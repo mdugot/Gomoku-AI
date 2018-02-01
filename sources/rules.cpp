@@ -14,10 +14,10 @@ bool Rules::win(Player &player) {
 	return false;
 }
 
-bool Rules::equality() {
+bool Rules::equality(Player &nextToPlay) {
 	for (int i = 0; i < W; i++) {
 		for (int j = 0; j < H; j++) {
-			if (gomoku->getStone(i, j) == FREE)
+			if (canPutStone(nextToPlay, i, j) == true)
 				return false;
 		}
 	}
@@ -28,7 +28,7 @@ void Rules::eat(Player &player) {
 	(void)player;
 }
 
-End Rules::checkEnd() {
+End Rules::checkEnd(Player &nextToPlay) {
 	if (win(gomoku->getWhitePlayer())) {
 		DEBUG << LIGHT_GREY << HLL_RED << "White player win" << DEFAULT_COLOR << "\n";
 		return WHITE_WIN;
@@ -37,7 +37,7 @@ End Rules::checkEnd() {
 		DEBUG << DARK_BLACK << HLIGHT_RED << "Black player win" << DEFAULT_COLOR << "\n";
 		return BLACK_WIN;
 	}
-	if (equality()) {
+	if (equality(nextToPlay)) {
 		DEBUG << DARK_BLUE << HLIGHT_BLUE << "no winner" << DEFAULT_COLOR << "\n";
 		return EQUALITY;
 	}

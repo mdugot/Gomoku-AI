@@ -22,7 +22,7 @@ Gomoku::~Gomoku()
 
 void Gomoku::start() {
 	Player *currentPlayer = &blackPlayer;
-	while (!rules.checkEnd()) {
+	while (!rules.checkEnd(*currentPlayer)) {
 		currentPlayer->play(rules);
 		if (currentPlayer == &blackPlayer)
 			currentPlayer = &whitePlayer;
@@ -40,6 +40,7 @@ Stone Gomoku::getStone(int x, int y) {
 }
 
 void Gomoku::printBoard() {
+	DEBUG << "\n";
 	for (int i = 0; i < W; i++) {
 		for (int j = 0; j < H; j++) {
 			if (board[i][j] == WHITE) {
