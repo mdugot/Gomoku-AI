@@ -2,13 +2,15 @@ NAME= Gomoku
 
 CC= g++
 CFLAGS= -std=c++11 -Wall -Werror -Wextra -g3 #-fsanitize=address
+SFMLFLAG= -lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system
 SRC_NAME= main.cpp \
           utils.cpp \
           gomoku.cpp \
           rules.cpp \
           defaultRules.cpp \
           player.cpp \
-          randomPlayer.cpp
+          randomPlayer.cpp\
+		  interface.cpp
 SRC_PATH= ./sources/
 INC_PATH= ./includes/
 OBJ_NAME= $(SRC_NAME:.cpp=.o)
@@ -23,7 +25,7 @@ end:
 	@printf "\n$(NAME) successfully created\n"
 
 $(NAME): $(OBJ)
-	@$(CC) $(CFLAGS) -o $(NAME) -I$(INC_PATH) $(OBJ)
+	@$(CC) $(CFLAGS) -o $(NAME) -I$(INC_PATH) $(OBJ) $(SFMLFLAG)
 	@printf "\033[2K[ \033[31mcompiling\033[0m ] $< \r"
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.cpp
