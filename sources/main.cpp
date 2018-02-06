@@ -1,3 +1,4 @@
+#include "utils.h"
 #include "gomoku.h"
 #include "randomPlayer.h"
 #include "defaultRules.h"

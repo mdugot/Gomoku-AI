@@ -21,6 +21,7 @@ class Gomoku
 		
 		Player &whitePlayer;
 		Player &blackPlayer;
+		Player *currentPlayer;
 		Rules &rules;
 		Interface &interface;
 		Stone board[GW][GH];
@@ -39,6 +40,7 @@ class Gomoku
 
 		inline Player &getWhitePlayer() {return whitePlayer;}
 		inline Player &getBlackPlayer() {return blackPlayer;}
+		inline Player *getCurrentPlayer() {return currentPlayer;}
 		inline Rules &getRules() {return rules;}
 		inline Interface &getInterface() {return interface;}
 		Stone getStone(int x, int y);

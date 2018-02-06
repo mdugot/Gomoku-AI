@@ -2,6 +2,7 @@
 #define RANDOMPLAYER_H
 
 #include "player.h"
+#include "utils.h"
 
 class RandomPlayer : public Player
 {
