@@ -28,15 +28,15 @@ Gomoku::~Gomoku()
 void Gomoku::start() {
 	//interface.start();
 	currentPlayer = &blackPlayer;
-	while (/*!rules.checkEnd(*currentPlayer) || */interface._window.isOpen()) {
-        interface.checkEvent();
-		//currentPlayer->play(rules);
+	while (!rules.checkEnd(*currentPlayer)/* || interface._window.isOpen()*/) {
+       // interface.checkEvent();
+		currentPlayer->play(rules);
 		if (currentPlayer == &blackPlayer)
 			currentPlayer = &whitePlayer;
 		else
 			currentPlayer = &blackPlayer;
 		rules.turnCounter += 1;
-        interface.update();
+        //interface.update();
 	}
 	printBoard();
 }
