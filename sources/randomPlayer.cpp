@@ -17,8 +17,8 @@ int increment(int n, int max) {
 }
 
 void RandomPlayer::play(Rules &rules) {
-	int x = rand() % W;
-	int y = rand() % H;
+	int x = rand() % GW;
+	int y = rand() % GH;
 	int ox = x;
 	int oy = y;
 	do {
@@ -28,9 +28,9 @@ void RandomPlayer::play(Rules &rules) {
 				putStone(x, y);
 				return;
 			}
-			y = increment(y, H);
+			y = increment(y, GH);
 		} while (y != oy);
-		x = increment(x, W);
+		x = increment(x, GW);
 	} while (x != ox);
 	failure("impossible to put stone on board");
 }

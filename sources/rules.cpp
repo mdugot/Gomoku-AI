@@ -15,8 +15,8 @@ bool Rules::win(Player &player) {
 }
 
 bool Rules::equality(Player &nextToPlay) {
-	for (int i = 0; i < W; i++) {
-		for (int j = 0; j < H; j++) {
+	for (int i = 0; i < GW; i++) {
+		for (int j = 0; j < GH; j++) {
 			if (canPutStone(nextToPlay, i, j) == true)
 				return false;
 		}

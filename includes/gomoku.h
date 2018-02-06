@@ -4,11 +4,12 @@
 #include "utils.h"
 #include "colors.h"
 
-#define W 19
-#define H 19
+#define GW 19
+#define GH 19
 
 class Player;
 class Rules;
+class Interface;
 
 typedef enum Stone {
 	BLACK = 1, WHITE = 2, FREE = 0, OUT_LIMIT = -1
@@ -21,7 +22,8 @@ class Gomoku
 		Player &whitePlayer;
 		Player &blackPlayer;
 		Rules &rules;
-		Stone board[W][H];
+		Interface &interface;
+		Stone board[GW][GH];
 
 		bool checkLine(Stone color, int x, int y);
 		bool leftDiagonal(Stone color, int x, int y);
@@ -32,12 +34,13 @@ class Gomoku
 	
 	public:
 
-		Gomoku(Player& p1, Player& p2, Rules& rules);
+		Gomoku(Player& p1, Player& p2, Rules& rules, Interface& interface);
 		~Gomoku();
 
 		inline Player &getWhitePlayer() {return whitePlayer;}
 		inline Player &getBlackPlayer() {return blackPlayer;}
 		inline Rules &getRules() {return rules;}
+		inline Interface &getInterface() {return interface;}
 		Stone getStone(int x, int y);
 		inline void setStone(Stone stone, int x, int y) {board[x][y] = stone;}
 

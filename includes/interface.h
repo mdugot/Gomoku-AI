@@ -11,8 +11,10 @@ using namespace sf;
 
 class Interface {
 
+	friend class Gomoku;
+
 	public:
-		Interface(Gomoku &gomoku);
+		Interface();
 		~Interface();
 
 		void	drawWindow(void);
@@ -26,8 +28,10 @@ class Interface {
 		void	timer(void);
 		void	stone(sf::CircleShape, int, int);
 
-	private:
-		Gomoku 				&_gomoku;
+	protected:
+		Gomoku 				*gomoku;
+		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
+		
 		sf::RenderWindow	_window;
 		sf::Event			_event;
 		sf::CircleShape		_stonePlayerOne;

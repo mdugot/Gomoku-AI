@@ -1,17 +1,19 @@
 #include "gomoku.h"
 #include "player.h"
 #include "rules.h"
+#include "interface.h"
 
-Gomoku::Gomoku(Player &p1, Player &p2, Rules &rules) : whitePlayer(p1), blackPlayer(p2), rules(rules)
+Gomoku::Gomoku(Player &p1, Player &p2, Rules &rules, Interface &interface) : whitePlayer(p1), blackPlayer(p2), rules(rules), interface(interface)
 {
-	for (int i = 0; i < W; i++) {
-		for (int j = 0; j < H; j++) {
+	for (int i = 0; i < GW; i++) {
+		for (int j = 0; j < GH; j++) {
 			board[i][j] = FREE;
 		}
 	}
 	rules.setGomoku(this);
 	whitePlayer.setGomoku(this);
 	blackPlayer.setGomoku(this);
+	interface.setGomoku(this);
 	whitePlayer.setColor(WHITE);
 	blackPlayer.setColor(BLACK);
 }
@@ -21,6 +23,7 @@ Gomoku::~Gomoku()
 }
 
 void Gomoku::start() {
+	interface.start();
 	Player *currentPlayer = &blackPlayer;
 	while (!rules.checkEnd(*currentPlayer)) {
 		currentPlayer->play(rules);
@@ -34,15 +37,15 @@ void Gomoku::start() {
 }
 
 Stone Gomoku::getStone(int x, int y) {
-	 if (x < 0 || y < 0 || x >= W || y >= H)
+	 if (x < 0 || y < 0 || x >= GW || y >= GH)
 	 	return OUT_LIMIT;
 	return board[x][y];
 }
 
 void Gomoku::printBoard() {
 	DEBUG << "\n";
-	for (int i = 0; i < W; i++) {
-		for (int j = 0; j < H; j++) {
+	for (int i = 0; i < GW; i++) {
+		for (int j = 0; j < GH; j++) {
 			if (board[i][j] == WHITE) {
 				DEBUG << DEFAULT_COLOR << HLL_GREY << "O" << DEFAULT_COLOR;
 			} else if (board[i][j] == BLACK) {
@@ -101,8 +104,8 @@ bool Gomoku::checkLine(Stone color, int x, int y) {
 }
 
 bool Gomoku::fiveStoneLine(Stone color, int &x, int &y) {
-	for (int i = 0; i < W; i++) {
-		for (int j = 0; j < H; j++) {
+	for (int i = 0; i < GW; i++) {
+		for (int j = 0; j < GH; j++) {
 			if (checkLine(color, i, j)) {
 				x = i;
 				y = j;
