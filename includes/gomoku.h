@@ -4,8 +4,8 @@
 #include "utils.h"
 #include "colors.h"
 
-#define GW 19
-#define GH 19
+#define W 19
+#define H 19
 
 class Player;
 class Rules;
@@ -21,7 +21,7 @@ class Gomoku
 		Player &whitePlayer;
 		Player &blackPlayer;
 		Rules &rules;
-		Stone board[GW][GH];
+		Stone board[W][H];
 
 		bool checkLine(Stone color, int x, int y);
 		bool leftDiagonal(Stone color, int x, int y);
