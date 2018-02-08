@@ -7,6 +7,8 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
+#include <list>
+
 #include "colors.h"
 #define NPOS std::string::npos
 #define PRINT_ERROR true

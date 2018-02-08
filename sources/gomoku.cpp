@@ -3,6 +3,8 @@
 #include "rules.h"
 #include "interface.h"
 
+using namespace sf;
+
 Gomoku::Gomoku(Player &p1, Player &p2, Rules &rules, Interface &interface) : whitePlayer(p1), blackPlayer(p2), rules(rules), interface(interface)
 {
 	for (int i = 0; i < GW; i++) {
@@ -14,11 +16,17 @@ Gomoku::Gomoku(Player &p1, Player &p2, Rules &rules, Interface &interface) : whi
 	whitePlayer.setGomoku(this);
 	blackPlayer.setGomoku(this);
 	interface.setGomoku(this);
-	whitePlayer.setColor(WHITE);
-	whitePlayer.setSpriteStone(sf::Color::White);
-	blackPlayer.setColor(BLACK);
-	blackPlayer.setSpriteStone(sf::Color::Black);
+	whitePlayer.setMyColor(WHITE);
+	blackPlayer.setMyColor(BLACK);
 	currentPlayer = &blackPlayer;
+    //interface._stoneImg.createMaskFromColor(Color::White); // Masque de transparence
+    whitePlayer.stoneSprite.setTexture(interface._stoneTexture);
+    blackPlayer.stoneSprite.setTexture(interface._stoneTexture);
+	whitePlayer.stoneSprite.setScale(0.1, 0.1);
+	blackPlayer.stoneSprite.setScale(0.1, 0.1);
+    whitePlayer.stoneSprite.setColor(Color(0,255,0));
+	interface.putStone(whitePlayer.getSpriteStone(), 50, 50);
+    //blackPlayer.stoneSprite.setColor(Color::Black);
 }
 
 Gomoku::~Gomoku()
@@ -28,13 +36,14 @@ Gomoku::~Gomoku()
 void Gomoku::start() {
 	//interface.start();
 	currentPlayer = &blackPlayer;
-	while (!rules.checkEnd(*currentPlayer)/* || interface._window.isOpen()*/) {
-       // interface.checkEvent();
+	while (!rules.checkEnd(*currentPlayer) /*|| 
+		//interface._window.isOpen()*/) {
 		currentPlayer->play(rules);
 		if (currentPlayer == &blackPlayer)
 			currentPlayer = &whitePlayer;
 		else
 			currentPlayer = &blackPlayer;
+        //interface.checkEvent(currentPlayer);
 		rules.turnCounter += 1;
         //interface.update();
 	}

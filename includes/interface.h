@@ -3,6 +3,7 @@
 
 # include "utils.h"
 # include "gomoku.h"
+# include "player.h"
 
 # define WIDTH	1200 // a essayer
 # define HEIGHT	1200
@@ -17,6 +18,7 @@ class Interface {
 		Interface();
 		~Interface();
 
+		void	start(void);
 		void	drawWindow(void);
 		void	drawGame(void);
 		void	update(void);
@@ -25,22 +27,32 @@ class Interface {
 		void	background(void);
 		void	winEnd(void);
 		void	timer(void);
-		void	putStone(sf::CircleShape, int, int);
-		sf::CircleShape	getCurrentStonePlayer(void);
+		void	putStone(sf::Sprite, int, int);
+//		sf::CircleShape	getCurrentStonePlayer(void);
+		inline sf::RenderWindow &getWindow(void) {return this->_window;}
+		inline sf::Event &getEvent(void) {return this->_event;}
+		void	loadTexture(void);
+		void	loadSprite(void);
+		void	makeSprite(sf::Sprite &s, sf::Texture &t, float sy, float sx, int px, int py);
 
 	protected:
 		Gomoku 				*gomoku;
 		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
-		inline sf::RenderWindow &getWindow(void) {return this->_window;}
-		inline sf::Event &getEvent(void) {return this->_event;}
 		
 		sf::RenderWindow	_window;
 		sf::Event			_event;
-		sf::CircleShape		_stonePlayerOne;
-		sf::CircleShape		_stonePlayerTwo;
+		sf::Sprite			_stonePlayerOne;
+		sf::Sprite			_stonePlayerTwo;
+		sf::Sprite			_backgroundSprite;
+       	sf::Sprite			_boardGameSprite;
+      	sf::Sprite			_gridSprite;
+		sf::Texture			_stoneTexture;
+		sf::Texture			_backgroundTexture;
+       	sf::Texture			_boardGameTexture;
+      	sf::Texture			_gridTexture;
+		std::list<sf::Sprite>			_allSprite;
 
-		void	checkEvent(void);
-		void	checkInput(void);
+		void	checkEvent(Player *currentPlayer);
 		int	clickX;
 		int clickY;
 };
