@@ -15,7 +15,7 @@ class Player
 		unsigned int eatenStones;
 		Gomoku *gomoku;
 		Stone stoneColor;
-		sf::Sprite	stoneSprite;
+		sf::Sprite	*stoneSprite;
 		
 		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
 		inline void setMyColor(Stone color) {this->stoneColor = color;}
@@ -28,7 +28,8 @@ class Player
 
 		virtual void play(Rules &rules) = 0;
 		inline Stone getColor() {return stoneColor;}
-		inline sf::Sprite getSpriteStone() {return stoneSprite;}
+		inline sf::Sprite *getSpriteStone() {return stoneSprite;}
+		inline void	setSpriteStone(sf::Sprite *stone) {this->stoneSprite = stone;}
 };
 
 

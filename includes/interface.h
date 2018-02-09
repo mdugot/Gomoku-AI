@@ -5,7 +5,7 @@
 # include "gomoku.h"
 # include "player.h"
 
-# define WIDTH	1200 // a essayer
+# define WIDTH	1600
 # define HEIGHT	1200
 
 using namespace sf;
@@ -41,15 +41,14 @@ class Interface {
 		
 		sf::RenderWindow	_window;
 		sf::Event			_event;
-		sf::Sprite			_stonePlayerOne;
-		sf::Sprite			_stonePlayerTwo;
+		sf::Sprite			_whiteStone;
+		sf::Sprite			_blackStone;
 		sf::Sprite			_backgroundSprite;
        	sf::Sprite			_boardGameSprite;
-      	sf::Sprite			_gridSprite;
-		sf::Texture			_stoneTexture;
+		sf::Texture			_stoneWhiteTexture;
+		sf::Texture			_stoneBlackTexture;
 		sf::Texture			_backgroundTexture;
        	sf::Texture			_boardGameTexture;
-      	sf::Texture			_gridTexture;
 		std::list<sf::Sprite>			_allSprite;
 
 		void	checkEvent(Player *currentPlayer);
