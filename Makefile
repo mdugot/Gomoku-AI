@@ -2,7 +2,7 @@ NAME= Gomoku
 
 CC= g++
 CFLAGS= -std=c++11 -Wall -Werror -Wextra -g3 #-fsanitize=address
-SFMLFLAG= -lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system
+SFMLFLAG= -L ~/.brew/opt/sfml/lib -L ./lib -lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system
 SRC_NAME= main.cpp \
           utils.cpp \
           gomoku.cpp \
@@ -22,7 +22,8 @@ OBJ= $(addprefix $(OBJ_PATH), $(OBJ_NAME))
 all: $(NAME) end
 	
 end:
-	@printf "\n$(NAME) successfully created\n"
+	@export LD_LIBRARY_PATH=~/.brew/opt/sfml/lib
+	@printf "$(NAME) successfully created\n"
 
 $(NAME): $(OBJ)
 	@$(CC) $(CFLAGS) -o $(NAME) -I$(INC_PATH) $(OBJ) $(SFMLFLAG)
