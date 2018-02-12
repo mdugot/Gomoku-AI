@@ -8,6 +8,8 @@
 #include <iostream>
 #include <fstream>
 #include <list>
+#include <map>
+#include <iterator>
 
 #include "colors.h"
 #define NPOS std::string::npos

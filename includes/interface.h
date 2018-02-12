@@ -22,6 +22,7 @@ class Interface {
 		void	drawWindow(void);
 		void	drawGame(void);
 		void	update(void);
+		void	endScreen(void);
 		void	welcomeScreen(void);
 		void	menuScreen(void);
 		void	background(void);
@@ -34,6 +35,9 @@ class Interface {
 		void	loadTexture(void);
 		void	loadSprite(void);
 		void	makeSprite(sf::Sprite &s, sf::Texture &t, float sy, float sx, int px, int py);
+		void	checkClickLeft(int x, int y);
+		bool	checkScreenStatus(std::string toCheck);
+		void	setScreenStatus(std::string status);
 
 	protected:
 		Gomoku 				*gomoku;
@@ -54,6 +58,7 @@ class Interface {
 		void	checkEvent(Player *currentPlayer);
 		int	clickX;
 		int clickY;
+		std::map<std::string, bool> _screenStatus;
 };
 
 #endif

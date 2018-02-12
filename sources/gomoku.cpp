@@ -33,6 +33,7 @@ void Gomoku::start() {
 	whitePlayer.setSpriteStone(&(interface._whiteStone));
 	blackPlayer.setSpriteStone(&(interface._blackStone));
 	currentPlayer = &blackPlayer;
+	interface.setScreenStatus("inGame");
 	while (/*!rules.checkEnd(*currentPlayer) || */
 		interface._window.isOpen()) {
 		//currentPlayer->play(rules);
