@@ -1,5 +1,6 @@
 #include "player.h"
 #include "gomoku.h"
+#include "interface.h"
 
 Player::Player() : eatenStones(0)
 {

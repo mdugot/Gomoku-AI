@@ -4,9 +4,15 @@
 # include "utils.h"
 # include "gomoku.h"
 # include "player.h"
+# include "humanPlayer.h"
 
 # define WIDTH	1600
 # define HEIGHT	1200
+# define BOARD_LEFT	355
+# define BOARD_RIGHT	1245
+# define BOARD_UP	155
+# define BOARD_DOWN	1045
+# define MARGE	10
 
 using namespace sf;
 
@@ -34,10 +40,15 @@ class Interface {
 		inline sf::Event &getEvent(void) {return this->_event;}
 		void	loadTexture(void);
 		void	loadSprite(void);
+		void	initCoordBoard(void);
+		void	printCoordBoard(void);
 		void	makeSprite(sf::Sprite &s, sf::Texture &t, float sy, float sx, int px, int py);
-		void	checkClickLeft(int x, int y);
+		void	checkClickLeft(Player &current, int x, int y);
 		bool	checkScreenStatus(std::string toCheck);
 		void	setScreenStatus(std::string status);
+		bool	onBoard(int x, int y);
+		void	setStoneOnClick(Player &player, int x, int y);
+		void	checkEvent(Player &current);
 
 	protected:
 		Gomoku 				*gomoku;
@@ -55,10 +66,11 @@ class Interface {
        	sf::Texture			_boardGameTexture;
 		std::list<sf::Sprite>			_allSprite;
 
-		void	checkEvent(Player *currentPlayer);
 		int	clickX;
 		int clickY;
 		std::map<std::string, bool> _screenStatus;
+		Vector2<int>	coordBoard[GW][GH];
+
 };
 
 #endif

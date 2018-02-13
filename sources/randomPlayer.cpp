@@ -16,7 +16,8 @@ int increment(int n, int max) {
 	return n;
 }
 
-void RandomPlayer::play(Rules &rules) {
+void RandomPlayer::play(Rules &rules, Interface &i) {
+	(void)i;
 	int x = rand() % GW;
 	int y = rand() % GH;
 	int ox = x;
@@ -26,7 +27,6 @@ void RandomPlayer::play(Rules &rules) {
 		do {
 			if (rules.canPutStone(*this, x, y)) {
 				putStone(x, y);
-				return;
 			}
 			y = increment(y, GH);
 		} while (y != oy);

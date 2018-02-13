@@ -18,10 +18,7 @@ Gomoku::Gomoku(Player &p1, Player &p2, Rules &rules, Interface &interface) : whi
 	interface.setGomoku(this);
 	whitePlayer.setMyColor(WHITE);
 	blackPlayer.setMyColor(BLACK);
-	DEBUG << "before\n";
 	currentPlayer = &blackPlayer;
-	DEBUG << "after\n";
-
 }
 
 Gomoku::~Gomoku()
@@ -29,19 +26,24 @@ Gomoku::~Gomoku()
 }
 
 void Gomoku::start() {
-	//interface.start();
 	whitePlayer.setSpriteStone(&(interface._whiteStone));
 	blackPlayer.setSpriteStone(&(interface._blackStone));
 	currentPlayer = &blackPlayer;
 	interface.setScreenStatus("inGame");
-	while (/*!rules.checkEnd(*currentPlayer) || */
+	//interface.printCoordBoard();
+	while (!rules.checkEnd(*currentPlayer) &&
 		interface._window.isOpen()) {
-		//currentPlayer->play(rules);
+		/*if (currentPlayer->human) {
+			while (!currentPlayer.setPlayed)
+        		interface.checkEvent();
+		}
+		else
+		*/currentPlayer->play(rules, interface);
+        interface.checkEvent(*currentPlayer);
 		if (currentPlayer == &blackPlayer)
 			currentPlayer = &whitePlayer;
 		else
 			currentPlayer = &blackPlayer;
-        interface.checkEvent(currentPlayer);
 		rules.turnCounter += 1;
         interface.update();
 	}

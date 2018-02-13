@@ -10,8 +10,72 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
    _screenStatus["inMenu"] = false;
    _screenStatus["inEndScreen"] = false;
    _screenStatus["inWelcomeScreen"] = true;
+   initCoordBoard();
    DEBUG << "INTERFACE READY\n";
 }
+
+void    Interface::initCoordBoard(void) {
+    int i = 0;
+    int j = 0;
+    float step = 49.445f;//(float)((BOARD_RIGHT - BOARD_LEFT) / 18);
+    DEBUG << "step:" << step;
+    float stepy = 0;
+    float stepx = 0;
+    int y = BOARD_UP;
+    while (i < GW) {
+        int x = BOARD_LEFT;
+        j = 0;
+        stepx = 0;
+        while (j < GH) {
+            coordBoard[i][j] = Vector2<int>((int)(x + stepx), (int)(y + stepy));
+            stepx+= step;
+            j++;
+        }
+        stepy += step;
+        i++;
+    }
+}
+
+void    Interface::printCoordBoard(void) {
+    int i = 0;
+    int j = 0;
+    while (i < GW) {
+        j = 0;
+        while (j < GH) {
+            DEBUG << coordBoard[i][j].x << "," << coordBoard[i][j].y << "|";
+            this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), coordBoard[i][j].x, coordBoard[i][j].y);
+            j++;
+        }
+        DEBUG << "\n";
+        i++;
+    }
+}
+
+void    Interface::setStoneOnClick(Player &current, int clickx, int clicky) {
+    int i = 0;
+    int j = 0;
+    while (i < GW) {
+        j = 0;
+        while (j < GH) {
+            if (clickx <= coordBoard[i][j].x + 8 && clickx >= coordBoard[i][j].x - 8 &&
+                clicky <= coordBoard[i][j].y + 8 && clicky >= coordBoard[i][j].y - 8) {
+                //AJOUTER AUSSI LES AUTRES REGLES A CHECKER
+                //if (gomoku->getStone(i, j) == FREE) {
+                if (gomoku->rules.canPutstone(current, i, j)) {
+                    //this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), coordBoard[i][j].x, coordBoard[i][j].y);
+                    //gomoku->setStone(gomoku->getCurrentPlayer()->getColor(), i, j);
+                    this->putStone(*(current->getSpriteStone()), coordBoard[i][j].x, coordBoard[i][j].y);
+                    gomoku->setStone(current->getColor(), i, j);
+                    current->setPlayed(true);
+                    return; 
+                }
+            }
+            j++;
+        }
+        i++;
+    }
+}
+
 
 void    Interface::loadTexture(void) {
    if(!_stoneWhiteTexture.loadFromFile("./sprite/whiteStone.png")
@@ -53,23 +117,15 @@ Interface::~Interface() {
 
 void    Interface::setScreenStatus(std::string status)
 {
-    DEBUG << "check\n";
-    for(std::map<std::string,bool>::const_iterator it=_screenStatus.begin() ; it!=_screenStatus.end() ; ++it)
-    {
-        if (it->first.compare(status) == 0)
-        {
-            DEBUG << "set to" << status << ", " << it->first << "\n";
-            _screenStatus[it->first] = true;
-        }
-        else
+    for(std::map<std::string,bool>::const_iterator it=_screenStatus.begin() ; it!=_screenStatus.end() ; ++it) {
             _screenStatus[it->first] = false;
     }
+    _screenStatus[status] = true;
 }
 
 bool    Interface::checkScreenStatus(std::string status)
 {
-    DEBUG << "checkStatus\n";
-    return ((this->_screenStatus.find(status))->second);
+    return (this->_screenStatus[status]);
 }
 
 void    Interface::drawWindow(void) {
@@ -108,9 +164,7 @@ void    Interface::putStone(Sprite stone, int x, int y) {
         _allSprite.push_back(stone);
 }
 
-void    Interface::checkEvent(Player *currentPlayer) {
-    
-    (void)currentPlayer;
+void    Interface::checkEvent(Player &current) {
     while (_window.pollEvent(_event))
     {
         switch (_event.type)
@@ -144,8 +198,8 @@ void    Interface::checkEvent(Player *currentPlayer) {
                 switch (_event.mouseButton.button)
                 {
                     case Mouse::Left :
-                        this->checkClickLeft(_event.mouseButton.x, _event.mouseButton.y);
-                        DEBUG << "xy(" <<_event.mouseButton.x << "," << _event.mouseButton.y << ")\n";  
+                        this->checkClickLeft(current, _event.mouseButton.x, _event.mouseButton.y);
+                        DEBUG << "xy(" <<_event.mouseButton.x << "," << _event.mouseButton.y << ")\n"; 
                     break;
                 default :
                     break;
@@ -158,28 +212,30 @@ void    Interface::checkEvent(Player *currentPlayer) {
     }
 }
 
-/*
+
 bool    Interface::onBoard(int x, int y)
 {
-    if (x <= BOARD_RIGHT + 20 && 
-        x >= BOARD_LEFT - 20 &&
-        y <= BOARD_UP - 20 &&
-        y >= BOARD_DOWN  + 20)
+    if (x <= BOARD_RIGHT + MARGE && 
+        x >= BOARD_LEFT - MARGE &&
+        y >= BOARD_UP - MARGE &&
+        y <= BOARD_DOWN  + MARGE)
         return true;
     else
-        return false
+        return false;
 }
-*/
 
-void    Interface::checkClickLeft(int x, int y)
+
+void    Interface::checkClickLeft(Player &current, int x, int y)
 {
     if (this->checkScreenStatus("inGame"))
     {
-        if (true /*onBoard()*/)
-            this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), x, y);
+        if (!current->human && onBoard(x, y))
+            this->setStoneOnClick(current, x, y); //this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), x, y);
+        else
+            DEBUG << "out of board add other feature interaction\n";
     }
     else
-        DEBUG << "not in game\n";
+        DEBUG << "not in game add feature menu and other\n";
 }
 
 void    Interface::update(void) {

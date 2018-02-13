@@ -10,6 +10,7 @@ SRC_NAME= main.cpp \
           defaultRules.cpp \
           player.cpp \
           randomPlayer.cpp\
+		  humanPlayer.cpp\
 		  interface.cpp
 SRC_PATH= ./sources/
 INC_PATH= ./includes/

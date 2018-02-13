@@ -14,7 +14,7 @@ class RandomPlayer : public Player
 		RandomPlayer();
 		~RandomPlayer();
 
-		virtual void play(Rules &rules);
+		virtual void play(Rules &rules, Interface &i);
 };
 
 
