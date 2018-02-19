@@ -1,10 +1,8 @@
 #ifndef INTERFACE_H
-# define INTERFACE_H
+#define INTERFACE_H
 
-# include "utils.h"
-# include "gomoku.h"
-# include "player.h"
-# include "humanPlayer.h"
+#include "gomoku.h"
+#include "player.h"
 
 # define WIDTH	1600
 # define HEIGHT	1200
@@ -15,6 +13,10 @@
 # define MARGE	10
 
 using namespace sf;
+
+typedef enum State {
+	WELCOME = 1, MENU = 2, GAME = 3, SCORE = 4, AGAIN = 5, GOODBYE = 0
+} State;
 
 class Interface {
 
@@ -49,6 +51,7 @@ class Interface {
 		bool	onBoard(int x, int y);
 		void	setStoneOnClick(Player &player, int x, int y);
 		void	checkEvent(Player &current);
+		inline Vector2<int>	getCoordBoard(int x, int y){return (coordBoard[x][y]);}	
 
 	protected:
 		Gomoku 				*gomoku;
@@ -66,8 +69,6 @@ class Interface {
        	sf::Texture			_boardGameTexture;
 		std::list<sf::Sprite>			_allSprite;
 
-		int	clickX;
-		int clickY;
 		std::map<std::string, bool> _screenStatus;
 		Vector2<int>	coordBoard[GW][GH];
 

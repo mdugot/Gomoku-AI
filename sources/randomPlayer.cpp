@@ -1,5 +1,6 @@
 #include "randomPlayer.h"
 #include "rules.h"
+#include "interface.h"
 
 RandomPlayer::RandomPlayer() : Player()
 {
@@ -17,11 +18,11 @@ int increment(int n, int max) {
 }
 
 void RandomPlayer::play(Rules &rules, Interface &i) {
-	(void)i;
 	int x = rand() % GW;
 	int y = rand() % GH;
 	int ox = x;
 	int oy = y;
+	(void)i;
 	do {
 		y = oy;
 		do {
@@ -33,4 +34,5 @@ void RandomPlayer::play(Rules &rules, Interface &i) {
 		x = increment(x, GW);
 	} while (x != ox);
 	failure("impossible to put stone on board");
+	played = true;
 }

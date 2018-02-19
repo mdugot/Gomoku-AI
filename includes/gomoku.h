@@ -3,13 +3,12 @@
 
 #include "utils.h"
 #include "colors.h"
+class Interface;
+class Player;
+class Rules;
 
 #define GW 19
 #define GH 19
-
-class Player;
-class Rules;
-class Interface;
 
 typedef enum Stone {
 	BLACK = 1, WHITE = 2, FREE = 0, OUT_LIMIT = -1

@@ -1,9 +1,9 @@
-#include "player.h"
 #include "gomoku.h"
-#include "interface.h"
+#include "player.h"
 
 Player::Player() : eatenStones(0)
 {
+	played = false;
 }
 
 Player::~Player() {

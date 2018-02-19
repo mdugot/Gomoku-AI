@@ -33,19 +33,17 @@ void Gomoku::start() {
 	//interface.printCoordBoard();
 	while (!rules.checkEnd(*currentPlayer) &&
 		interface._window.isOpen()) {
-		/*if (currentPlayer->human) {
-			while (!currentPlayer.setPlayed)
-        		interface.checkEvent();
+        interface.update();
+		while (!currentPlayer->played) {
+			currentPlayer->play(rules, interface);
 		}
-		else
-		*/currentPlayer->play(rules, interface);
-        interface.checkEvent(*currentPlayer);
+		currentPlayer->played = false;
 		if (currentPlayer == &blackPlayer)
 			currentPlayer = &whitePlayer;
 		else
 			currentPlayer = &blackPlayer;
+        interface.checkEvent(*currentPlayer);
 		rules.turnCounter += 1;
-        interface.update();
 	}
 	printBoard();
 }

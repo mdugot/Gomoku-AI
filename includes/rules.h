@@ -1,10 +1,8 @@
 #ifndef RULES_H
 #define RULES_H
 
-#include "player.h"
 #include "gomoku.h"
-
-class Gomoku;
+#include "player.h"
 
 typedef enum End {
 	BLACK_WIN = 1, WHITE_WIN = 2, EQUALITY = 3, NO_END = 0

@@ -1,4 +1,7 @@
 #include "interface.h"
+#include "gomoku.h"
+#include "player.h"
+#include "rules.h"
 
 
 Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::Titlebar | Style::Close)
@@ -60,18 +63,17 @@ void    Interface::setStoneOnClick(Player &current, int clickx, int clicky) {
             if (clickx <= coordBoard[i][j].x + 8 && clickx >= coordBoard[i][j].x - 8 &&
                 clicky <= coordBoard[i][j].y + 8 && clicky >= coordBoard[i][j].y - 8) {
                 //AJOUTER AUSSI LES AUTRES REGLES A CHECKER
-                //if (gomoku->getStone(i, j) == FREE) {
-                if (gomoku->rules.canPutstone(current, i, j)) {
-                    //this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), coordBoard[i][j].x, coordBoard[i][j].y);
-                    //gomoku->setStone(gomoku->getCurrentPlayer()->getColor(), i, j);
-                    this->putStone(*(current->getSpriteStone()), coordBoard[i][j].x, coordBoard[i][j].y);
-                    gomoku->setStone(current->getColor(), i, j);
-                    current->setPlayed(true);
-                    return; 
+                if (gomoku->getStone(i, j) == FREE) {
+                //if (gomoku->rules.canPutstone(current, i, j)) {
+                    this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), coordBoard[i][j].x, coordBoard[i][j].y);
+                    gomoku->setStone(gomoku->getCurrentPlayer()->getColor(), i, j);
+                    current.setPlayed(true);
                 }
-            }
+                //vClick = *coorBoard[i][j];
+                return; 
+                }
             j++;
-        }
+            }
         i++;
     }
 }
@@ -198,6 +200,9 @@ void    Interface::checkEvent(Player &current) {
                 switch (_event.mouseButton.button)
                 {
                     case Mouse::Left :
+                        //this->clickx = _event.mouseButton.x;
+                        //this->clicky = event.mousebutton.y;
+                        //aClick = true;
                         this->checkClickLeft(current, _event.mouseButton.x, _event.mouseButton.y);
                         DEBUG << "xy(" <<_event.mouseButton.x << "," << _event.mouseButton.y << ")\n"; 
                     break;
@@ -229,7 +234,7 @@ void    Interface::checkClickLeft(Player &current, int x, int y)
 {
     if (this->checkScreenStatus("inGame"))
     {
-        if (!current->human && onBoard(x, y))
+        if (onBoard(x, y))
             this->setStoneOnClick(current, x, y); //this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), x, y);
         else
             DEBUG << "out of board add other feature interaction\n";

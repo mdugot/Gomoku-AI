@@ -1,18 +1,18 @@
-#ifndef RANDOMPLAYER_H
-#define RANDOMPLAYER_H
+#ifndef NOOBIA_H
+#define NOOBIA_H
 
 #include "utils.h"
 #include "player.h"
 
-class RandomPlayer : public Player
+class NoobIA : public Player
 {
 	private:
 
 	
 	public:
 
-		RandomPlayer();
-		~RandomPlayer();
+		NoobIA();
+		~NoobIA();
 
 		virtual void play(Rules &rules, Interface &i);
 };

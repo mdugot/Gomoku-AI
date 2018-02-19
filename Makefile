@@ -11,6 +11,7 @@ SRC_NAME= main.cpp \
           player.cpp \
           randomPlayer.cpp\
 		  humanPlayer.cpp\
+		  noobIA.cpp\
 		  interface.cpp
 SRC_PATH= ./sources/
 INC_PATH= ./includes/
