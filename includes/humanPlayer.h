@@ -14,7 +14,6 @@ class HumanPlayer : public Player
 		HumanPlayer();
 		~HumanPlayer();
 
-		//virtual Vector2<int> play(Rules &rules, Vector2<int>) = 0;
 		virtual void play(Rules &rules, Interface &i);
 };
 

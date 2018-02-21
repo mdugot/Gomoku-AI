@@ -29,9 +29,7 @@ void Gomoku::start() {
 	whitePlayer.setSpriteStone(&(interface._whiteStone));
 	blackPlayer.setSpriteStone(&(interface._blackStone));
 	currentPlayer = &blackPlayer;
-	//interface.setScreenStatus("inGame");
 	interface.setState(GAME);
-	//interface.printCoordBoard();
 	while (!rules.checkEnd(*currentPlayer) &&
 		interface._window.isOpen()) {
         interface.update();
@@ -128,3 +126,12 @@ bool Gomoku::fiveStoneLine(Stone color, int &x, int &y) {
 	}
 	return false;
 }
+
+/*IN PROGRESS...
+void Gomoku::checkCapture(Stone colorCurrent, int x, int y, Stone colorEnemy)
+{
+	if (i - 3 > 0 && j > 0 && getStone(i,j) == colorCurrent){
+		if (getStone(i+1, j) == colorEnemy && getStone(i+2, j) == colorEnemy)
+			current->eat(enemy.getColor());
+	}
+}*/

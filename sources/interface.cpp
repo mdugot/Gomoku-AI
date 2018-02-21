@@ -61,14 +61,12 @@ void    Interface::setStoneOnClick(Player &current, int clickx, int clicky) {
         while (j < GH) {
             if (clickx <= coordBoard[i][j].x + 8 && clickx >= coordBoard[i][j].x - 8 &&
                 clicky <= coordBoard[i][j].y + 8 && clicky >= coordBoard[i][j].y - 8) {
-                //TO-DO : Revoir l'implémentation pour AJOUTER AUSSI LES AUTRES REGLES A CHECKER
-                if (gomoku->getStone(i, j) == FREE) {
-                //if (gomoku->rules.canPutstone(current, i, j)) {
+                if (gomoku->getRules().canPutStone(current, i, j)) {
+                    current.setCoordPlayed(i, j);
                     this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), coordBoard[i][j].x, coordBoard[i][j].y);
                     gomoku->setStone(gomoku->getCurrentPlayer()->getColor(), i, j);
                     current.setPlayed(true);
                 }
-                //vClick = *coorBoard[i][j];
                 return; 
                 }
             j++;
@@ -156,12 +154,6 @@ void    Interface::setState(State newState)
                 exit(0);
                 break;
     }
-    /*
-    for(std::map<std::string,bool>::const_iterator it=_screenStatus.begin() ; it!=_screenStatus.end() ; ++it) {
-            _screenStatus[it->first] = false;
-    }
-    _screenStatus[status] = true;
-    */
 }
 
 void    Interface::startPauseScreen(void) {
@@ -183,6 +175,7 @@ void    Interface::cleanSpriteList(void) {
     /*for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
         this->_window.draw(*it);
     }*/
+    _allSprite.erase(_allSprite.begin(), _allSprite.end());
 }
 
 void    Interface::welcomeScreen(void) {
@@ -237,6 +230,7 @@ void    Interface::checkEvent(Player &current) {
         {
             case Event::Closed :
                 _window.close();
+                //add function to quit properly with clean and goodbye
                 break;
             case Event::KeyPressed :
             {

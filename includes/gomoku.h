@@ -18,18 +18,19 @@ class Gomoku
 {
 	private:
 		
-		Player &whitePlayer;
-		Player &blackPlayer;
-		Player *currentPlayer;
-		Rules &rules;
+		Player	&whitePlayer;
+		Player	&blackPlayer;
+		Player	*currentPlayer;
+		Rules	&rules;
 		Interface &interface;
-		Stone board[GW][GH];
+		Stone	board[GW][GH];
+		int		nbEatenStone;
 
-		bool checkLine(Stone color, int x, int y);
-		bool leftDiagonal(Stone color, int x, int y);
-		bool rightDiagonal(Stone color, int x, int y);
-		bool verticalLine(Stone color, int x, int y);
-		bool horizontalLine(Stone color, int x, int y);
+		bool	checkLine(Stone color, int x, int y);
+		bool	leftDiagonal(Stone color, int x, int y);
+		bool	rightDiagonal(Stone color, int x, int y);
+		bool	verticalLine(Stone color, int x, int y);
+		bool	horizontalLine(Stone color, int x, int y);
 
 	
 	public:
@@ -42,6 +43,7 @@ class Gomoku
 		inline Player *getCurrentPlayer() {return currentPlayer;}
 		inline Rules &getRules() {return rules;}
 		inline Interface &getInterface() {return interface;}
+		inline int getNbEatenStone() {return nbEatenStone;}
 		Stone getStone(int x, int y);
 		inline void setStone(Stone stone, int x, int y) {board[x][y] = stone;}
 

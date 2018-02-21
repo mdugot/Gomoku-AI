@@ -1,9 +1,8 @@
 #include "gomoku.h"
 #include "player.h"
 
-Player::Player() : eatenStones(0)
+Player::Player() : nbCapture(0), played(false)
 {
-	played = false;
 }
 
 Player::~Player() {

@@ -16,9 +16,6 @@ void HumanPlayer::play(Rules &rules, Interface &i) {
 	while (!this->played)
 	{
 		i.checkEvent(*this);
-		//if (rules.canPutStone(*this, v.x, v.y)) {
-		//this->putStone(v.x, v.y);
-	//return v;
 	}
 	return;
 }

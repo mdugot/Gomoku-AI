@@ -10,6 +10,8 @@
 #include <list>
 #include <map>
 #include <iterator>
+#include <cmath>
+
 
 #include "colors.h"
 #define NPOS std::string::npos

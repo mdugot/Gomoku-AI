@@ -4,6 +4,8 @@
 #include "gomoku.h"
 #include "player.h"
 
+#define NB_CAPTURE_TO_WIN 10
+
 typedef enum End {
 	BLACK_WIN = 1, WHITE_WIN = 2, EQUALITY = 3, NO_END = 0
 } End;

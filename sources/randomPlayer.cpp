@@ -28,6 +28,7 @@ void RandomPlayer::play(Rules &rules, Interface &i) {
 		do {
 			if (rules.canPutStone(*this, x, y)) {
 				putStone(x, y);
+				setCoordPlayed(x, y);
 			}
 			y = increment(y, GH);
 		} while (y != oy);
