@@ -4,16 +4,16 @@
 #include "rules.h"
 
 
+//TO-DO : fonction pour nettoyer (free) et réinitiliaser la liste de sprite du jeu à afficher.
+
 Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::Titlebar | Style::Close)
 {
    _window.setFramerateLimit(60);
    this->loadTexture();
    this->loadSprite();
-   _screenStatus["inGame"] = false;
-   _screenStatus["inMenu"] = false;
-   _screenStatus["inEndScreen"] = false;
-   _screenStatus["inWelcomeScreen"] = true;
    initCoordBoard();
+   // TO-DO : implement initCoordCapture[]
+   this->setState(WELCOME);
    DEBUG << "INTERFACE READY\n";
 }
 
@@ -21,7 +21,6 @@ void    Interface::initCoordBoard(void) {
     int i = 0;
     int j = 0;
     float step = 49.445f;//(float)((BOARD_RIGHT - BOARD_LEFT) / 18);
-    DEBUG << "step:" << step;
     float stepy = 0;
     float stepx = 0;
     int y = BOARD_UP;
@@ -46,7 +45,7 @@ void    Interface::printCoordBoard(void) {
         j = 0;
         while (j < GH) {
             DEBUG << coordBoard[i][j].x << "," << coordBoard[i][j].y << "|";
-            this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), coordBoard[i][j].x, coordBoard[i][j].y);
+//            this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), coordBoard[i][j].x, coordBoard[i][j].y);
             j++;
         }
         DEBUG << "\n";
@@ -62,7 +61,7 @@ void    Interface::setStoneOnClick(Player &current, int clickx, int clicky) {
         while (j < GH) {
             if (clickx <= coordBoard[i][j].x + 8 && clickx >= coordBoard[i][j].x - 8 &&
                 clicky <= coordBoard[i][j].y + 8 && clicky >= coordBoard[i][j].y - 8) {
-                //AJOUTER AUSSI LES AUTRES REGLES A CHECKER
+                //TO-DO : Revoir l'implémentation pour AJOUTER AUSSI LES AUTRES REGLES A CHECKER
                 if (gomoku->getStone(i, j) == FREE) {
                 //if (gomoku->rules.canPutstone(current, i, j)) {
                     this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), coordBoard[i][j].x, coordBoard[i][j].y);
@@ -78,7 +77,7 @@ void    Interface::setStoneOnClick(Player &current, int clickx, int clicky) {
     }
 }
 
-
+//TO-DO : Ajout texture des autres States ici.
 void    Interface::loadTexture(void) {
    if(!_stoneWhiteTexture.loadFromFile("./sprite/whiteStone.png")
     || !_stoneBlackTexture.loadFromFile("./sprite/blackStone.png")
@@ -110,6 +109,7 @@ void    Interface::makeSprite(Sprite &sprite, Texture &texture, float sizeX, flo
     sprite.setTexture(texture);
     sprite.setScale(sizeX, sizeY);
     sprite.setPosition(posX, posY);
+    //TO-DO : ligne temporaire, les sprites seront ensuite push_back selon le state du jeu :
     _allSprite.push_back(sprite);
 }
 
@@ -117,21 +117,59 @@ Interface::~Interface() {
 
 }
 
-void    Interface::setScreenStatus(std::string status)
+//TO-DO : a changer, utiliser une Enum
+void    Interface::setState(State newState)
 {
+    if (state == PAUSE && newState != PAUSE) {
+        this->state = newState;
+        stopPauseScreen();
+        return;
+    }
+    else if (state == PAUSE) {
+        this->state = newState;
+        startPauseScreen();
+        return;
+    }
+    this->state = newState;
+    //appel fonction clean spriteList.
+    switch (state) {
+            case MENU :
+                menuScreen();
+                break;
+            case GAME :
+                gameScreen();
+                break;
+            case SCORE :
+                scoreScreen();
+                break;
+            case AGAIN :
+                againScreen();
+                break;
+            case GOODBYE :
+                endScreen();
+                break;
+            case WELCOME :
+                welcomeScreen();
+                break;
+            default :
+                DEBUG << "ERROR SCREEN STATE ???";
+                exit(0);
+                break;
+    }
+    /*
     for(std::map<std::string,bool>::const_iterator it=_screenStatus.begin() ; it!=_screenStatus.end() ; ++it) {
             _screenStatus[it->first] = false;
     }
     _screenStatus[status] = true;
+    */
 }
 
-bool    Interface::checkScreenStatus(std::string status)
-{
-    return (this->_screenStatus[status]);
+void    Interface::startPauseScreen(void) {
+    DEBUG <<" PAUSE START";
 }
 
-void    Interface::drawWindow(void) {
-    
+void    Interface::stopPauseScreen(void) {
+    DEBUG <<" PAUSE STOP";
 }
 
 void    Interface::drawGame(void) {
@@ -140,24 +178,50 @@ void    Interface::drawGame(void) {
     }
 }
 
+//TO-DO :
+void    Interface::cleanSpriteList(void) {
+    /*for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
+        this->_window.draw(*it);
+    }*/
+}
+
 void    Interface::welcomeScreen(void) {
+    //cleanSpriteList();
+    //add push_back list les éléments
+    //set status
 }
 
 void    Interface::endScreen(void) {
-    //draw endScreen
-    this->setScreenStatus("inEnd");
+    //cleanSpriteList();
+    //add push_back list les éléments
+    //this->setScreenStatus("inEnd");
 }
 
 void    Interface::menuScreen(void) {
-    //drawMenu
-    this->setScreenStatus("inMenu");
+    //cleanSpriteList();
+    //add push_back list les éléments
+    ////this->setScreenStatus("inMenu");
+}
+void    Interface::againScreen(void) {
+    //cleanSpriteList();
+    //add push_back list les éléments
 }
 
-void    Interface::background(void) {
+void    Interface::gameScreen(void) {
+    //cleanSpriteList();
+    //add push_back list les éléments
+}
 
+void    Interface::scoreScreen(void) {
+    //cleanSpriteList();
+    //add push_back list les éléments
 }
 
 void    Interface::timer(void) {
+
+}
+
+void    Interface::captureZone(void) {
 
 }
 
@@ -189,22 +253,19 @@ void    Interface::checkEvent(Player &current) {
                 }
             }
             break;
-            case Event::MouseMoved :
+/*            case Event::MouseMoved :
             {
                 //clickX = _event.mouseMove.x;
                 //clickY = _event.mouseMove.y;
             }
             break;
-            case Event::MouseButtonPressed :
+*/          case Event::MouseButtonPressed :
             {
                 switch (_event.mouseButton.button)
                 {
                     case Mouse::Left :
-                        //this->clickx = _event.mouseButton.x;
-                        //this->clicky = event.mousebutton.y;
-                        //aClick = true;
                         this->checkClickLeft(current, _event.mouseButton.x, _event.mouseButton.y);
-                        DEBUG << "xy(" <<_event.mouseButton.x << "," << _event.mouseButton.y << ")\n"; 
+                        DEBUG << "click : xy(" <<_event.mouseButton.x << "," << _event.mouseButton.y << ")\n"; 
                     break;
                 default :
                     break;
@@ -217,7 +278,6 @@ void    Interface::checkEvent(Player &current) {
     }
 }
 
-
 bool    Interface::onBoard(int x, int y)
 {
     if (x <= BOARD_RIGHT + MARGE && 
@@ -229,18 +289,35 @@ bool    Interface::onBoard(int x, int y)
         return false;
 }
 
-
 void    Interface::checkClickLeft(Player &current, int x, int y)
 {
-    if (this->checkScreenStatus("inGame"))
+    if (state == GAME)
     {
         if (onBoard(x, y))
-            this->setStoneOnClick(current, x, y); //this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), x, y);
+            this->setStoneOnClick(current, x, y);
         else
             DEBUG << "out of board add other feature interaction\n";
     }
+    else if (state == WELCOME){
+        DEBUG << "click during Welcome\n";
+    }
+    else if (state == MENU){
+        DEBUG << "click during Menu\n";
+    }
+    else if (state == SCORE){
+        DEBUG << "click during victory or fefeat screen\n";
+    }
+    else if (state == AGAIN){
+        DEBUG << "click during Again\n";
+    }
+    else if (state == PAUSE){
+        DEBUG << "click during Pause\n";
+    }
+    else if (state == GOODBYE){
+        DEBUG << "click during End\n";
+    }
     else
-        DEBUG << "not in game add feature menu and other\n";
+        DEBUG << "click during unknow state\n";
 }
 
 void    Interface::update(void) {

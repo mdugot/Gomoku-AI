@@ -29,7 +29,8 @@ void Gomoku::start() {
 	whitePlayer.setSpriteStone(&(interface._whiteStone));
 	blackPlayer.setSpriteStone(&(interface._blackStone));
 	currentPlayer = &blackPlayer;
-	interface.setScreenStatus("inGame");
+	//interface.setScreenStatus("inGame");
+	interface.setState(GAME);
 	//interface.printCoordBoard();
 	while (!rules.checkEnd(*currentPlayer) &&
 		interface._window.isOpen()) {
