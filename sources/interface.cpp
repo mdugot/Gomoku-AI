@@ -2,6 +2,7 @@
 #include "gomoku.h"
 #include "player.h"
 #include "rules.h"
+#include "utils.h"
 
 
 //TO-DO : fonction pour nettoyer (free) et réinitiliaser la liste de sprite du jeu à afficher.
@@ -12,6 +13,7 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
    this->loadTexture();
    this->loadSprite();
    initCoordBoard();
+   initCoordCanteen();
    // TO-DO : implement initCoordCapture[]
    this->setState(WELCOME);
    DEBUG << "INTERFACE READY\n";
@@ -34,6 +36,32 @@ void    Interface::initCoordBoard(void) {
             j++;
         }
         stepy += step;
+        i++;
+    }
+}
+
+void    Interface::initCoordCanteen(void) {
+    int i = 0;
+    float step = 49.445f;//(float)((BOARD_RIGHT - BOARD_LEFT) / 18);
+    float stepx = 0;
+    int y = BLACKCANTEENY;
+    int x = BLACKCANTEENX;
+    stepx = 0;
+    while (i < NB_CAPTURE_TO_WIN) {
+        blackCanteen[i] = Vector2<int>((int)(x + stepx), (int)(y));
+            this->putStone(this->_blackStone, blackCanteen[i].x, blackCanteen[i].y);
+            stepx+= step;
+        i++;
+    }
+    i = 0;
+    stepx = 0;
+    y = WHITECANTEENY;
+    x = WHITECANTEENX;
+    stepx = 0;
+    while (i < NB_CAPTURE_TO_WIN) {
+        whiteCanteen[i] = Vector2<int>((int)(x - stepx), (int)(y));
+        this->putStone(this->_whiteStone, whiteCanteen[i].x, whiteCanteen[i].y);
+        stepx+= step;
         i++;
     }
 }
@@ -73,6 +101,25 @@ void    Interface::setStoneOnClick(Player &current, int clickx, int clicky) {
             }
         i++;
     }
+}
+
+
+void	Interface::capture(Player &current, sf::Sprite *spriteEnemy, int x1, int y1, int x2, int y2) {
+    (void)current;
+    (void)spriteEnemy;
+    int i = getCoordBoard(x1,y1).x;
+    int j = getCoordBoard(x1,y1).y;
+    int i2 = getCoordBoard(x2,y2).x;
+    int j2 = getCoordBoard(x2,y2).y;
+    Vector2<int> pos;
+    for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
+        pos = (Vector2<int>)(*it).getPosition();
+        if ((pos.x == i && pos.y == j) || (pos.x == i2 && pos.y == j2)){
+            it = _allSprite.erase(it);
+            DEBUG << "REMOVE\n";
+        }
+    }
+    //putStone
 }
 
 //TO-DO : Ajout texture des autres States ici.

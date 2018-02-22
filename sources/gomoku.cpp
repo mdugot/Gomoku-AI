@@ -28,6 +28,8 @@ Gomoku::~Gomoku()
 void Gomoku::start() {
 	whitePlayer.setSpriteStone(&(interface._whiteStone));
 	blackPlayer.setSpriteStone(&(interface._blackStone));
+	//whitePlayer.canteen = interface.whiteCanteen;
+	//blackPlayer.canteen = interface.blackCanteen;
 	currentPlayer = &blackPlayer;
 	interface.setState(GAME);
 	while (!rules.checkEnd(*currentPlayer) &&
@@ -37,11 +39,15 @@ void Gomoku::start() {
 			currentPlayer->play(rules, interface);
 		}
 		currentPlayer->played = false;
-		if (currentPlayer == &blackPlayer)
+		if (currentPlayer == &blackPlayer) {
+			checkCapture(*currentPlayer, currentPlayer->coordPlayed.x, currentPlayer->coordPlayed.y, whitePlayer);
 			currentPlayer = &whitePlayer;
-		else
+		}
+		else {
+			checkCapture(*currentPlayer, currentPlayer->coordPlayed.x, currentPlayer->coordPlayed.y, blackPlayer);
 			currentPlayer = &blackPlayer;
-        interface.checkEvent(*currentPlayer);
+		}
+		interface.checkEvent(*currentPlayer);
 		rules.turnCounter += 1;
 	}
 	printBoard();
@@ -127,11 +133,118 @@ bool Gomoku::fiveStoneLine(Stone color, int &x, int &y) {
 	return false;
 }
 
-/*IN PROGRESS...
-void Gomoku::checkCapture(Stone colorCurrent, int x, int y, Stone colorEnemy)
+bool Gomoku::checkCapture(Player &current, int x, int y, Player &enemy)
 {
-	if (i - 3 > 0 && j > 0 && getStone(i,j) == colorCurrent){
-		if (getStone(i+1, j) == colorEnemy && getStone(i+2, j) == colorEnemy)
-			current->eat(enemy.getColor());
+	if (checkLeft(current, x, y, enemy) ||
+		checkRight(current, x, y, enemy) ||
+		checkUp(current, x, y, enemy) ||
+		checkDown(current, x, y, enemy) ||
+		checkUpLeft(current, x, y, enemy) ||
+		checkDownLeft(current, x, y, enemy) ||
+		checkUpRight(current, x, y, enemy) ||
+		checkUpLeft(current, x, y, enemy))
+		return (true);
+	return (false);
+}
+
+void Gomoku::capture(Player &current, Sprite *spriteEnemy, int x1, int y1, int x2, int y2) {
+	current.nbCapture += 2;
+	(void)current;
+	(void)spriteEnemy;
+	setStone(FREE, x1, y1);
+	setStone(FREE, x2, y2);
+			DEBUG << "CAPTURE = " << current.nbCapture << " " << x1 << " " << y1 << " " << x2 << " " << y2 << "\n";
+	interface.capture(current, spriteEnemy, x1, y1, x2, y2); // ajoute 2 stones de la couleur enemy du current dans sa zone de capture, pour cela check le nb de capture et put des stones au bon endroit.
+}
+
+bool Gomoku::checkBetween(Stone colorEnemy, int x1, int y1, int x2, int y2) {
+	return (getStone(x1, y1) == colorEnemy && getStone(x2,y2) == colorEnemy);
+}
+
+bool Gomoku::checkLeft(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+	if (getStone(xPlayed - 3, yPlayed) == current.getColor()) {
+		if (checkBetween(enemy.getColor(), xPlayed - 2, yPlayed, xPlayed - 1, yPlayed)) {
+			capture(current, enemy.getSpriteStone(), xPlayed - 2, yPlayed, xPlayed - 1, yPlayed);
+			DEBUG << "CAPTURE LEFT!!!!!!!!!";
+			return (true);
+		}
 	}
-}*/
+	return (false);
+}
+
+bool Gomoku::checkRight(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+	if (getStone(xPlayed + 3, yPlayed) == current.getColor()) {
+		if (checkBetween(enemy.getColor(), xPlayed + 2, yPlayed, xPlayed + 1, yPlayed)) {
+			capture(current, enemy.getSpriteStone(), xPlayed + 2, yPlayed, xPlayed + 1, yPlayed);
+			DEBUG << "CAPTURE RIGHT!!!!!!!!!";
+			return (true);
+		}
+	}
+	return (false);
+}
+
+bool Gomoku::checkUp(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+	if (getStone(xPlayed, yPlayed - 3) == current.getColor()) {
+		if (checkBetween(enemy.getColor(), xPlayed, yPlayed - 2, xPlayed, yPlayed - 1)) {
+			capture(current, enemy.getSpriteStone(), xPlayed, yPlayed - 2, xPlayed, yPlayed - 1);
+			DEBUG << "CAPTURE UP!!!!!!!!!";
+			return (true);
+		}
+	}
+	return (false);
+}
+
+bool Gomoku::checkDown(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+	if (getStone(xPlayed, yPlayed + 3) == current.getColor()) {
+		if (checkBetween(enemy.getColor(), xPlayed, yPlayed + 2, xPlayed, yPlayed + 1)) {
+			capture(current, enemy.getSpriteStone(), xPlayed, yPlayed + 2, xPlayed, yPlayed + 1);
+			DEBUG << "CAPTUREDOWN !!!!!!!!!";
+			return (true);
+		}
+	}
+	return (false);
+}
+
+bool Gomoku::checkUpLeft(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+	if (getStone(xPlayed - 3, yPlayed - 3) == current.getColor()) {
+		if (checkBetween(enemy.getColor(), xPlayed - 2, yPlayed - 2, xPlayed - 1, yPlayed - 1)) {
+			capture(current, enemy.getSpriteStone(), xPlayed - 2, yPlayed - 2, xPlayed - 1, yPlayed - 1);
+			DEBUG << "CAPTUREUPLEFT !!!!!!!!!";
+			return (true);
+		}
+	}
+	return (false);
+}
+
+bool Gomoku::checkDownLeft(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+	if (getStone(xPlayed - 3, yPlayed + 3) == current.getColor()) {
+		if (checkBetween(enemy.getColor(), xPlayed - 2, yPlayed + 2, xPlayed - 1, yPlayed + 1)) {
+			capture(current, enemy.getSpriteStone(), xPlayed - 2, yPlayed + 2, xPlayed - 1, yPlayed + 1);
+			DEBUG << "CAPTUREDOWNLEFT !!!!!!!!!";
+			return (true);
+		}
+	}
+	return (false);
+}
+
+bool Gomoku::checkUpRight(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+	if (getStone(xPlayed + 3, yPlayed - 3) == current.getColor()) {
+		if (checkBetween(enemy.getColor(), xPlayed + 2, yPlayed - 2, xPlayed + 1, yPlayed - 1)) {
+			capture(current, enemy.getSpriteStone(), xPlayed + 2, yPlayed - 2, xPlayed + 1, yPlayed - 1);
+			DEBUG << "CAPTUREUPRIGHT !!!!!!!!!";
+			return (true);
+		}
+	}
+	return (false);
+}
+
+bool Gomoku::checkDownRight(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+	if (getStone(xPlayed + 3, yPlayed + 3) == current.getColor()) {
+		if (checkBetween(enemy.getColor(), xPlayed + 2, yPlayed + 2, xPlayed + 1, yPlayed + 1)) {
+			capture(current, enemy.getSpriteStone(), xPlayed + 2, yPlayed + 2, xPlayed + 1, yPlayed + 1);
+			DEBUG << "DOWNRIGHT !!!!!!!!!";
+			return (true);
+		}
+	}
+	return (false);
+}

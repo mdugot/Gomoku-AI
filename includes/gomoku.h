@@ -31,7 +31,17 @@ class Gomoku
 		bool	rightDiagonal(Stone color, int x, int y);
 		bool	verticalLine(Stone color, int x, int y);
 		bool	horizontalLine(Stone color, int x, int y);
-
+		
+		bool	checkLeft(Player &current, int x, int y, Player &enemy);
+		bool	checkRight(Player &current, int x, int y, Player &enemy);
+		bool	checkUp(Player &current, int x, int y, Player &enemy);
+		bool	checkDown(Player &current, int x, int y, Player &enemy);
+		bool	checkUpLeft(Player &current, int x, int y, Player &enemy);
+		bool	checkDownLeft(Player &current, int x, int y, Player &enemy);
+		bool	checkUpRight(Player &current, int x, int y, Player &enemy);
+		bool	checkDownRight(Player &current, int x, int y, Player &enemy);
+		bool	checkBetween(Stone colorEnemy, int x1, int y1, int x2, int y2);
+		void	capture(Player &current, sf::Sprite *spriteEnemy, int x1, int y1, int x2, int y2);
 	
 	public:
 
@@ -48,6 +58,7 @@ class Gomoku
 		inline void setStone(Stone stone, int x, int y) {board[x][y] = stone;}
 
 		bool fiveStoneLine(Stone color, int &x, int &y);
+		bool checkCapture(Player &current, int x, int y, Player &enemy);
 
 		void printBoard();
 		void start();

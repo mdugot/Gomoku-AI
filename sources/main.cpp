@@ -13,7 +13,8 @@ int main(int argc, char **argv) {
 	srand(time(NULL));
 	//RandomPlayer	p1;
 	//RandomPlayer	p2;
-	NoobIA		p1;
+	//NoobIA		p1;
+	HumanPlayer	p1;
 	HumanPlayer	p2;
 	DefaultRules	rules;
 	Interface		interface;

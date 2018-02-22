@@ -11,6 +11,10 @@
 # define BOARD_UP	155
 # define BOARD_DOWN	1045
 # define MARGE	10
+# define BLACKCANTEENX 355
+# define BLACKCANTEENY 100
+# define WHITECANTEENX 1245
+# define WHITECANTEENY 1100
 
 using namespace sf;
 
@@ -38,11 +42,14 @@ class Interface {
 		void	checkEvent(Player &current);
 		
 		void	setState(State newState);
+		void	capture(Player &current, sf::Sprite *spriteEnemy, int x, int y, int x2, int y2);
 
 		inline	State				&getState(void) {return (state);}
 		inline	sf::RenderWindow	&getWindow(void) {return this->_window;}
 		inline	sf::Event			&getEvent(void) {return this->_event;}
 		inline	Vector2<int>		&getCoordBoard(int x, int y){return (coordBoard[x][y]);}	
+		Vector2<int> whiteCanteen[10];
+		Vector2<int> blackCanteen[10];
 
 	protected:
 		Gomoku 				*gomoku;
@@ -72,6 +79,7 @@ class Interface {
 		void	loadTexture(void);
 		void	loadSprite(void);
 		void	initCoordBoard(void);
+		void	initCoordCanteen(void);
 		
 		sf::Sprite			_backgroundSprite;
 		sf::Sprite			_boardGameSprite;

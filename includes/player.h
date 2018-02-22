@@ -24,6 +24,7 @@ class Player
 		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
 		inline void setMyColor(Stone color) {this->stoneColor = color;}
 		void putStone(int x, int y);
+		int canteen[10];
 	
 	public:
 

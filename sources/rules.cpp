@@ -11,8 +11,8 @@ bool Rules::win(Player &player) {
 	int x = 0, y = 0; //pourra être utile pour s'assurer de l'endroit de la victoire et faire une animation graphique
 	if (gomoku->fiveStoneLine(player.getColor(), x, y))
 		return true;
-	/*else if (player.getNbCapture() == NB_CAPTURE_TO_WIN)
-		return true;*/
+	else if (player.getNbCapture() == (int)NB_CAPTURE_TO_WIN)
+		return true;
 	return false;
 }
 
@@ -25,10 +25,6 @@ bool Rules::equality(Player &nextToPlay) {
 	}
 	return true;
 }
-/*
-void Rules::eat(Player &player) {
-
-}*/
 
 End Rules::checkEnd(Player &nextToPlay) {
 	if (win(gomoku->getWhitePlayer())) {
@@ -45,9 +41,3 @@ End Rules::checkEnd(Player &nextToPlay) {
 	}
 	return NO_END;
 }
-
-/*
-void Rules::checkEat() {
-	gomoku->eat();
-}*/
-

@@ -21,11 +21,13 @@ SRC= $(addprefix $(SRC_PATH), $(SRC_NAME))
 OBJ= $(addprefix $(OBJ_PATH), $(OBJ_NAME))
 
 .PHONY: all
-all: $(NAME) end
+all: $(NAME) end export
 	
 end:
-	@export LD_LIBRARY_PATH=~/.brew/opt/sfml/lib
 	@printf "$(NAME) successfully created\n"
+
+export:
+	@export LD_LIBRARY_PATH=~/.brew/opt/sfml/lib
 
 $(NAME): $(OBJ)
 	@$(CC) $(CFLAGS) -o $(NAME) -I$(INC_PATH) $(OBJ) $(SFMLFLAG)
