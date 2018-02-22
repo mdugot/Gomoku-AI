@@ -16,9 +16,9 @@ int increment(int n, int max) {
 	return n;
 }
 
-void RandomPlayer::play(Rules &rules) {
-	int x = rand() % GW;
-	int y = rand() % GH;
+void RandomPlayer::play(Rules &rules, int &x, int &y) {
+	x = rand() % GW;
+	y = rand() % GH;
 	int ox = x;
 	int oy = y;
 	do {

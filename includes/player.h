@@ -14,11 +14,13 @@ class Player
 
 		unsigned int eatenStones;
 		Gomoku *gomoku;
+		Player *ennemy;
 		Stone stoneColor;
 		sf::CircleShape	spriteStone;
 		
-		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
-		inline void setColor(Stone color) {this->stoneColor = color;}
+		inline virtual void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
+		inline void setEnnemy(Player *e) {this->ennemy = e;}
+		inline virtual void setColor(Stone color) {this->stoneColor = color;}
 		inline void setSpriteStone(sf::Color color) {spriteStone.setRadius(10.0f);spriteStone.setFillColor(color); }
 		void putStone(int x, int y);
 	
@@ -27,7 +29,8 @@ class Player
 		Player();
 		~Player();
 
-		virtual void play(Rules &rules) = 0;
+		virtual void play(Rules &rules, int &x, int &y) = 0;
+		inline virtual void observe(Rules &rules, int x, int y) {(void)rules; (void)x; (void)y;}
 		inline Stone getColor() {return stoneColor;}
 		inline sf::CircleShape getSpriteStone() {return spriteStone;}
 };

@@ -15,4 +15,5 @@ void Player::putStone(int x, int y) {
 		DEBUG << DARK_BLACK << HLIGHT_GREY << "Black player put stone in " << x << "/" << y << DEFAULT_COLOR << "\n";
 	}
 	gomoku->setStone(stoneColor, x, y);
+	gomoku->updateFocus(x, y);
 }
