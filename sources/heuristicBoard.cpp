@@ -1,6 +1,6 @@
 #include "heuristicBoard.h"
 
-const unsigned int HeuristicBoard::levels[5] = {L0, L1, L2, L3, L4};
+const long long HeuristicBoard::levels[6] = {L0, L1, L2, L3, L4, HAS_WON};
 
 HeuristicBoard::HeuristicBoard()
 {
@@ -74,6 +74,7 @@ HeuristicBoard& HeuristicBoard::clear(unsigned char x, unsigned char y)
 	REMOVE_THREAT(GET_VH(heuristic[x][y]));
 	REMOVE_THREAT(GET_DLH(heuristic[x][y]));
 	REMOVE_THREAT(GET_DRH(heuristic[x][y]));
+//	heuristic[x][y] = 0; //KEEP VALUE TO REUSE IT IF STONE IS EAT
 	return *this;
 }
 
@@ -216,13 +217,15 @@ int HeuristicBoard::getBestLevel(unsigned char x, unsigned char y) {
 	return r;
 }
 
-void HeuristicBoard::print() {
+void HeuristicBoard::print(int lastX, int lastY) {
 	DEBUG << "\n";
 	int level;
 	for (int j = 0; j < GH; j++) {
 		for (int i = 0; i < GW; i++) {
 			level = getBestLevel(i, j);
-			if (level == 1) {
+			if (gomoku->getStone(i, j) != FREE) {
+				gomoku->printStone(i, j, lastX, lastY);
+			} else if (level == 1) {
 				DEBUG << BLUE << level << DEFAULT_COLOR;
 			} else if (level == 2) {
 				DEBUG << PURPLE << level << DEFAULT_COLOR;
@@ -231,7 +234,7 @@ void HeuristicBoard::print() {
 			} else if (level == 4) {
 				DEBUG << RED << level << DEFAULT_COLOR;
 			} else if (level == 0) {
-				DEBUG << ".";
+				DEBUG << "." << DEFAULT_COLOR;
 			} else {
 				DEBUG << BLACK_COLOR << HLL_RED << level << DEFAULT_COLOR;
 			}

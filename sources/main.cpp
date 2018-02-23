@@ -12,8 +12,8 @@ int main(int argc, char **argv) {
 	(void)argv;
 	srand(time(NULL));
 //	srand(7);
-	MinMaxDynamicPlayer		white(7);
-	MinMaxDynamicPlayer		black(7);
+	MinMaxDynamicPlayer		white(4);
+	MinMaxDynamicPlayer		black(6);
 	DefaultRules			rules;
 	Interface				interface;
 	Gomoku					gomoku(white, black, rules, interface);

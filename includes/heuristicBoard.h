@@ -13,23 +13,25 @@
 #define SET_DLH(x,y) ((x & 0xFF0F) | (y << 4))
 #define SET_DRH(x,y) ((x & 0xFFF0) | (y))
 
-#define REMOVE_THREAT(x) score -= levels[((x) > 4 ? 4 : (x))]
-#define ADD_THREAT(x) score += levels[((x) > 4 ? 4 : (x))]
+#define REMOVE_THREAT(x) score -= levels[((x) > 5 ? 5 : (x))]
+#define ADD_THREAT(x) score += levels[((x) > 5 ? 5 : (x))]
 
 #define WATCH(x,name) if (x < 0 || x >= GW) DEBUG << RED << "WARNING " << name << " : out of limit -> " << x << "\n" << DEFAULT_COLOR
 
 #define L0 0
 #define L1 1
-#define L2 361
-#define L3 6859
-#define L4 130321
-#define WIN_STATE 130321*2
+#define L2 (long long)(18*18)
+#define L3 (long long)L2*L2
+#define L4 (long long)L3*L2
+#define HAS_WON (long long)L4*L2
+#define WIN_STATE (long long)L4*2
+#define BIG (long long)HAS_WON*L2
 
 class HeuristicBoard
 {
 	friend class MinMaxDynamicPlayer;
 	friend class HeuristicBoard;
-	static const unsigned int levels[5];
+	static const long long levels[6];
 
 	private:
 
@@ -41,14 +43,14 @@ class HeuristicBoard
 		int getBestLevel(unsigned char x, unsigned char y);
 	
 	public:
-		unsigned int score;
+		long long score;
 
 		HeuristicBoard();
 		HeuristicBoard(HeuristicBoard *copyFrom);
 		~HeuristicBoard();
 		HeuristicBoard &put(unsigned char x, unsigned char y, bool prediction = true);
 		HeuristicBoard &clear(unsigned char x, unsigned char y);
-		void print();
+		void print(int lastX = -1, int lastY = -1);
 
 };
 

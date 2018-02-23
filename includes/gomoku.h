@@ -7,7 +7,7 @@
 
 #define GW 19
 #define GH 19
-#define FOCUS 4
+#define FOCUS 2
 
 class Player;
 class Rules;
@@ -63,7 +63,8 @@ class Gomoku
 		bool fiveStoneLine(Stone color, int &x, int &y);
 		int calculateWinPossibility(Player &player);
 
-		void printBoard();
+		void printBoard(int lastX = -1, int lastY = -1);
+		void printStone(int i, int j, int lastX = -1, int lastY = -1);
 		void start();
 };
 

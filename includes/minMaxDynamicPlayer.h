@@ -30,12 +30,12 @@ class MinMaxDynamicPlayer : public Player
 
 		inline virtual void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku; myHeuristic.gomoku = gomoku; ennemyHeuristic.gomoku = gomoku;}
 		inline virtual void setColor(Stone color) {this->stoneColor = color; myHeuristic.stone =color; ennemyHeuristic.stone = (color == WHITE ? BLACK : WHITE);}
-		int heuristic(HeuristicBoard &heuristic, HeuristicBoard &ennemyHeuristic);
-		int min(int depth, int minBestOption, int maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH);
-		int max(int depth, int minBestOption, int maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH);
+		long long heuristic(HeuristicBoard &heuristic, HeuristicBoard &ennemyHeuristic, int depth, bool ennemy = false);
+		long long min(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH);
+		long long max(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH);
 		void startMinMax(int &rx, int &ry, Rules &rules);
 		bool win(int &rx, int &ry, Rules &rules);
-		std::map<int, Choice> heuristicMap(Rules &rules, Player *player, bool focus = false);
+		std::map<long long, Choice> heuristicMap(Rules &rules, Player *player, int depht, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin, bool focus = false);
 
 
 	public:

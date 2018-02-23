@@ -11,7 +11,7 @@ Gomoku::Gomoku(Player &p1, Player &p2, Rules &rules, Interface &interface) : whi
 			focus[i][j] = false;
 		}
 	}
-	updateFocus(GW/2, GH/2);
+	focus[GW/2][GH/2] = true;
 	rules.setGomoku(this);
 	whitePlayer.setGomoku(this);
 	blackPlayer.setGomoku(this);
@@ -40,7 +40,7 @@ void Gomoku::start() {
 		currentPlayer->play(rules, x, y);
 		otherPlayer->observe(rules, x, y);
 //		if (rules.turnCounter < 30) {
-			printBoard();
+			printBoard(x, y);
 			DEBUG << "win possibility : " << calculateWinPossibility(*currentPlayer) << "\n";
 //		}
 		if (currentPlayer == &blackPlayer) {
@@ -52,6 +52,10 @@ void Gomoku::start() {
 		}
 		rules.turnCounter += 1;
         //interface.update();
+
+		std::string input = "";
+		std::cout << "PRESS ENTER TO CONTINUE\n";
+		std::getline(std::cin, input);
 	}
 	printBoard();
 }
@@ -71,17 +75,25 @@ void Gomoku::updateFocus(int x, int y) {
 	}
 }
 
-void Gomoku::printBoard() {
+void Gomoku::printStone(int i, int j, int lastX, int lastY) {
+	if (board[i][j] == WHITE) {
+		DEBUG << ((lastX == i && lastY == j) ? GREEN : DEFAULT_COLOR) << HLL_GREY << "O" << DEFAULT_COLOR;
+	} else if (board[i][j] == BLACK) {
+		DEBUG << ((lastX == i && lastY == j) ? RED : DARK_BLACK) << HLIGHT_GREY << "X" << DEFAULT_COLOR;
+	} else {
+		if (focus[i][j]) {
+			DEBUG << ".";
+		} else {
+			DEBUG << "#";
+		}
+	}
+}
+
+void Gomoku::printBoard(int lastX, int lastY) {
 	DEBUG << "\n";
 	for (int j = 0; j < GH; j++) {
 		for (int i = 0; i < GW; i++) {
-			if (board[i][j] == WHITE) {
-				DEBUG << DEFAULT_COLOR << HLL_GREY << "O" << DEFAULT_COLOR;
-			} else if (board[i][j] == BLACK) {
-				DEBUG << DARK_BLACK << HLIGHT_GREY << "X" << DEFAULT_COLOR;
-			} else {
-				DEBUG << ".";
-			}
+			printStone(i, j, lastX, lastY);
 		}
 		DEBUG << "\n";
 	}
