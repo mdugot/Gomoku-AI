@@ -41,6 +41,7 @@ class HeuristicBoard
 
 		void getAdjacent(char x, char y, char vx, char vy, unsigned char &before, unsigned char &after, unsigned char &beforeWall, unsigned char &afterWall);
 		int getBestLevel(unsigned char x, unsigned char y);
+		void fiveValue(unsigned char x, unsigned char y, unsigned char &value, unsigned char heurisitc);
 	
 	public:
 		long long score;

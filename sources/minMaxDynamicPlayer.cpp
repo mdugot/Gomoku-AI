@@ -1,7 +1,7 @@
 #include "minMaxDynamicPlayer.h"
 #include "rules.h"
 
-const unsigned char MinMaxDynamicPlayer::depthWidths[10] = {60, 60, 60, 60, 60, 60, 60, 60, 60, 60};
+const unsigned char MinMaxDynamicPlayer::depthWidths[10] = {20, 20, 10, 10, 10, 10, 10, 6, 6, 6};
 
 Choice::Choice(unsigned char x, unsigned char y, HeuristicBoard *myHeuristic, HeuristicBoard *ennemyHeuristic, bool ennemy) : x(x), y(y), myHeuristic(myHeuristic), ennemyHeuristic(ennemyHeuristic)
 {
@@ -75,7 +75,7 @@ void MinMaxDynamicPlayer::startMinMax(int &rx, int &ry, Rules &rules)
 	long long best = MIN_LONG;
 	long long maxBestOption = MIN_LONG;
 	complexity = 0;
-	std::map<long long, Choice> choices = heuristicMap(rules, this, 0, myHeuristic, ennemyHeuristic, true);
+	std::map<long long, Choice> choices = heuristicMap(rules, this, minMaxDepth, myHeuristic, ennemyHeuristic, true);
 	rx = choices.begin()->second.x;
 	ry = choices.begin()->second.y;
 	unsigned char i = 0;
@@ -119,16 +119,17 @@ void MinMaxDynamicPlayer::startMinMax(int &rx, int &ry, Rules &rules)
 long long MinMaxDynamicPlayer::max(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH)
 {
 	if (depth <= 0 || myH.score >= HAS_WON || ennemyH.score >= HAS_WON) {
-		return heuristic(myH, ennemyH, depth, true);
+//		if (depth == 8) DEBUG << ">end : " << heuristic(myH, ennemyH, depth+1, true) << "\n";
+		return heuristic(myH, ennemyH, depth+1, true);
 	}
 	long long option;
 	long long best = MIN_LONG;
 	std::map<long long, Choice> choices = heuristicMap(rules, this, depth, myH, ennemyH);
 	unsigned char i = 0;
-	if (ennemyH.score >= L4) {
-//		DEBUG << RED << "DANGER ZONE\n" << DEFAULT_COLOR;
-		i = depthWidths[minMaxDepth - depth];
-	}
+//	if (ennemyH.score >= L4) {
+//		if (depth == 8) DEBUG << RED << ">DANGER ZONE (" << ennemyH.score << ")\n" << DEFAULT_COLOR;
+//		i = depthWidths[minMaxDepth - depth];
+//	}
 	for (auto it = choices.begin(); it != choices.end(); ++it) {
 		if (i > depthWidths[minMaxDepth - depth]) {
 //			DEBUG << CYAN << "width break\n" << DEFAULT_COLOR;
@@ -146,27 +147,30 @@ long long MinMaxDynamicPlayer::max(int depth, long long minBestOption, long long
 				maxBestOption = option;
 			}
 			if (maxBestOption >= minBestOption - 1) {
+//				if (depth == 8) DEBUG << ">alphabeta : " << best << "\n";
 //				DEBUG << CYAN << "alpha beta break\n" << DEFAULT_COLOR;
 				return best;
 			}
 		}
 		i++;
 	}
+//	if (depth == 8) DEBUG << ">normal : " << best << "\n";
 	return best;
 }
 
 long long MinMaxDynamicPlayer::min(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH)
 {
 	if (depth <= 0 || myH.score >= HAS_WON || ennemyH.score >= HAS_WON) {
-		return heuristic(myH, ennemyH, depth);
+		return heuristic(myH, ennemyH, depth+1);
 	}
 	long long option;
 	long long best = MAX_LONG;
+//	if (depth == 9) DEBUG << "default : " << best << "\n";
 	std::map<long long, Choice> choices = heuristicMap(rules, ennemy, depth, myH, ennemyH);
 	unsigned char i = 0;
-	if (myH.score >= L4) {
-		i = depthWidths[minMaxDepth - depth];
-	}
+//	if (myH.score >= L4) {
+//		i = depthWidths[minMaxDepth - depth];
+//	}
 	for (auto it = choices.begin(); it != choices.end(); ++it) {
 		if (i > depthWidths[minMaxDepth - depth]) {
 //			DEBUG << GREEN << "width break\n" << DEFAULT_COLOR;
@@ -180,10 +184,12 @@ long long MinMaxDynamicPlayer::min(int depth, long long minBestOption, long long
 		gomoku->setStone(FREE, it->second.x, it->second.y);
 		if (option < best) {
 			best = option;
+//			if (depth == 9) DEBUG << "new : " << best << "\n";
 			if (option < minBestOption) {
 				minBestOption = option;
 			}
 			if (maxBestOption >= minBestOption - 1) {
+//				if (depth == 9) DEBUG << "result : " << best << "\n";
 //				DEBUG << GREEN << "alpha beta break\n" << DEFAULT_COLOR;
 				return best;
 			}
@@ -202,15 +208,15 @@ void MinMaxDynamicPlayer::play(Rules &rules, int &x, int &y) {
 	}
 	putStone(x, y);
 
-	DEBUG << "THREAT HEURISTIC BEFORE STONE = " << heuristic(myHeuristic, ennemyHeuristic, 0) << "\n";
+	DEBUG << "THREAT HEURISTIC BEFORE STONE = " << heuristic(myHeuristic, ennemyHeuristic, minMaxDepth) << "\n";
 	DEBUG << "my score before stone = " << myHeuristic.score << "\n";
 	DEBUG << "ennemy score before stone = " << ennemyHeuristic.score << "\n";
 	myHeuristic.put(x, y, false);
 	ennemyHeuristic.clear(x, y);
-	DEBUG << "THREAT HEURISTIC AFTER STONE = " << heuristic(myHeuristic, ennemyHeuristic, 0) << "\n";
+	DEBUG << "THREAT HEURISTIC AFTER STONE = " << heuristic(myHeuristic, ennemyHeuristic, minMaxDepth) << "\n";
 	DEBUG << "my score after stone = " << myHeuristic.score << "\n";
 	DEBUG << "ennemy score after stone = " << ennemyHeuristic.score << "\n";
-	myHeuristic.print();
+	myHeuristic.print(x, y);
 }
 
 void MinMaxDynamicPlayer::observe(Rules &rules, int x, int y) {
@@ -220,34 +226,38 @@ void MinMaxDynamicPlayer::observe(Rules &rules, int x, int y) {
 }
 
 long long MinMaxDynamicPlayer::heuristic(HeuristicBoard &myH, HeuristicBoard &ennemyH, int depth, bool ennemy) {
+	if (depth <= 0) {
+		DEBUG << RED << "NEGATIVE DEPTH !!!!\n" << DEFAULT_COLOR;
+	}
 	if (myH.score >= HAS_WON) {
-//		if (depth == 0) DEBUG << PURPLE  << "#I have won" << DEFAULT_COLOR << "\n";
-		return BIG * (minMaxDepth - depth + 1) * 11;
+//		if (last) DEBUG << PURPLE  << "#I have won" << DEFAULT_COLOR << "\n";
+		return BIG * (depth) * 11;
 	}
 	if (ennemyH.score >= HAS_WON) {
-//		if (depth == 0) DEBUG << PURPLE  << "#ennemy has won" << DEFAULT_COLOR << "\n";
-		return -BIG * (minMaxDepth - depth + 1) * 11;
+//		if (last) DEBUG << PURPLE  << "#ennemy has won" << DEFAULT_COLOR << "\n";
+		return -BIG * (depth) * 11;
 	}
 
 	if (ennemy) {
 		if (myH.score >= L4) {
-			return BIG * (minMaxDepth - depth + 1);
+			return BIG * (depth);
 		}
 		if (ennemyH.score >= WIN_STATE) {
-			return -BIG * (minMaxDepth - depth + 1);
+//			if (depth == 9) DEBUG << PURPLE  << "#ennemy going to win (depth=" << depth << ", result=" << (-BIG * (depth)) << ", big=" << BIG << ")" << DEFAULT_COLOR << "\n";
+			return (-BIG * (depth) - 1);
 		}
-		return (myH.score * 10) - (ennemyH.score);
+		return (myH.score * L2) - (ennemyH.score);
 	}
 
 	if (ennemyH.score >= L4) {
-//		if (depth == 0) DEBUG << PURPLE  << "#I am going to loose" << DEFAULT_COLOR << "\n";
-		return -BIG * (minMaxDepth - depth);
+//		if (depth == 9) DEBUG << PURPLE  << "#I am going to loose" << DEFAULT_COLOR << "\n";
+		return -BIG * (depth);
 	}
 	if (myH.score >= WIN_STATE) {
-//		if (depth == 0) DEBUG << PURPLE  << "#I am going to win" << DEFAULT_COLOR << "\n";
-		return BIG * (minMaxDepth - depth);
+//		if (last) DEBUG << PURPLE  << "#I am going to win" << DEFAULT_COLOR << "\n";
+		return BIG * (depth);
 	}
-//	if (depth == 0) DEBUG << PURPLE  << "#I don't know (ennemy score = " << ennemyH.score << ")" << DEFAULT_COLOR << "\n";
-	return myH.score - (ennemyH.score * 10);
+//	if (last) DEBUG << PURPLE  << "#I don't know (ennemy score = " << ennemyH.score << ")" << DEFAULT_COLOR << "\n";
+	return myH.score - (ennemyH.score * L2);
 }
 

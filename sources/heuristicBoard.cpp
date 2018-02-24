@@ -78,6 +78,13 @@ HeuristicBoard& HeuristicBoard::clear(unsigned char x, unsigned char y)
 	return *this;
 }
 
+void HeuristicBoard::fiveValue(unsigned char x, unsigned char y, unsigned char &value, unsigned char heuristic) {
+	(void)x;
+	(void)y;
+	if (value > 4 && heuristic < 4)
+		value = 4;
+}
+
 HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y, bool prediction)
 {
 	unsigned char before, beforeWall;
@@ -96,6 +103,7 @@ HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y, bool predi
 		tmp = GET_HH(heuristic[x][y-before]);
 		REMOVE_THREAT(tmp);
 		tmp += after;
+		fiveValue(x, y, tmp, GET_HH(heuristic[x][y]));
 //		WATCH(x, "horizontal");
 //		WATCH(y-before, "horizontal");
 		heuristic[x][y-before] = SET_HH(heuristic[x][y-before], tmp);
@@ -109,6 +117,7 @@ HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y, bool predi
 		tmp = GET_HH(heuristic[x][y+after]);
 		REMOVE_THREAT(tmp);
 		tmp += before;
+		fiveValue(x, y, tmp, GET_HH(heuristic[x][y]));
 //		WATCH(x, "horizontal");
 //		WATCH(y+after, "horizontal");
 		heuristic[x][y+after] = SET_HH(heuristic[x][y+after], tmp);
@@ -124,6 +133,7 @@ HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y, bool predi
 		tmp = GET_VH(heuristic[x-before][y]);
 		REMOVE_THREAT(tmp);
 		tmp += after;
+		fiveValue(x, y, tmp, GET_VH(heuristic[x][y]));
 //		WATCH(x-before, "vertical");
 //		WATCH(y, "vertical");
 		heuristic[x-before][y] = SET_VH(heuristic[x-before][y], tmp);
@@ -136,6 +146,7 @@ HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y, bool predi
 		tmp = GET_VH(heuristic[x+after][y]);
 		REMOVE_THREAT(tmp);
 		tmp += before;
+		fiveValue(x, y, tmp, GET_VH(heuristic[x][y]));
 //		WATCH(x+after, "vertical");
 //		WATCH(y, "vertical");
 		heuristic[x+after][y] = SET_VH(heuristic[x+after][y], tmp);
@@ -151,6 +162,7 @@ HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y, bool predi
 		tmp = GET_DRH(heuristic[x-before][y-before]);
 		REMOVE_THREAT(tmp);
 		tmp += after;
+		fiveValue(x, y, tmp, GET_DRH(heuristic[x][y]));
 //		WATCH(x-before, "right");
 //		WATCH(y-before, "right");
 		heuristic[x-before][y-before] = SET_DRH(heuristic[x-before][y-before], tmp);
@@ -163,6 +175,7 @@ HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y, bool predi
 		tmp = GET_DRH(heuristic[x+after][y+after]);
 		REMOVE_THREAT(tmp);
 		tmp += before;
+		fiveValue(x, y, tmp, GET_DRH(heuristic[x][y]));
 //		WATCH(x+after, "right");
 //		WATCH(y+after, "right");
 		heuristic[x+after][y+after] = SET_DRH(heuristic[x+after][y+after], tmp);
@@ -178,6 +191,7 @@ HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y, bool predi
 		tmp = GET_DLH(heuristic[x+before][y-before]);
 		REMOVE_THREAT(tmp);
 		tmp += after;
+		fiveValue(x, y, tmp, GET_DLH(heuristic[x][y]));
 //		WATCH(x+before, "left");
 //		WATCH(y-before, "left");
 		heuristic[x+before][y-before] = SET_DLH(heuristic[x+before][y-before], tmp);
@@ -189,6 +203,7 @@ HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y, bool predi
 		tmp = GET_DLH(heuristic[x-after][y+after]);
 		REMOVE_THREAT(tmp);
 		tmp += before;
+		fiveValue(x, y, tmp, GET_DLH(heuristic[x][y]));
 //		WATCH(x-after, "left");
 //		WATCH(y+after, "left");
 		heuristic[x-after][y+after] = SET_DLH(heuristic[x-after][y+after], tmp);

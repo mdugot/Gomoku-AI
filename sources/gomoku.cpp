@@ -53,9 +53,9 @@ void Gomoku::start() {
 		rules.turnCounter += 1;
         //interface.update();
 
-		std::string input = "";
-		std::cout << "PRESS ENTER TO CONTINUE\n";
-		std::getline(std::cin, input);
+//		std::string input = "";
+//		std::cout << "PRESS ENTER TO CONTINUE\n";
+//		std::getline(std::cin, input);
 	}
 	printBoard();
 }
