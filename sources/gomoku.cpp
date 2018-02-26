@@ -18,6 +18,8 @@ Gomoku::Gomoku(Player &p1, Player &p2, Rules &rules, Interface &interface) : whi
 	interface.setGomoku(this);
 	whitePlayer.setMyColor(WHITE);
 	blackPlayer.setMyColor(BLACK);
+	blackPlayer.setEnemy(&whitePlayer);
+	whitePlayer.setEnemy(&blackPlayer);
 	currentPlayer = &blackPlayer;
 }
 
@@ -28,8 +30,8 @@ Gomoku::~Gomoku()
 void Gomoku::start() {
 	whitePlayer.setSpriteStone(&(interface._whiteStone));
 	blackPlayer.setSpriteStone(&(interface._blackStone));
-	//whitePlayer.canteen = interface.whiteCanteen;
-	//blackPlayer.canteen = interface.blackCanteen;
+	whitePlayer.setCanteen(interface.whiteCanteen);
+	blackPlayer.setCanteen(interface.blackCanteen);
 	currentPlayer = &blackPlayer;
 	interface.setState(GAME);
 	while (!rules.checkEnd(*currentPlayer) &&
@@ -142,7 +144,7 @@ bool Gomoku::checkCapture(Player &current, int x, int y, Player &enemy)
 		checkUpLeft(current, x, y, enemy) ||
 		checkDownLeft(current, x, y, enemy) ||
 		checkUpRight(current, x, y, enemy) ||
-		checkUpLeft(current, x, y, enemy))
+		checkDownRight(current, x, y, enemy))
 		return (true);
 	return (false);
 }

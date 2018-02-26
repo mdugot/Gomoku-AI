@@ -4,6 +4,7 @@
 #include "rules.h"
 #include "utils.h"
 
+using namespace sf;
 
 //TO-DO : fonction pour nettoyer (free) et réinitiliaser la liste de sprite du jeu à afficher.
 
