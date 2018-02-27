@@ -16,8 +16,6 @@
 # define WHITECANTEENX 1245
 # define WHITECANTEENY 1100
 
-using namespace sf;
-
 typedef enum State {
 	WELCOME = 1, MENU = 2, GAME = 3, SCORE = 4, AGAIN = 5, PAUSE = 6, GOODBYE = 0
 } State;
@@ -47,9 +45,9 @@ class Interface {
 		inline	State				&getState(void) {return (state);}
 		inline	sf::RenderWindow	&getWindow(void) {return this->_window;}
 		inline	sf::Event			&getEvent(void) {return this->_event;}
-		inline	Vector2<int>		&getCoordBoard(int x, int y){return (coordBoard[x][y]);}	
-		Vector2<int> whiteCanteen[10];
-		Vector2<int> blackCanteen[10];
+		inline	sf::Vector2<int>		&getCoordBoard(int x, int y){return (coordBoard[x][y]);}	
+		sf::Vector2<int> whiteCanteen[10];
+		sf::Vector2<int> blackCanteen[10];
 
 	protected:
 		Gomoku 				*gomoku;
@@ -60,7 +58,7 @@ class Interface {
 		sf::Event			_event;
 		std::list<sf::Sprite>			_allSprite;
 		//std::map<std::string, bool> _screenStatus;
-		Vector2<int>	coordBoard[GW][GH];
+		sf::Vector2<int>	coordBoard[GW][GH];
 		
 		sf::Sprite			_whiteStone;
 		sf::Sprite			_blackStone;
@@ -71,7 +69,7 @@ class Interface {
 		void	scoreScreen(void);
 		void	againScreen(void);
 		void	gameScreen(void);
-		void	endScreen(void);
+		void	goodByeScreen(void);
 		void	startPauseScreen(void);
 		void	stopPauseScreen(void);
 		void	captureZone(void);
@@ -83,11 +81,13 @@ class Interface {
 		
 		sf::Sprite			_backgroundSprite;
 		sf::Sprite			_boardGameSprite;
+		sf::Sprite			_goodByeSprite;
 
 		sf::Texture			_stoneWhiteTexture;
 		sf::Texture			_stoneBlackTexture;
 		sf::Texture			_backgroundTexture;
 		sf::Texture			_boardGameTexture;
+		sf::Texture			_goodByeTexture;
 
 };
 

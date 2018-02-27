@@ -4,17 +4,17 @@
 #include "rules.h"
 #include "utils.h"
 
-
+using namespace sf;
 //TO-DO : fonction pour nettoyer (free) et réinitiliaser la liste de sprite du jeu à afficher.
 
 Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::Titlebar | Style::Close)
 {
    _window.setFramerateLimit(60);
+   _window.setVerticalSyncEnabled(true);
    this->loadTexture();
    this->loadSprite();
    initCoordBoard();
    initCoordCanteen();
-   // TO-DO : implement initCoordCapture[]
    this->setState(WELCOME);
    DEBUG << "INTERFACE READY\n";
 }
@@ -49,7 +49,7 @@ void    Interface::initCoordCanteen(void) {
     stepx = 0;
     while (i < NB_CAPTURE_TO_WIN) {
         blackCanteen[i] = Vector2<int>((int)(x + stepx), (int)(y));
-            this->putStone(this->_blackStone, blackCanteen[i].x, blackCanteen[i].y);
+            //this->putStone(this->_blackStone, blackCanteen[i].x, blackCanteen[i].y);
             stepx+= step;
         i++;
     }
@@ -60,7 +60,7 @@ void    Interface::initCoordCanteen(void) {
     stepx = 0;
     while (i < NB_CAPTURE_TO_WIN) {
         whiteCanteen[i] = Vector2<int>((int)(x - stepx), (int)(y));
-        this->putStone(this->_whiteStone, whiteCanteen[i].x, whiteCanteen[i].y);
+       // this->putStone(this->_whiteStone, whiteCanteen[i].x, whiteCanteen[i].y);
         stepx+= step;
         i++;
     }
@@ -119,7 +119,8 @@ void	Interface::capture(Player &current, sf::Sprite *spriteEnemy, int x1, int y1
             DEBUG << "REMOVE\n";
         }
     }
-    //putStone
+    this->putStone(*spriteEnemy, current.getCoordCanteen(current.getNbCapture() - 2).x, current.getCoordCanteen(current.getNbCapture() - 2).y);
+    this->putStone(*spriteEnemy, current.getCoordCanteen(current.getNbCapture() - 1).x, current.getCoordCanteen(current.getNbCapture() - 1).y);
 }
 
 //TO-DO : Ajout texture des autres States ici.
@@ -127,14 +128,17 @@ void    Interface::loadTexture(void) {
    if(!_stoneWhiteTexture.loadFromFile("./sprite/whiteStone.png")
     || !_stoneBlackTexture.loadFromFile("./sprite/blackStone.png")
     || !_backgroundTexture.loadFromFile("./sprite/background.png")
-    || !_boardGameTexture.loadFromFile("./sprite/go.png")) {
+    || !_boardGameTexture.loadFromFile("./sprite/go.png")
+    || !_goodByeTexture.loadFromFile("./sprite/goodBye.png")) {
        DEBUG << "Error during import " << std::endl;
+       exit(1);
    }
    else {
        _stoneWhiteTexture.setSmooth(true);
        _stoneBlackTexture.setSmooth(true);
        _backgroundTexture.setSmooth(true);
        _boardGameTexture.setSmooth(true);
+       _goodByeTexture.setSmooth(true);
    }
 }
 
@@ -143,10 +147,11 @@ void    Interface::loadSprite(void) {
     makeSprite(_boardGameSprite, _boardGameTexture, 1, 1, (_backgroundTexture.getSize().x - _boardGameTexture.getSize().x) / 2, (_backgroundTexture.getSize().y - _boardGameTexture.getSize().y) / 2);
     makeSprite(_whiteStone, _stoneWhiteTexture, 0.95f, 0.95f, 0, 0);
     makeSprite(_blackStone, _stoneBlackTexture, 0.95f, 0.95f, 0, 0);
+    makeSprite(_goodByeSprite, _goodByeTexture, 1, 1, 0, 0);
     _whiteStone.setOrigin(_stoneWhiteTexture.getSize().x / _whiteStone.getScale().x / 2, _stoneWhiteTexture.getSize().y / _whiteStone.getScale().y / 2);
     _blackStone.setOrigin(_stoneBlackTexture.getSize().x / _blackStone.getScale().x / 2, _stoneBlackTexture.getSize().y / _blackStone.getScale().y / 2);
-    _allSprite.pop_back();
-    _allSprite.pop_back();
+//    _allSprite.pop_back();
+//    _allSprite.pop_back();
    DEBUG << "loadS\n";
 }
 
@@ -154,8 +159,6 @@ void    Interface::makeSprite(Sprite &sprite, Texture &texture, float sizeX, flo
     sprite.setTexture(texture);
     sprite.setScale(sizeX, sizeY);
     sprite.setPosition(posX, posY);
-    //TO-DO : ligne temporaire, les sprites seront ensuite push_back selon le state du jeu :
-    _allSprite.push_back(sprite);
 }
 
 Interface::~Interface() {
@@ -191,7 +194,7 @@ void    Interface::setState(State newState)
                 againScreen();
                 break;
             case GOODBYE :
-                endScreen();
+                goodByeScreen();
                 break;
             case WELCOME :
                 welcomeScreen();
@@ -219,22 +222,31 @@ void    Interface::drawGame(void) {
 
 //TO-DO :
 void    Interface::cleanSpriteList(void) {
-    /*for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
-        this->_window.draw(*it);
-    }*/
-    _allSprite.erase(_allSprite.begin(), _allSprite.end());
+
+    for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
+        it = _allSprite.erase(it);
+    }
+
+//    _allSprite.erase(_allSprite.begin(), _allSprite.end());
 }
 
 void    Interface::welcomeScreen(void) {
     //cleanSpriteList();
     //add push_back list les éléments
     //set status
+    _allSprite.push_back(_goodByeSprite);
+    this->state = WELCOME;
+    DEBUG << "WELCOME SCREEN\n";
+    update();
+    sleep(1);
 }
 
-void    Interface::endScreen(void) {
-    //cleanSpriteList();
+void    Interface::goodByeScreen(void) {
+    DEBUG << "GOODBYE SCREEN\n";
+    this->cleanSpriteList();
+    _allSprite.push_back(_goodByeSprite);
     //add push_back list les éléments
-    //this->setScreenStatus("inEnd");
+    this->state = GOODBYE;
 }
 
 void    Interface::menuScreen(void) {
@@ -248,7 +260,12 @@ void    Interface::againScreen(void) {
 }
 
 void    Interface::gameScreen(void) {
-    //cleanSpriteList();
+    DEBUG << "GAME SCREEN\n";
+    this->cleanSpriteList();
+    _allSprite.push_back(_backgroundSprite);
+    _allSprite.push_back(_boardGameSprite);
+    this->state = GAME;
+    DEBUG << "GAMEOUT SCREEN\n";
     //add push_back list les éléments
 }
 
@@ -276,18 +293,17 @@ void    Interface::checkEvent(Player &current) {
         switch (_event.type)
         {
             case Event::Closed :
-                _window.close();
-                //add function to quit properly with clean and goodbye
+                gomoku->end();
                 break;
             case Event::KeyPressed :
             {
                 switch (_event.key.code)
                 {
                     case Keyboard::Escape :
-                       _window.close();
+                        gomoku->end();
                         break;
                     case Keyboard::Q :
-                        _window.close();
+                        gomoku->end();
                         break;
                     default :
                         break;

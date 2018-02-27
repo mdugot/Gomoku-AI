@@ -14,8 +14,9 @@ class Player
 
 	protected:
 
-		unsigned int nbCapture;
+		int nbCapture;
 		Gomoku *gomoku;
+		Player *enemy;
 		Stone stoneColor;
 		sf::Sprite	*stoneSprite;
 		bool	played;
@@ -24,7 +25,7 @@ class Player
 		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
 		inline void setMyColor(Stone color) {this->stoneColor = color;}
 		void putStone(int x, int y);
-		int canteen[10];
+		sf::Vector2<int> canteen[10];
 	
 	public:
 
@@ -33,13 +34,17 @@ class Player
 
 		virtual void play(Rules &rules, Interface &i )= 0;
 		inline Stone getColor() {return stoneColor;}
+		inline Player *getEnemy() {return enemy;}
 		inline sf::Sprite *getSpriteStone() {return stoneSprite;}
 		inline int getNbCapture() {return nbCapture;}
 		inline sf::Vector2<int> getCoordPlayed(void) {return (coordPlayed);}
-		inline void	setNbCapture(int nb) {this-> nbCapture = nb;}
+		inline sf::Vector2<int> getCoordCanteen(int index) {return (canteen[index]);}
+		inline void	setEnemy(Player *en) {this->enemy = en;}
+		inline void	setNbCapture(int nb) {this->nbCapture = nb;}
 		inline void setCoordPlayed(int x, int y) {coordPlayed.x = x; coordPlayed.y = y;}
 		inline void	setSpriteStone(sf::Sprite *stone) {this->stoneSprite = stone;}
 		inline void	setPlayed(bool state) {played = state;}
+		inline void	setCanteen(sf::Vector2<int> toCopy[10]) {int i = 0; while(i<10){canteen[i] = toCopy[i];i++;}}
 };
 
 
