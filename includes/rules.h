@@ -22,7 +22,6 @@ class Rules
 		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
 		bool win(Player &player);
 		bool equality(Player &nextToPlay);
-		void eat(Player &player);
 	
 	public:
 
@@ -32,7 +31,6 @@ class Rules
 		virtual bool canPutStone(Player &player, int x, int y) = 0;
 
 		End checkEnd(Player &nextToPlay);
-		void checkEat();
 };
 
 

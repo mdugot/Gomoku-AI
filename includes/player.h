@@ -20,7 +20,7 @@ class Player
 		Stone stoneColor;
 		sf::Sprite	*stoneSprite;
 		bool	played;
-		sf::Vector2<int> coordPlayed; // MEMO : x et y ==> coordonnée du board dans Gomoku && w et z ==> coordonnés pour le board de l'interface.
+		sf::Vector2<int> coordPlayed; // MEMO : x et y ==> coordonnée du board dans Gomoku
 
 		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
 		inline void setMyColor(Stone color) {this->stoneColor = color;}

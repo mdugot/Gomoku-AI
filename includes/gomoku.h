@@ -11,7 +11,7 @@ class Rules;
 #define GH 19
 
 typedef enum Stone {
-	BLACK = 1, WHITE = 2, BLACKFORBIDDEN = 3, WHITEFORBIDDEN = 4, FREE = 0, OUT_LIMIT = -1
+	BLACK = 1, WHITE = 2, FORBIDDEN = 3, FREE = 0, OUT_LIMIT = -1
 } Stone;
 
 class Gomoku
