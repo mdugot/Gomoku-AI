@@ -11,6 +11,7 @@ NoobIA::~NoobIA()
 }
 
 void NoobIA::play(Rules &rules, Interface &i) {
+	(void)i;
 	while (!this->played)
 	{
 		int x = rand() % GW;
@@ -18,7 +19,6 @@ void NoobIA::play(Rules &rules, Interface &i) {
 		if (rules.canPutStone(*this, x, y)) {
 			setCoordPlayed(x, y);
 			this->putStone(x, y);
-			i.putStone(*(this->stoneSprite),i.getCoordBoard(x,y).x ,i.getCoordBoard(x,y).y);
 			this->played = true;
 		}
 	}

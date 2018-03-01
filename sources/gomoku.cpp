@@ -10,15 +10,17 @@ Gomoku::Gomoku(Player &p1, Player &p2, Rules &rules, Interface &interface) : whi
 	for (int i = 0; i < GW; i++) {
 		for (int j = 0; j < GH; j++) {
 			board[i][j] = FREE;
+			focus[i][j] = false;
 		}
 	}
+	focus[GW/2][GH/2] = true;
 	rules.setGomoku(this);
 	whitePlayer.setGomoku(this);
 	blackPlayer.setGomoku(this);
 	interface.setGomoku(this);
-	whitePlayer.setMyColor(WHITE);
-	blackPlayer.setMyColor(BLACK);
+	whitePlayer.setColor(WHITE);
 	whitePlayer.setEnemy(&blackPlayer);
+	blackPlayer.setColor(BLACK);
 	blackPlayer.setEnemy(&whitePlayer);
 	currentPlayer = &blackPlayer;
 }
@@ -35,6 +37,11 @@ void Gomoku::end() {
 	exit(1);
 }
 
+void Gomoku::drawStone() {
+	sf::Vector2<int> coord = interface.getCoordBoard(currentPlayer->coordPlayed.x, currentPlayer->coordPlayed.y);
+		interface.putStone(*(currentPlayer->stoneSprite), coord.x , coord.y);
+}
+
 void Gomoku::start() {
 	whitePlayer.setSpriteStone(&(interface._whiteStone));
 	blackPlayer.setSpriteStone(&(interface._blackStone));
@@ -45,10 +52,10 @@ void Gomoku::start() {
 	while (!rules.checkEnd(*currentPlayer) &&
 		interface._window.isOpen()) {
         interface.update();
-		while (!currentPlayer->played) {
-			currentPlayer->play(rules, interface);
-		}
-		checkCapture(*currentPlayer, currentPlayer->coordPlayed.x, currentPlayer->coordPlayed.y, *(currentPlayer->getEnemy()));
+		currentPlayer->play(rules, interface);
+		drawStone();
+		//checkCapture(*currentPlayer, currentPlayer->coordPlayed.x, currentPlayer->coordPlayed.y, *(currentPlayer->getEnemy()));
+		currentPlayer->getEnemy()->observe(rules, currentPlayer->coordPlayed.x, currentPlayer->coordPlayed.y);
 		currentPlayer->played = false;
 		currentPlayer = currentPlayer->getEnemy();
 		interface.checkEvent(*currentPlayer);
@@ -64,17 +71,34 @@ Stone Gomoku::getStone(int x, int y) {
 	return board[x][y];
 }
 
-void Gomoku::printBoard() {
+void Gomoku::updateFocus(int x, int y) {
+	for (int i = x-FOCUS; i <= x+FOCUS ; i++) {
+		for (int j = y-FOCUS; j <= y+FOCUS ; j++) {
+			if (i >= 0 && j >= 0 && i < GW && j < GH)
+				focus[i][j] = true;
+		}
+	}
+}
+
+void Gomoku::printStone(int i, int j, int lastX, int lastY) {
+	if (board[i][j] == WHITE) {
+		DEBUG << ((lastX == i && lastY == j) ? GREEN : DEFAULT_COLOR) << HLL_GREY << "O" << DEFAULT_COLOR;
+	} else if (board[i][j] == BLACK) {
+		DEBUG << ((lastX == i && lastY == j) ? RED : DARK_BLACK) << HLIGHT_GREY << "X" << DEFAULT_COLOR;
+	} else {
+		if (focus[i][j]) {
+			DEBUG << ".";
+		} else {
+			DEBUG << "#";
+		}
+	}
+}
+
+void Gomoku::printBoard(int lastX, int lastY) {
 	DEBUG << "\n";
-	for (int i = 0; i < GW; i++) {
-		for (int j = 0; j < GH; j++) {
-			if (board[i][j] == WHITE) {
-				DEBUG << DEFAULT_COLOR << HLL_GREY << "O" << DEFAULT_COLOR;
-			} else if (board[i][j] == BLACK) {
-				DEBUG << DARK_BLACK << HLIGHT_GREY << "X" << DEFAULT_COLOR;
-			} else {
-				DEBUG << ".";
-			}
+	for (int j = 0; j < GH; j++) {
+		for (int i = 0; i < GW; i++) {
+			printStone(i, j, lastX, lastY);
 		}
 		DEBUG << "\n";
 	}
@@ -114,6 +138,8 @@ bool Gomoku::leftDiagonal(Stone color, int x, int y) {
 }
 
 bool Gomoku::checkLine(Stone color, int x, int y) {
+	if (getStone(x, y) != color)
+		return false;
 	if (horizontalLine(color, x, y))
 		return true;
 	if (verticalLine(color, x, y))

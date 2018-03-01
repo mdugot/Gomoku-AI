@@ -3,12 +3,14 @@
 
 #include "utils.h"
 #include "colors.h"
+#include "boardIterator.h"
 class Interface;
 class Player;
 class Rules;
 
 #define GW 19
 #define GH 19
+#define FOCUS 2
 
 typedef enum Stone {
 	BLACK = 1, WHITE = 2, BLACKFORBIDDEN = 3, WHITEFORBIDDEN = 4, FREE = 0, OUT_LIMIT = -1
@@ -25,6 +27,7 @@ class Gomoku
 		Interface &interface;
 		Stone	board[GW][GH];
 		int		nbEatenStone;
+		bool focus[GW][GH];
 
 		bool	checkLine(Stone color, int x, int y);
 		bool	leftDiagonal(Stone color, int x, int y);
@@ -42,6 +45,7 @@ class Gomoku
 		bool	checkDownRight(Player &current, int x, int y, Player &enemy);
 		bool	checkBetween(Stone colorEnemy, int x1, int y1, int x2, int y2);
 		void	capture(Player &current, sf::Sprite *spriteEnemy, int x1, int y1, int x2, int y2);
+		void	drawStone();
 	
 	public:
 
@@ -52,15 +56,19 @@ class Gomoku
 		inline Player &getBlackPlayer() {return blackPlayer;}
 		inline Player *getCurrentPlayer() {return currentPlayer;}
 		inline Rules &getRules() {return rules;}
+		inline Stone** getBoard() {return (Stone**)board;}
 		inline Interface &getInterface() {return interface;}
 		inline int getNbEatenStone() {return nbEatenStone;}
 		Stone getStone(int x, int y);
 		inline void setStone(Stone stone, int x, int y) {board[x][y] = stone;}
+		inline bool isFocus(int x, int y) {return focus[x][y];}
+		void updateFocus(int x, int j);
 
 		bool fiveStoneLine(Stone color, int &x, int &y);
 		bool checkCapture(Player &current, int x, int y, Player &enemy);
 
-		void printBoard();
+		void printBoard(int lastX = -1, int lastY = -1);
+		void printStone(int i, int j, int lastX = -1, int lastY = -1);
 		void start();
 		void end();
 };

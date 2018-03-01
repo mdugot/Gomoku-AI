@@ -12,7 +12,10 @@ SRC_NAME= main.cpp \
           randomPlayer.cpp\
 		  humanPlayer.cpp\
 		  noobIA.cpp\
-		  interface.cpp
+		  interface.cpp\
+		  boardIterator.cpp\
+		  minMaxDynamicPlayer.cpp\
+		  heuristicBoard.cpp
 SRC_PATH= ./sources/
 INC_PATH= ./includes/
 OBJ_NAME= $(SRC_NAME:.cpp=.o)
