@@ -91,8 +91,6 @@ void    Interface::setStoneOnClick(Player &current, int clickx, int clicky) {
                 clicky <= coordBoard[i][j].y + 8 && clicky >= coordBoard[i][j].y - 8) {
                 if (gomoku->getRules().canPutStone(current, i, j)) {
                     current.setCoordPlayed(i, j);
-                    this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), coordBoard[i][j].x, coordBoard[i][j].y);
-                    gomoku->setStone(gomoku->getCurrentPlayer()->getColor(), i, j);
                     current.setPlayed(true);
                 }
                 return; 

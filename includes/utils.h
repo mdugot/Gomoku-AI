@@ -23,6 +23,10 @@
 #define PRINT_OUT true
 #define OUT if (PRINT_OUT) std::cout
 #define ABS(x) (x) < 0 ? -(x) : (x)
+#define MIN_INT -10000000
+#define MAX_INT 10000000
+#define MIN_LONG (long long)0x8000000000000000 
+#define MAX_LONG (long long)0x7FFFFFFFFFFFFFFF
 
 void success(std::string message);
 void failure(std::string message);

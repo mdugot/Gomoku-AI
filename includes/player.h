@@ -22,8 +22,8 @@ class Player
 		bool	played;
 		sf::Vector2<int> coordPlayed; // MEMO : x et y ==> coordonnée du board dans Gomoku
 
-		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
-		inline void setMyColor(Stone color) {this->stoneColor = color;}
+		inline virtual void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
+		inline virtual void setColor(Stone color) {this->stoneColor = color;}
 		void putStone(int x, int y);
 		sf::Vector2<int> canteen[10];
 	
@@ -33,6 +33,7 @@ class Player
 		~Player();
 
 		virtual void play(Rules &rules, Interface &i )= 0;
+		inline virtual void observe(Rules &rules, int x, int y) {(void)rules; (void)x; (void)y;}
 		inline Stone getColor() {return stoneColor;}
 		inline Player *getEnemy() {return enemy;}
 		inline sf::Sprite *getSpriteStone() {return stoneSprite;}
