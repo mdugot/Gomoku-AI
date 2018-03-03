@@ -6,6 +6,7 @@ HeuristicBoard::HeuristicBoard()
 {
 //	DEBUG << "new 1\n";
 	bzero(heuristic, sizeof(short int[GW][GH]));
+	totalCaptured = 0;
 	stone = 0;
 	gomoku = NULL;
 	score = 0;
@@ -15,6 +16,7 @@ HeuristicBoard::HeuristicBoard()
 HeuristicBoard::HeuristicBoard(HeuristicBoard *copyFrom) {
 //	DEBUG << "memcopy\n";
 //	DEBUG << "copy : " << heuristic << "/" << copyFrom->heuristic << "\n";
+	totalCaptured = copyFrom->totalCaptured;
 	stone = copyFrom->stone;
 	gomoku = copyFrom->gomoku;
 	score = copyFrom->score;
@@ -67,14 +69,42 @@ void HeuristicBoard::getAdjacent(char x, char y, char vx, char vy, char &before,
 	}
 }
 
+void HeuristicBoard::clearOne(char x, char y, char vx, char vy, char shift, short int mask)
+{
+	char before, beforeWall;
+	char after, afterWall;
+
+	getAdjacent(x, y, vx, vy, before, after, beforeWall, afterWall);
+	if (after > 4 || before > 4)
+		REMOVE_THREAT(GET_THREAT(heuristic[(unsigned char)x][(unsigned char)y], mask, shift));
+	else
+		REMOVE_THREAT(4);
+}
+
 HeuristicBoard& HeuristicBoard::clear(unsigned char x, unsigned char y)
 {
 //	DEBUG << "clear\n";
-	REMOVE_THREAT(GET_HH(heuristic[x][y]));
-	REMOVE_THREAT(GET_VH(heuristic[x][y]));
-	REMOVE_THREAT(GET_DLH(heuristic[x][y]));
-	REMOVE_THREAT(GET_DRH(heuristic[x][y]));
-//	heuristic[x][y] = 0; //KEEP VALUE TO REUSE IT IF STONE IS EAT
+	if (GET_HH(heuristic[x][y]) < 5)
+		REMOVE_THREAT(GET_HH(heuristic[x][y]));
+	else
+		clearOne(x, y, 1, 0, HORIZONTAL_SHIFT, HORIZONTAL_MASK);
+
+	if (GET_VH(heuristic[x][y]) < 5)
+		REMOVE_THREAT(GET_VH(heuristic[x][y]));
+	else
+		clearOne(x, y, 0, 1, VERTICAL_SHIFT, VERTICAL_MASK);
+
+	if (GET_DLH(heuristic[x][y]) < 5)
+		REMOVE_THREAT(GET_DLH(heuristic[x][y]));
+	else
+		clearOne(x, y, -1, 1, DLEFT_SHIFT, DLEFT_MASK);
+
+	if (GET_DRH(heuristic[x][y]) < 5)
+		REMOVE_THREAT(GET_DRH(heuristic[x][y]));
+	else
+		clearOne(x, y, 1, 1, DRIGHT_SHIFT, DRIGHT_MASK);
+
+	heuristic[x][y] = 0;
 	return *this;
 }
 
@@ -84,6 +114,7 @@ void HeuristicBoard::fiveValue(char x, char y, unsigned char &value, unsigned ch
 	if (value > 4 && heuristic < 4)
 		value = 4;
 }
+
 
 void HeuristicBoard::updateThreat(char x, char y, char vx, char vy, char shift, short int mask)
 {
@@ -96,18 +127,75 @@ void HeuristicBoard::updateThreat(char x, char y, char vx, char vy, char shift, 
 		tmp = GET_THREAT(heuristic[(unsigned char)x-(before*vx)][(unsigned char)y-(before*vy)], mask, shift);
 		REMOVE_THREAT(tmp);
 		tmp += after;
-		fiveValue(x, y, tmp, GET_THREAT(heuristic[(unsigned char)x][(unsigned char)y], mask, shift));
 		heuristic[(unsigned char)x-(before*vx)][(unsigned char)y-(before*vy)] = SET_THREAT(heuristic[(unsigned char)x-(before*vx)][(unsigned char)y-(before*vy)], tmp, mask, shift);
+		fiveValue(x, y, tmp, GET_THREAT(heuristic[(unsigned char)x][(unsigned char)y], mask, shift));
 		ADD_THREAT(tmp);
 	}
 	if (!afterWall) {
 		tmp = GET_THREAT(heuristic[(unsigned char)x+(after*vx)][(unsigned char)y+(after*vy)], mask, shift);
 		REMOVE_THREAT(tmp);
 		tmp += before;
-		fiveValue(x, y, tmp, GET_THREAT(heuristic[(unsigned char)x][(unsigned char)y], mask, shift));
 		heuristic[(unsigned char)x+(after*vx)][(unsigned char)y+(after*vy)] = SET_THREAT(heuristic[(unsigned char)x+(after*vx)][(unsigned char)y+(after*vy)], tmp, mask, shift);
+		fiveValue(x, y, tmp, GET_THREAT(heuristic[(unsigned char)x][(unsigned char)y], mask, shift));
 		ADD_THREAT(tmp);
 	}
+}
+
+void HeuristicBoard::removeEnnemyThreat(char x, char y, char vx, char vy, char shift, short int mask)
+{
+	char before, beforeWall;
+	char after, afterWall;
+
+	getAdjacent(x, y, vx, vy, before, after, beforeWall, afterWall);
+	heuristic[(unsigned char)x][(unsigned char)y] = SET_THREAT(heuristic[(unsigned char)x][(unsigned char)y], (after+before-2), mask, shift);
+	ADD_THREAT((after+before-2) > 4 ? 4 : (after+before-2));
+}
+
+void HeuristicBoard::removeThreat(char x, char y, char vx, char vy, char shift, short int mask)
+{
+	char before, beforeWall;
+	char after, afterWall;
+	unsigned char tmp, oldLength;
+
+	getAdjacent(x, y, vx, vy, before, after, beforeWall, afterWall);
+	oldLength = before + after - 1;
+	if (!beforeWall) {
+		tmp = GET_THREAT(heuristic[(unsigned char)x-(before*vx)][(unsigned char)y-(before*vy)], mask, shift);
+		if (tmp) {
+			REMOVE_THREAT((tmp > 4 && oldLength <= 5) ? 4 : tmp);
+			tmp -= after;
+			heuristic[(unsigned char)x-(before*vx)][(unsigned char)y-(before*vy)] = SET_THREAT(heuristic[(unsigned char)x-(before*vx)][(unsigned char)y-(before*vy)], tmp, mask, shift);
+			ADD_THREAT((tmp > 4 && before <= 5) ? 4 : tmp);
+		}
+	}
+	if (!afterWall) {
+		tmp = GET_THREAT(heuristic[(unsigned char)x+(after*vx)][(unsigned char)y+(after*vy)], mask, shift);
+		if (tmp) {
+			REMOVE_THREAT((tmp > 4 && oldLength <= 5) ? 4 : tmp);
+			tmp -= before;
+			heuristic[(unsigned char)x+(after*vx)][(unsigned char)y+(after*vy)] = SET_THREAT(heuristic[(unsigned char)x+(after*vx)][(unsigned char)y+(after*vy)], tmp, mask, shift);
+			ADD_THREAT((tmp > 4 && after <= 5) ? 4 : tmp);
+		}
+	}
+	heuristic[(unsigned char)x][(unsigned char)y] = SET_THREAT(heuristic[(unsigned char)x][(unsigned char)y], (after+before-2), mask, shift);
+	ADD_THREAT((after+before-2) > 4 ? 4 : (after+before-2));
+}
+
+void HeuristicBoard::beCaptured(unsigned char x, unsigned char y)
+{
+	removeThreat(x, y, 0, 1, HORIZONTAL_SHIFT, HORIZONTAL_MASK);
+	removeThreat(x, y, 1, 0, VERTICAL_SHIFT, VERTICAL_MASK);
+	removeThreat(x, y, 1, 1, DRIGHT_SHIFT, DRIGHT_MASK);
+	removeThreat(x, y, -1, 1, DLEFT_SHIFT, DLEFT_MASK);
+}
+
+void HeuristicBoard::capture(unsigned char x, unsigned char y)
+{
+	removeEnnemyThreat(x, y, 0, 1, HORIZONTAL_SHIFT, HORIZONTAL_MASK);
+	removeEnnemyThreat(x, y, 1, 0, VERTICAL_SHIFT, VERTICAL_MASK);
+	removeEnnemyThreat(x, y, 1, 1, DRIGHT_SHIFT, DRIGHT_MASK);
+	removeEnnemyThreat(x, y, -1, 1, DLEFT_SHIFT, DLEFT_MASK);
+	totalCaptured += 1;
 }
 
 HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y, bool prediction)

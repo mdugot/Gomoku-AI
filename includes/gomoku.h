@@ -35,16 +35,17 @@ class Gomoku
 		bool	verticalLine(Stone color, int x, int y);
 		bool	horizontalLine(Stone color, int x, int y);
 		
-		bool	checkLeft(Player &current, int x, int y, Player &enemy);
-		bool	checkRight(Player &current, int x, int y, Player &enemy);
-		bool	checkUp(Player &current, int x, int y, Player &enemy);
-		bool	checkDown(Player &current, int x, int y, Player &enemy);
-		bool	checkUpLeft(Player &current, int x, int y, Player &enemy);
-		bool	checkDownLeft(Player &current, int x, int y, Player &enemy);
-		bool	checkUpRight(Player &current, int x, int y, Player &enemy);
-		bool	checkDownRight(Player &current, int x, int y, Player &enemy);
-		bool	checkBetween(Stone colorEnemy, int x1, int y1, int x2, int y2);
-		void	capture(Player &current, sf::Sprite *spriteEnemy, int x1, int y1, int x2, int y2);
+		void	checkLeft(Player &current, unsigned char x, unsigned char y, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured);
+		void	checkRight(Player &current, unsigned char x, unsigned char y, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured);
+		void	checkUp(Player &current, unsigned char x, unsigned char y, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured);
+		void	checkDown(Player &current, unsigned char x, unsigned char y, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured);
+		void	checkUpLeft(Player &current, unsigned char x, unsigned char y, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured);
+		void	checkDownLeft(Player &current, unsigned char x, unsigned char y, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured);
+		void	checkUpRight(Player &current, unsigned char x, unsigned char y, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured);
+		void	checkDownRight(Player &current, unsigned char x, unsigned char y, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured);
+		bool	checkBetween(Stone colorEnemy, unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2);
+		void	capture(Player &current, sf::Sprite *spriteEnemy, int x1, int y1);
+		void	captureAll(Player &current, sf::Sprite *spriteEnemy, std::vector<std::pair<unsigned char, unsigned char>> &captured);
 		void	drawStone();
 	
 	public:
@@ -65,7 +66,7 @@ class Gomoku
 		void updateFocus(int x, int j);
 
 		bool fiveStoneLine(Stone color, int &x, int &y);
-		bool checkCapture(Player &current, int x, int y, Player &enemy);
+		void checkCapture(Player &current, unsigned char x, unsigned char y, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured);
 
 		void printBoard(int lastX = -1, int lastY = -1);
 		void printStone(int i, int j, int lastX = -1, int lastY = -1);

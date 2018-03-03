@@ -46,14 +46,18 @@ class HeuristicBoard
 
 	private:
 
+		unsigned char totalCaptured;
 		short int heuristic[GW][GH];
 		Gomoku* gomoku;
 		char stone;
 
 		void getAdjacent(char x, char y, char vx, char vy, char &before, char &after, char &beforeWall, char &afterWall);
 		int getBestLevel(unsigned char x, unsigned char y);
-		void fiveValue(char x, char y, unsigned char &value, unsigned char heurisitc);
+		void fiveValue(char x, char y, unsigned char &value, unsigned char heuristic);
 		void updateThreat(char x, char y, char vx, char vy, char shift, short int mask);
+		void removeEnnemyThreat(char x, char y, char vx, char vy, char shift, short int mask);
+		void removeThreat(char x, char y, char vx, char vy, char shift, short int mask);
+		void clearOne(char x, char y, char vx, char vy, char shift, short int mask);
 	
 	public:
 		long long score;
@@ -63,6 +67,8 @@ class HeuristicBoard
 		~HeuristicBoard();
 		HeuristicBoard &put(unsigned char x, unsigned char y, bool prediction = true);
 		HeuristicBoard &clear(unsigned char x, unsigned char y);
+		void beCaptured(unsigned char x, unsigned char y);
+		void capture(unsigned char x, unsigned char y);
 		void print(int lastX = -1, int lastY = -1);
 
 };

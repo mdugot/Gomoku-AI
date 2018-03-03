@@ -41,11 +41,21 @@ std::map<long long, Choice> MinMaxDynamicPlayer::heuristicMap(Rules &rules, Play
 
 				if (player == this) {
 					Choice choice(i, j, &myOrigin, &ennemyOrigin);
+					gomoku->checkCapture(*this, i, j, *enemy, choice.captured);
+					for (auto it = choice.captured.begin(); it != choice.captured.end(); ++it) {
+						choice.ennemyHeuristic.beCaptured(it->first, it->second);
+						choice.myHeuristic.capture(it->first, it->second);
+					}
 					result[-heuristic(choice.myHeuristic, choice.ennemyHeuristic, depth)] = choice;
 //					if (focus)
 //						DEBUG << DARK_YELLOW << "option : " << -heuristic(choice.myHeuristic, choice.ennemyHeuristic, depth) << "=" << (int)choice.x << "/" << (int)choice.y << "\n" << DEFAULT_COLOR;
 				} else {
 					Choice choice(i, j, &myOrigin, &ennemyOrigin, true);
+					gomoku->checkCapture(*enemy, i, j, *this, choice.captured);
+					for (auto it = choice.captured.begin(); it != choice.captured.end(); ++it) {
+						choice.ennemyHeuristic.capture(it->first, it->second);
+						choice.myHeuristic.beCaptured(it->first, it->second);
+					}
 					result[heuristic(choice.myHeuristic, choice.ennemyHeuristic, depth, true)] = choice;
 				}
 			}
@@ -79,26 +89,23 @@ void MinMaxDynamicPlayer::startMinMax(int &rx, int &ry, Rules &rules)
 	rx = choices.begin()->second.x;
 	ry = choices.begin()->second.y;
 	unsigned char i = 0;
-	if (ennemyHeuristic.score >= L4) {
-//		DEBUG << RED << "DANGER ZONE\n" << DEFAULT_COLOR;
-		i = depthWidths[0];
-	}
+//	if (ennemyHeuristic.score >= L4) {
+//		i = depthWidths[0];
+//	}
 	for (auto it = choices.begin(); it != choices.end(); ++it) {
 		if (i > depthWidths[0]) {
-//			DEBUG << "WIDTH BREAK\n";
 			break;
 		}
-//		DEBUG << YELLOW << "choice : " << it->first << "=" << (int)it->second.x << "/" << (int)it->second.y << "\n" << DEFAULT_COLOR;
 		gomoku->setStone(getColor(), it->second.x, it->second.y);
-//		gomoku->printBoard(it->second.x, it->second.y);
-//		it->second.myHeuristic.print();
-//		DEBUG << "my score = " << it->second.myHeuristic.score << "\n";
-//		it->second.ennemyHeuristic.print(it->second.x, it->second.y);
-//		DEBUG << "ennemy score = " << it->second.ennemyHeuristic.score << "\n";
+		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
+			gomoku->setStone(FREE, it2->first, it2->second);
+		}
 		complexity++;
 		option = min(minMaxDepth, MAX_LONG, maxBestOption, rules, it->second.myHeuristic, it->second.ennemyHeuristic);
-//		DEBUG << DARK_YELLOW << "prediction : " << option << "\n" << DEFAULT_COLOR;
 		gomoku->setStone(FREE, it->second.x, it->second.y);
+		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
+			gomoku->setStone(enemy->getColor(), it2->first, it2->second);
+		}
 		if (option > best) {
 			best = option;
 			rx = it->second.x;
@@ -119,7 +126,6 @@ void MinMaxDynamicPlayer::startMinMax(int &rx, int &ry, Rules &rules)
 long long MinMaxDynamicPlayer::max(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH)
 {
 	if (depth <= 0 || myH.score >= HAS_WON || ennemyH.score >= HAS_WON) {
-//		if (depth == 8) DEBUG << ">end : " << heuristic(myH, ennemyH, depth+1, true) << "\n";
 		return heuristic(myH, ennemyH, depth+1, true);
 	}
 	long long option;
@@ -127,34 +133,34 @@ long long MinMaxDynamicPlayer::max(int depth, long long minBestOption, long long
 	std::map<long long, Choice> choices = heuristicMap(rules, this, depth, myH, ennemyH);
 	unsigned char i = 0;
 //	if (ennemyH.score >= L4) {
-//		if (depth == 8) DEBUG << RED << ">DANGER ZONE (" << ennemyH.score << ")\n" << DEFAULT_COLOR;
 //		i = depthWidths[minMaxDepth - depth];
 //	}
 	for (auto it = choices.begin(); it != choices.end(); ++it) {
 		if (i > depthWidths[minMaxDepth - depth]) {
-//			DEBUG << CYAN << "width break\n" << DEFAULT_COLOR;
 			break;
 		}
-//		DEBUG << CYAN << "choice : " << it->first << "=" << (int)it->second.x << "/" << (int)it->second.y << "\n" << DEFAULT_COLOR;
 		gomoku->setStone(getColor(), it->second.x, it->second.y);
+		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
+			if (gomoku->getStone(it2->first, it2->second) != enemy->getColor()) DEBUG << RED << "WRONG CAPTURE !\n" << DEFAULT_COLOR;
+			gomoku->setStone(FREE, it2->first, it2->second);
+		}
 		complexity++;
 		option = min(depth-1, minBestOption, maxBestOption, rules, it->second.myHeuristic, it->second.ennemyHeuristic);
-//		DEBUG << DARK_CYAN << "prediction : " << option << "\n" << DEFAULT_COLOR;
 		gomoku->setStone(FREE, it->second.x, it->second.y);
+		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
+			gomoku->setStone(enemy->getColor(), it2->first, it2->second);
+		}
 		if (option > best) {
 			best = option;
 			if (option > maxBestOption) {
 				maxBestOption = option;
 			}
 			if (maxBestOption >= minBestOption - 1) {
-//				if (depth == 8) DEBUG << ">alphabeta : " << best << "\n";
-//				DEBUG << CYAN << "alpha beta break\n" << DEFAULT_COLOR;
 				return best;
 			}
 		}
 		i++;
 	}
-//	if (depth == 8) DEBUG << ">normal : " << best << "\n";
 	return best;
 }
 
@@ -165,7 +171,6 @@ long long MinMaxDynamicPlayer::min(int depth, long long minBestOption, long long
 	}
 	long long option;
 	long long best = MAX_LONG;
-//	if (depth == 9) DEBUG << "default : " << best << "\n";
 	std::map<long long, Choice> choices = heuristicMap(rules, enemy, depth, myH, ennemyH);
 	unsigned char i = 0;
 //	if (myH.score >= L4) {
@@ -173,24 +178,25 @@ long long MinMaxDynamicPlayer::min(int depth, long long minBestOption, long long
 //	}
 	for (auto it = choices.begin(); it != choices.end(); ++it) {
 		if (i > depthWidths[minMaxDepth - depth]) {
-//			DEBUG << GREEN << "width break\n" << DEFAULT_COLOR;
 			break;
 		}
-//		DEBUG << GREEN << "min choice : " << it->first << "=" << (int)it->second.x << "/" << (int)it->second.y << "\n" << DEFAULT_COLOR;
 		gomoku->setStone(enemy->getColor(), it->second.x, it->second.y);
+		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
+			if (gomoku->getStone(it2->first, it2->second) != getColor()) DEBUG << RED << "WRONG CAPTURE !\n" << DEFAULT_COLOR;
+			gomoku->setStone(FREE, it2->first, it2->second);
+		}
 		complexity++;
 		option = max(depth-1, minBestOption, maxBestOption, rules, it->second.myHeuristic, it->second.ennemyHeuristic);
-//		DEBUG << DARK_GREEN << "min prediction : " << option << "\n" << DEFAULT_COLOR;
 		gomoku->setStone(FREE, it->second.x, it->second.y);
+		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
+			gomoku->setStone(getColor(), it2->first, it2->second);
+		}
 		if (option < best) {
 			best = option;
-//			if (depth == 9) DEBUG << "new : " << best << "\n";
 			if (option < minBestOption) {
 				minBestOption = option;
 			}
 			if (maxBestOption >= minBestOption - 1) {
-//				if (depth == 9) DEBUG << "result : " << best << "\n";
-//				DEBUG << GREEN << "alpha beta break\n" << DEFAULT_COLOR;
 				return best;
 			}
 		}
@@ -227,45 +233,56 @@ void MinMaxDynamicPlayer::play(Rules &rules, Interface &i) {
 	myHeuristic.print(x, y);
 }
 
-void MinMaxDynamicPlayer::observe(Rules &rules, int x, int y) {
+void MinMaxDynamicPlayer::observe(Rules &rules, int x, int y, std::vector<std::pair<unsigned char, unsigned char>> &captured) {
 	(void)rules;
 	myHeuristic.clear(x, y);
 	ennemyHeuristic.put(x, y);
+	for (auto it = captured.begin(); it != captured.end(); ++it) {
+		myHeuristic.beCaptured(it->first, it->second);
+		ennemyHeuristic.capture(it->first, it->second);
+		DEBUG << RED << "CAPTURED BY ENNEMY !\n" << DEFAULT_COLOR;
+		myHeuristic.print(x, y);
+		ennemyHeuristic.print(x, y);
+	}
+}
+
+void MinMaxDynamicPlayer::observeMyCapture(std::vector<std::pair<unsigned char, unsigned char>> &captured) {
+	for (auto it = captured.begin(); it != captured.end(); ++it) {
+		myHeuristic.capture(it->first, it->second);
+		ennemyHeuristic.beCaptured(it->first, it->second);
+		DEBUG << GREEN << "CAPTURE ENNEMY STONES !\n" << DEFAULT_COLOR;
+		myHeuristic.print();
+		ennemyHeuristic.print();
+	}
 }
 
 long long MinMaxDynamicPlayer::heuristic(HeuristicBoard &myH, HeuristicBoard &ennemyH, int depth, bool ennemy) {
 	if (depth <= 0) {
 		DEBUG << RED << "NEGATIVE DEPTH !!!!\n" << DEFAULT_COLOR;
 	}
-	if (myH.score >= HAS_WON) {
-//		if (last) DEBUG << PURPLE  << "#I have won" << DEFAULT_COLOR << "\n";
-		return BIG * (depth) * 11;
+	if (myH.score >= HAS_WON || myH.totalCaptured >= 10) {
+		return BIG * (depth);
 	}
-	if (ennemyH.score >= HAS_WON) {
-//		if (last) DEBUG << PURPLE  << "#ennemy has won" << DEFAULT_COLOR << "\n";
-		return -BIG * (depth) * 11;
+	if (ennemyH.score >= HAS_WON || ennemyH.totalCaptured >= 10) {
+		return -BIG * (depth);
 	}
 
 	if (ennemy) {
-		if (myH.score >= L4) {
-			return BIG * (depth);
-		}
-		if (ennemyH.score >= WIN_STATE) {
-//			if (depth == 9) DEBUG << PURPLE  << "#ennemy going to win (depth=" << depth << ", result=" << (-BIG * (depth)) << ", big=" << BIG << ")" << DEFAULT_COLOR << "\n";
-			return (-BIG * (depth) - 1);
-		}
-		return (myH.score * L2) - (ennemyH.score);
+	//	if (myH.score >= L4) {
+	//		return BIG * (depth);
+	//	}
+	//	if (ennemyH.score >= WIN_STATE) {
+	//		return (-BIG * (depth) - 1);
+	//	}
+		return (myH.score * L2 + HeuristicBoard::levels[myH.totalCaptured]) - (ennemyH.score + HeuristicBoard::levels[ennemyH.totalCaptured]);
 	}
 
-	if (ennemyH.score >= L4) {
-//		if (depth == 9) DEBUG << PURPLE  << "#I am going to loose" << DEFAULT_COLOR << "\n";
-		return -BIG * (depth);
-	}
-	if (myH.score >= WIN_STATE) {
-//		if (last) DEBUG << PURPLE  << "#I am going to win" << DEFAULT_COLOR << "\n";
-		return BIG * (depth);
-	}
-//	if (last) DEBUG << PURPLE  << "#I don't know (ennemy score = " << ennemyH.score << ")" << DEFAULT_COLOR << "\n";
-	return myH.score - (ennemyH.score * L2);
+//	if (ennemyH.score >= L4) {
+//		return -BIG * (depth);
+//	}
+//	if (myH.score >= WIN_STATE) {
+//		return BIG * (depth);
+//	}
+	return (myH.score + HeuristicBoard::levels[myH.totalCaptured]) - (ennemyH.score * L2 + HeuristicBoard::levels[ennemyH.totalCaptured]);
 }
 

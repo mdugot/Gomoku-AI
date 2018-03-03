@@ -102,22 +102,20 @@ void    Interface::setStoneOnClick(Player &current, int clickx, int clicky) {
 }
 
 
-void	Interface::capture(Player &current, sf::Sprite *spriteEnemy, int x1, int y1, int x2, int y2) {
+void	Interface::capture(Player &current, sf::Sprite *spriteEnemy, int x1, int y1) {
     (void)current;
     (void)spriteEnemy;
     int i = getCoordBoard(x1,y1).x;
     int j = getCoordBoard(x1,y1).y;
-    int i2 = getCoordBoard(x2,y2).x;
-    int j2 = getCoordBoard(x2,y2).y;
     Vector2<int> pos;
     for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
         pos = (Vector2<int>)(*it).getPosition();
-        if ((pos.x == i && pos.y == j) || (pos.x == i2 && pos.y == j2)){
+        if ((pos.x == i && pos.y == j)){
             it = _allSprite.erase(it);
             DEBUG << "REMOVE\n";
         }
     }
-    this->putStone(*spriteEnemy, current.getCoordCanteen(current.getNbCapture() - 2).x, current.getCoordCanteen(current.getNbCapture() - 2).y);
+//    this->putStone(*spriteEnemy, current.getCoordCanteen(current.getNbCapture() - 2).x, current.getCoordCanteen(current.getNbCapture() - 2).y);
     this->putStone(*spriteEnemy, current.getCoordCanteen(current.getNbCapture() - 1).x, current.getCoordCanteen(current.getNbCapture() - 1).y);
 }
 

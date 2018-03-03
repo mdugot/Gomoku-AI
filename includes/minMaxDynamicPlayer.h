@@ -11,6 +11,7 @@ class Choice
 		unsigned char y;
 		HeuristicBoard myHeuristic;
 		HeuristicBoard ennemyHeuristic;
+		std::vector<std::pair<unsigned char, unsigned char>> captured;
 	
 		Choice(unsigned char x, unsigned char y, HeuristicBoard *myHeuristic, HeuristicBoard *ennemyHeuristic, bool ennemy = false);
 		Choice();
@@ -40,7 +41,8 @@ class MinMaxDynamicPlayer : public Player
 
 	public:
 
-		virtual void observe(Rules &rules, int x, int y);
+		virtual void observe(Rules &rules, int x, int y, std::vector<std::pair<unsigned char, unsigned char>> &captured);
+		virtual void observeMyCapture(std::vector<std::pair<unsigned char, unsigned char>> &captured);
 		MinMaxDynamicPlayer(int d);
 		~MinMaxDynamicPlayer();
 		virtual void play(Rules &rules, Interface &interfacce);

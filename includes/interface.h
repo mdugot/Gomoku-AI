@@ -40,7 +40,7 @@ class Interface {
 		void	checkEvent(Player &current);
 		
 		void	setState(State newState);
-		void	capture(Player &current, sf::Sprite *spriteEnemy, int x, int y, int x2, int y2);
+		void	capture(Player &current, sf::Sprite *spriteEnemy, int x, int y);
 
 		inline	State				&getState(void) {return (state);}
 		inline	sf::RenderWindow	&getWindow(void) {return this->_window;}

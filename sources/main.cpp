@@ -17,6 +17,7 @@ int main(int argc, char **argv) {
 	//RandomPlayer	p2;
 	//NoobIA		p1;
 	HumanPlayer				black;
+//	HumanPlayer				white;
 	MinMaxDynamicPlayer		white(6);
 	HumanPlayer	p2;
 	DefaultRules	rules;
