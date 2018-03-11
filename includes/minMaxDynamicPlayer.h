@@ -36,7 +36,7 @@ class MinMaxDynamicPlayer : public Player
 		long long max(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH);
 		void startMinMax(int &rx, int &ry, Rules &rules);
 		bool win(int &rx, int &ry, Rules &rules);
-		std::map<long long, Choice> heuristicMap(Rules &rules, Player *player, int depht, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin, bool focus = false);
+		std::multimap<long long, Choice> heuristicMap(Rules &rules, Player *player, int depht, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin, bool focus = false);
 
 
 	public:
