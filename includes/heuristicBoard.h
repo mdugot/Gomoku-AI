@@ -30,7 +30,7 @@
 class HeuristicBoard
 {
 	friend class MinMaxDynamicPlayer;
-	friend class HeuristicBoard;
+	//friend class HeuristicBoard;
 	static const long long levels[6];
 
 	private:
