@@ -33,7 +33,8 @@ class Player
 		~Player();
 
 		virtual void play(Rules &rules, Interface &i )= 0;
-		inline virtual void observe(Rules &rules, int x, int y) {(void)rules; (void)x; (void)y;}
+		inline virtual void observe(Rules &rules, int x, int y, std::vector<std::pair<unsigned char, unsigned char>> &captured) {(void)rules; (void)x; (void)y; (void)captured;}
+		inline virtual void observeMyCapture(std::vector<std::pair<unsigned char, unsigned char>> &captured) {(void)captured;}
 		inline Stone getColor() {return stoneColor;}
 		inline Player *getEnemy() {return enemy;}
 		inline sf::Sprite *getSpriteStone() {return stoneSprite;}

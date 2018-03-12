@@ -11,6 +11,7 @@ class Choice
 		unsigned char y;
 		HeuristicBoard myHeuristic;
 		HeuristicBoard ennemyHeuristic;
+		std::vector<std::pair<unsigned char, unsigned char>> captured;
 	
 		Choice(unsigned char x, unsigned char y, HeuristicBoard *myHeuristic, HeuristicBoard *ennemyHeuristic, bool ennemy = false);
 		Choice();
@@ -35,12 +36,13 @@ class MinMaxDynamicPlayer : public Player
 		long long max(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH);
 		void startMinMax(int &rx, int &ry, Rules &rules);
 		bool win(int &rx, int &ry, Rules &rules);
-		std::map<long long, Choice> heuristicMap(Rules &rules, Player *player, int depht, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin, bool focus = false);
+		std::multimap<long long, Choice> heuristicMap(Rules &rules, Player *player, int depht, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin, bool focus = false);
 
 
 	public:
 
-		virtual void observe(Rules &rules, int x, int y);
+		virtual void observe(Rules &rules, int x, int y, std::vector<std::pair<unsigned char, unsigned char>> &captured);
+		virtual void observeMyCapture(std::vector<std::pair<unsigned char, unsigned char>> &captured);
 		MinMaxDynamicPlayer(int d);
 		~MinMaxDynamicPlayer();
 		virtual void play(Rules &rules, Interface &interfacce);
