@@ -22,7 +22,7 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
 void    Interface::initCoordBoard(void) {
     int i = 0;
     int j = 0;
-    float step = 49.445f;//(float)((BOARD_RIGHT - BOARD_LEFT) / 18);
+    float step = 40.0f;//(float)((BOARD_RIGHT - BOARD_LEFT) / 18);
     float stepy = 0;
     float stepx = 0;
     int y = BOARD_UP;
@@ -42,7 +42,7 @@ void    Interface::initCoordBoard(void) {
 
 void    Interface::initCoordCanteen(void) {
     int i = 0;
-    float step = 49.445f;//(float)((BOARD_RIGHT - BOARD_LEFT) / 18);
+    float step = 40.0f;//(float)((BOARD_RIGHT - BOARD_LEFT) / 18);
     float stepx = 0;
     int y = BLACKCANTEENY;
     int x = BLACKCANTEENX;
@@ -124,7 +124,8 @@ void    Interface::loadTexture(void) {
    if(!_stoneWhiteTexture.loadFromFile("./sprite/whiteStone.png")
     || !_stoneBlackTexture.loadFromFile("./sprite/blackStone.png")
     || !_backgroundTexture.loadFromFile("./sprite/background.png")
-    || !_boardGameTexture.loadFromFile("./sprite/go.png")
+    || !_boardGameTexture.loadFromFile("./sprite/goban(2).png")
+    || !_helloTexture.loadFromFile("./sprite/hello.png")
     || !_goodByeTexture.loadFromFile("./sprite/goodBye.png")) {
        DEBUG << "Error during import " << std::endl;
        exit(1);
@@ -135,15 +136,17 @@ void    Interface::loadTexture(void) {
        _backgroundTexture.setSmooth(true);
        _boardGameTexture.setSmooth(true);
        _goodByeTexture.setSmooth(true);
+       _helloTexture.setSmooth(true);
    }
 }
 
 void    Interface::loadSprite(void) {
     makeSprite(_backgroundSprite, _backgroundTexture, 1, 1, 0, 0);
-    makeSprite(_boardGameSprite, _boardGameTexture, 1, 1, (_backgroundTexture.getSize().x - _boardGameTexture.getSize().x) / 2, (_backgroundTexture.getSize().y - _boardGameTexture.getSize().y) / 2);
-    makeSprite(_whiteStone, _stoneWhiteTexture, 0.95f, 0.95f, 0, 0);
-    makeSprite(_blackStone, _stoneBlackTexture, 0.95f, 0.95f, 0, 0);
+    makeSprite(_boardGameSprite, _boardGameTexture, 0.9f, 0.9f, (_backgroundTexture.getSize().x - (_boardGameTexture.getSize().x * 0.9)) / 2, (_backgroundTexture.getSize().y - (_boardGameTexture.getSize().y * 0.9)) / 2);
+    makeSprite(_whiteStone, _stoneWhiteTexture, 0.825f, 0.825f, 0, 0);
+    makeSprite(_blackStone, _stoneBlackTexture, 0.825f, 0.825f, 0, 0);
     makeSprite(_goodByeSprite, _goodByeTexture, 1, 1, 0, 0);
+    makeSprite(_helloSprite, _helloTexture, 1, 1, 0, 0);
     _whiteStone.setOrigin(_stoneWhiteTexture.getSize().x / _whiteStone.getScale().x / 2, _stoneWhiteTexture.getSize().y / _whiteStone.getScale().y / 2);
     _blackStone.setOrigin(_stoneBlackTexture.getSize().x / _blackStone.getScale().x / 2, _stoneBlackTexture.getSize().y / _blackStone.getScale().y / 2);
 //    _allSprite.pop_back();
@@ -230,7 +233,7 @@ void    Interface::welcomeScreen(void) {
     //cleanSpriteList();
     //add push_back list les éléments
     //set status
-    _allSprite.push_back(_goodByeSprite);
+    _allSprite.push_back(_helloSprite);
     this->state = WELCOME;
     DEBUG << "WELCOME SCREEN\n";
     update();
