@@ -41,8 +41,3 @@ End Rules::checkEnd(Player &nextToPlay) {
 	}
 	return NO_END;
 }
-/*
-void	Rules::noDoubleThrees(Player &current) {
-	//A appliquer sur tous le board ou juste au moment du coup joué ???
-	gomoku->checkAlignThrees(current);
-}*/

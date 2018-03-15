@@ -118,6 +118,26 @@ void HeuristicBoard::fiveValue(char x, char y, unsigned char &value, unsigned ch
 }
 
 
+void HeuristicBoard::searchFreeThree(char x, char y, char vx, char vy, char shift, short int mask, unsigned char &result)
+{
+	char before, beforeWall;
+	char after, afterWall;
+	unsigned char tmp;
+
+	getAdjacent(x, y, vx, vy, before, after, beforeWall, afterWall);
+	if (!beforeWall && !afterWall) {
+		tmp = GET_THREAT(heuristic[(unsigned char)x-(before*vx)][(unsigned char)y-(before*vy)], mask, shift);
+		if (tmp + after == 3) {
+			result += 1;
+			return;
+		}
+		tmp = GET_THREAT(heuristic[(unsigned char)x+(after*vx)][(unsigned char)y+(after*vy)], mask, shift);
+		if (tmp + before == 3) {
+			result += 1;
+		}
+	}
+}
+
 void HeuristicBoard::updateThreat(char x, char y, char vx, char vy, char shift, short int mask)
 {
 	char before, beforeWall;
@@ -210,6 +230,16 @@ HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y, bool predi
 	updateThreat(x, y, 1, 1, DRIGHT_SHIFT, DRIGHT_MASK);
 	updateThreat(x, y, -1, 1, DLEFT_SHIFT, DLEFT_MASK);
 	return clear(x, y);
+}
+
+bool HeuristicBoard::checkDoubleFreeThree(unsigned char x, unsigned char y)
+{
+	unsigned char n = 0;
+	searchFreeThree(x, y, 0, 1, HORIZONTAL_SHIFT, HORIZONTAL_MASK, n);
+	searchFreeThree(x, y, 1, 0, VERTICAL_SHIFT, VERTICAL_MASK, n);
+	searchFreeThree(x, y, 1, 1, DRIGHT_SHIFT, DRIGHT_MASK, n);
+	searchFreeThree(x, y, -1, 1, DLEFT_SHIFT, DLEFT_MASK, n);
+	return (n >= 2);
 }
 
 int HeuristicBoard::getBestLevel(unsigned char x, unsigned char y) {

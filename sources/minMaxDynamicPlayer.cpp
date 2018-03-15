@@ -134,7 +134,7 @@ void MinMaxDynamicPlayer::startMinMax(int &rx, int &ry, Rules &rules)
 
 long long MinMaxDynamicPlayer::max(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH)
 {
-	if (depth <= 0 || myH.score >= HAS_WON || ennemyH.score >= HAS_WON || myH.totalCaptured >= 10 || ennemyH.totalCaptured >= 10) {
+	if (depth <= 0 || myH.fiveLine || ennemyH.fiveLine || myH.totalCaptured >= 10 || ennemyH.totalCaptured >= 10) {
 		return heuristic(myH, ennemyH, depth+1, true);
 	}
 	long long option;
@@ -175,7 +175,7 @@ long long MinMaxDynamicPlayer::max(int depth, long long minBestOption, long long
 
 long long MinMaxDynamicPlayer::min(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH)
 {
-	if (depth <= 0 || myH.score >= HAS_WON || ennemyH.score >= HAS_WON || myH.totalCaptured >= 10 || ennemyH.totalCaptured >= 10) {
+	if (depth <= 0 || myH.fiveLine || ennemyH.fiveLine || myH.totalCaptured >= 10 || ennemyH.totalCaptured >= 10) {
 		return heuristic(myH, ennemyH, depth+1);
 	}
 	long long option;
@@ -234,13 +234,9 @@ void MinMaxDynamicPlayer::play(Rules &rules, Interface &i) {
 	DEBUG << "THREAT HEURISTIC BEFORE STONE = " << heuristic(myHeuristic, ennemyHeuristic, minMaxDepth) << "\n";
 	DEBUG << "my score before stone = " << myHeuristic.score << "\n";
 	DEBUG << "ennemy score before stone = " << ennemyHeuristic.score << "\n";
-	myHeuristic.put(x, y, false);
-	ennemyHeuristic.clear(x, y);
 	DEBUG << "THREAT HEURISTIC AFTER STONE = " << heuristic(myHeuristic, ennemyHeuristic, minMaxDepth) << "\n";
 	DEBUG << "my score after stone = " << myHeuristic.score << "\n";
 	DEBUG << "ennemy score after stone = " << ennemyHeuristic.score << "\n";
-	myHeuristic.print(x, y);
-	ennemyHeuristic.print(x, y);
 }
 
 long long MinMaxDynamicPlayer::heuristic(HeuristicBoard &myH, HeuristicBoard &ennemyH, int depth, bool ennemy) {

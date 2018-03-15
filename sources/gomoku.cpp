@@ -51,15 +51,28 @@ void Gomoku::start() {
 	blackPlayer.setCanteen(interface.blackCanteen);
 	currentPlayer = &blackPlayer;
 	interface.setState(GAME);
+	int x, y;
 	while (!rules.checkEnd(*currentPlayer) &&
 		interface._window.isOpen()) {
+		//PLAY
         interface.update();
 		currentPlayer->play(rules, interface);
+		x = currentPlayer->coordPlayed.x;
+		y = currentPlayer->coordPlayed.y;
+		//UPDATE HEURISTIC
+		currentPlayer->myHeuristic.put(x, y, false);
+		currentPlayer->ennemyHeuristic.clear(x, y);
+		currentPlayer->myHeuristic.print(x, y);
+		currentPlayer->ennemyHeuristic.print(x, y);
+		//DRAW
 		drawStone();
-		checkCapture(*currentPlayer, currentPlayer->coordPlayed.x, currentPlayer->coordPlayed.y, *(currentPlayer->getEnemy()), captured);
+		//CAPTURE
+		checkCapture(*currentPlayer, x, y, *(currentPlayer->getEnemy()), captured);
 		captureAll(*currentPlayer, currentPlayer->getEnemy()->getSpriteStone(), captured);
-		currentPlayer->getEnemy()->observe(rules, currentPlayer->coordPlayed.x, currentPlayer->coordPlayed.y, captured);
+		//OBSERVE
+		currentPlayer->getEnemy()->observe(rules, x, y, captured);
 		currentPlayer->observeMyCapture(captured);
+		//END
 		currentPlayer->played = false;
 		currentPlayer = currentPlayer->getEnemy();
 		interface.checkEvent(*currentPlayer);

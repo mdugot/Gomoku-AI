@@ -40,6 +40,7 @@ class Player
 		virtual void observe(Rules &rules, int x, int y, std::vector<std::pair<unsigned char, unsigned char>> &captured);
 		virtual void observeMyCapture(std::vector<std::pair<unsigned char, unsigned char>> &captured);
 		inline Stone getColor() {return stoneColor;}
+		inline HeuristicBoard *getMyHeuristic() {return &myHeuristic;}
 		inline Player *getEnemy() {return enemy;}
 		inline sf::Sprite *getSpriteStone() {return stoneSprite;}
 		inline int getNbCapture() {return nbCapture;}

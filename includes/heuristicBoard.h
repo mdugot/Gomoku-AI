@@ -60,6 +60,7 @@ class HeuristicBoard
 		void removeEnnemyThreat(char x, char y, char vx, char vy, char shift, short int mask);
 		void removeThreat(char x, char y, char vx, char vy, char shift, short int mask);
 		void clearOne(char x, char y, char vx, char vy, char shift, short int mask);
+		void searchFreeThree(char x, char y, char vx, char vy, char shift, short int mask, unsigned char &result);
 	
 	public:
 		long long score;
@@ -72,6 +73,7 @@ class HeuristicBoard
 		void beCaptured(unsigned char x, unsigned char y);
 		void capture(unsigned char x, unsigned char y);
 		void print(int lastX = -1, int lastY = -1);
+		bool checkDoubleFreeThree(unsigned char x, unsigned char y);
 
 };
 

@@ -16,9 +16,10 @@ int main(int argc, char **argv) {
 	//RandomPlayer	p1;
 	//RandomPlayer	p2;
 	//NoobIA		p1;
-	HumanPlayer				black;
+//	HumanPlayer				black;
 //	HumanPlayer				white;
-	MinMaxDynamicPlayer		white(4);
+	MinMaxDynamicPlayer		white(3);
+	MinMaxDynamicPlayer		black(3);
 	DefaultRules	rules;
 	Interface		interface;
 	Gomoku			gomoku(white, black, rules, interface);
