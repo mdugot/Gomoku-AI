@@ -7,6 +7,7 @@ HeuristicBoard::HeuristicBoard()
 //	DEBUG << "new 1\n";
 	bzero(heuristic, sizeof(short int[GW][GH]));
 	totalCaptured = 0;
+	fiveLine = 0;
 	stone = 0;
 	gomoku = NULL;
 	score = 0;
@@ -17,6 +18,7 @@ HeuristicBoard::HeuristicBoard(HeuristicBoard *copyFrom) {
 //	DEBUG << "memcopy\n";
 //	DEBUG << "copy : " << heuristic << "/" << copyFrom->heuristic << "\n";
 	totalCaptured = copyFrom->totalCaptured;
+	fiveLine = copyFrom->fiveLine;
 	stone = copyFrom->stone;
 	gomoku = copyFrom->gomoku;
 	score = copyFrom->score;
@@ -123,6 +125,8 @@ void HeuristicBoard::updateThreat(char x, char y, char vx, char vy, char shift, 
 	unsigned char tmp;
 
 	getAdjacent(x, y, vx, vy, before, after, beforeWall, afterWall);
+	if (before + after >= 6)
+		fiveLine += 1;
 	if (!beforeWall) {
 		tmp = GET_THREAT(heuristic[(unsigned char)x-(before*vx)][(unsigned char)y-(before*vy)], mask, shift);
 		REMOVE_THREAT(tmp);
@@ -200,134 +204,11 @@ void HeuristicBoard::capture(unsigned char x, unsigned char y)
 
 HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y, bool prediction)
 {
-//	unsigned char before, beforeWall;
-//	unsigned char after, afterWall;
-//	unsigned char tmp;
-
-
 	(void)prediction;
 	updateThreat(x, y, 0, 1, HORIZONTAL_SHIFT, HORIZONTAL_MASK);
 	updateThreat(x, y, 1, 0, VERTICAL_SHIFT, VERTICAL_MASK);
 	updateThreat(x, y, 1, 1, DRIGHT_SHIFT, DRIGHT_MASK);
 	updateThreat(x, y, -1, 1, DLEFT_SHIFT, DLEFT_MASK);
-////	DEBUG << "put\n";
-//	//HORIZONTAL THREATS UPDATE
-//	getAdjacent(x, y, 0, 1, before, after, beforeWall, afterWall);
-//	if (!beforeWall) {
-////		WATCH(x, "horizontal");
-////		WATCH(y-before, "horizontal");
-////		DEBUG << "new horizontal threat\n";
-//		tmp = GET_HH(heuristic[x][y-before]);
-//		REMOVE_THREAT(tmp);
-//		tmp += after;
-//		fiveValue(x, y, tmp, GET_HH(heuristic[x][y]));
-////		WATCH(x, "horizontal");
-////		WATCH(y-before, "horizontal");
-//		heuristic[x][y-before] = SET_HH(heuristic[x][y-before], tmp);
-////		if (!prediction) DEBUG << "ADD left " << tmp << "\n";
-//		ADD_THREAT(tmp);
-//	}
-//	if (!afterWall) {
-////		DEBUG << "new horizontal threat\n";
-////		WATCH(x, "horizontal");
-////		WATCH(y+after, "horizontal");
-//		tmp = GET_HH(heuristic[x][y+after]);
-//		REMOVE_THREAT(tmp);
-//		tmp += before;
-//		fiveValue(x, y, tmp, GET_HH(heuristic[x][y]));
-////		WATCH(x, "horizontal");
-////		WATCH(y+after, "horizontal");
-//		heuristic[x][y+after] = SET_HH(heuristic[x][y+after], tmp);
-////		if (!prediction) DEBUG << "ADD right " << tmp << "\n";
-//		ADD_THREAT(tmp);
-//	}
-//
-//	//VERTICAL THREATS UPDATE
-//	getAdjacent(x, y, 1, 0, before, after, beforeWall, afterWall);
-//	if (!beforeWall) {
-////		WATCH(x-before, "vertical");
-////		WATCH(y, "vertical");
-//		tmp = GET_VH(heuristic[x-before][y]);
-//		REMOVE_THREAT(tmp);
-//		tmp += after;
-//		fiveValue(x, y, tmp, GET_VH(heuristic[x][y]));
-////		WATCH(x-before, "vertical");
-////		WATCH(y, "vertical");
-//		heuristic[x-before][y] = SET_VH(heuristic[x-before][y], tmp);
-////		if (!prediction) DEBUG << "ADD up " << tmp << "\n";
-//		ADD_THREAT(tmp);
-//	}
-//	if (!afterWall) {
-////		WATCH(x+after, "vertical");
-////		WATCH(y, "vertical");
-//		tmp = GET_VH(heuristic[x+after][y]);
-//		REMOVE_THREAT(tmp);
-//		tmp += before;
-//		fiveValue(x, y, tmp, GET_VH(heuristic[x][y]));
-////		WATCH(x+after, "vertical");
-////		WATCH(y, "vertical");
-//		heuristic[x+after][y] = SET_VH(heuristic[x+after][y], tmp);
-////		if (!prediction) DEBUG << "ADD down " << tmp << "\n";
-//		ADD_THREAT(tmp);
-//	}
-//
-//	//DIAGONAL RIGTH THREATS UPDATE
-//	getAdjacent(x, y, 1, 1, before, after, beforeWall, afterWall);
-//	if (!beforeWall) {
-////		WATCH(x-before, "right");
-////		WATCH(y-before, "right");
-//		tmp = GET_DRH(heuristic[x-before][y-before]);
-//		REMOVE_THREAT(tmp);
-//		tmp += after;
-//		fiveValue(x, y, tmp, GET_DRH(heuristic[x][y]));
-////		WATCH(x-before, "right");
-////		WATCH(y-before, "right");
-//		heuristic[x-before][y-before] = SET_DRH(heuristic[x-before][y-before], tmp);
-////		if (!prediction) DEBUG << "ADD up-left " << tmp << "\n";
-//		ADD_THREAT(tmp);
-//	}
-//	if (!afterWall) {
-////		WATCH(x+after, "right");
-////		WATCH(y+after, "right");
-//		tmp = GET_DRH(heuristic[x+after][y+after]);
-//		REMOVE_THREAT(tmp);
-//		tmp += before;
-//		fiveValue(x, y, tmp, GET_DRH(heuristic[x][y]));
-////		WATCH(x+after, "right");
-////		WATCH(y+after, "right");
-//		heuristic[x+after][y+after] = SET_DRH(heuristic[x+after][y+after], tmp);
-////		if (!prediction) DEBUG << "ADD down-right " << tmp << "\n";
-//		ADD_THREAT(tmp);
-//	}
-//
-//	//DIAGONAL LEFT THREATS UPDATE
-//	getAdjacent(x, y, -1, 1, before, after, beforeWall, afterWall);
-//	if (!beforeWall) {
-////		WATCH(x+before, "left");
-////		WATCH(y-before, "left");
-//		tmp = GET_DLH(heuristic[x+before][y-before]);
-//		REMOVE_THREAT(tmp);
-//		tmp += after;
-//		fiveValue(x, y, tmp, GET_DLH(heuristic[x][y]));
-////		WATCH(x+before, "left");
-////		WATCH(y-before, "left");
-//		heuristic[x+before][y-before] = SET_DLH(heuristic[x+before][y-before], tmp);
-//		ADD_THREAT(tmp);
-//	}
-//	if (!afterWall) {
-////		WATCH(x-after, "left");
-////		WATCH(y+after, "left");
-//		tmp = GET_DLH(heuristic[x-after][y+after]);
-//		REMOVE_THREAT(tmp);
-//		tmp += before;
-//		fiveValue(x, y, tmp, GET_DLH(heuristic[x][y]));
-////		WATCH(x-after, "left");
-////		WATCH(y+after, "left");
-//		heuristic[x-after][y+after] = SET_DLH(heuristic[x-after][y+after], tmp);
-////		if (!prediction) DEBUG << "ADD down-left " << tmp << "\n";
-//		ADD_THREAT(tmp);
-//	}
-
 	return clear(x, y);
 }
 

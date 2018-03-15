@@ -3,6 +3,7 @@
 
 #include "utils.h"
 #include "gomoku.h"
+#include "heuristicBoard.h"
 
 class Interface;
 class Rules;
@@ -14,6 +15,9 @@ class Player
 
 	protected:
 
+		HeuristicBoard myHeuristic;
+		HeuristicBoard ennemyHeuristic;
+
 		int nbCapture;
 		Gomoku *gomoku;
 		Player *enemy;
@@ -22,8 +26,8 @@ class Player
 		bool	played;
 		sf::Vector2<int> coordPlayed; // MEMO : x et y ==> coordonnée du board dans Gomoku
 
-		inline virtual void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
-		inline virtual void setColor(Stone color) {this->stoneColor = color;}
+		inline virtual void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku; myHeuristic.gomoku = gomoku; ennemyHeuristic.gomoku = gomoku;}
+		inline virtual void setColor(Stone color) {this->stoneColor = color; myHeuristic.stone =color; ennemyHeuristic.stone = (color == WHITE ? BLACK : WHITE);}
 		void putStone(int x, int y);
 		sf::Vector2<int> canteen[10];
 	
@@ -33,8 +37,8 @@ class Player
 		~Player();
 
 		virtual void play(Rules &rules, Interface &i )= 0;
-		inline virtual void observe(Rules &rules, int x, int y, std::vector<std::pair<unsigned char, unsigned char>> &captured) {(void)rules; (void)x; (void)y; (void)captured;}
-		inline virtual void observeMyCapture(std::vector<std::pair<unsigned char, unsigned char>> &captured) {(void)captured;}
+		virtual void observe(Rules &rules, int x, int y, std::vector<std::pair<unsigned char, unsigned char>> &captured);
+		virtual void observeMyCapture(std::vector<std::pair<unsigned char, unsigned char>> &captured);
 		inline Stone getColor() {return stoneColor;}
 		inline Player *getEnemy() {return enemy;}
 		inline sf::Sprite *getSpriteStone() {return stoneSprite;}

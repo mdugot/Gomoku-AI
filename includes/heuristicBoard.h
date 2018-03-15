@@ -40,12 +40,14 @@
 
 class HeuristicBoard
 {
+	friend class Player;
 	friend class MinMaxDynamicPlayer;
 	//friend class HeuristicBoard;
 	static const long long levels[6];
 
 	private:
 
+		unsigned char fiveLine;
 		unsigned char totalCaptured;
 		short int heuristic[GW][GH];
 		Gomoku* gomoku;

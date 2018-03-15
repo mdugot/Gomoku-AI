@@ -2,7 +2,6 @@
 #define MINMAXDYNAMICPLAYER_H
 
 #include "player.h"
-#include "heuristicBoard.h"
 
 class Choice
 {
@@ -26,11 +25,7 @@ class MinMaxDynamicPlayer : public Player
 
 		unsigned long complexity;
 		int minMaxDepth;
-		HeuristicBoard myHeuristic;
-		HeuristicBoard ennemyHeuristic;
 
-		inline virtual void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku; myHeuristic.gomoku = gomoku; ennemyHeuristic.gomoku = gomoku;}
-		inline virtual void setColor(Stone color) {this->stoneColor = color; myHeuristic.stone =color; ennemyHeuristic.stone = (color == WHITE ? BLACK : WHITE);}
 		long long heuristic(HeuristicBoard &heuristic, HeuristicBoard &ennemyHeuristic, int depth, bool ennemy = false);
 		long long min(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH);
 		long long max(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH);
@@ -41,8 +36,6 @@ class MinMaxDynamicPlayer : public Player
 
 	public:
 
-		virtual void observe(Rules &rules, int x, int y, std::vector<std::pair<unsigned char, unsigned char>> &captured);
-		virtual void observeMyCapture(std::vector<std::pair<unsigned char, unsigned char>> &captured);
 		MinMaxDynamicPlayer(int d);
 		~MinMaxDynamicPlayer();
 		virtual void play(Rules &rules, Interface &interfacce);
