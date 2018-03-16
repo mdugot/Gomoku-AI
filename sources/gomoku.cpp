@@ -55,6 +55,8 @@ void Gomoku::start() {
 		interface.checkEvent(*currentPlayer);
         interface.update();
 	}
+	int x = 0;
+	int y = 0;
 	while (!rules.checkEnd(*currentPlayer) &&
 		interface._window.isOpen()) {
 		//PLAY
