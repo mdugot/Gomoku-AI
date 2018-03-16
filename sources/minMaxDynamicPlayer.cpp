@@ -27,6 +27,14 @@ MinMaxDynamicPlayer::MinMaxDynamicPlayer(int d) : Player(), minMaxDepth(d), myHe
 {
 	if (d > 10)
 		failure("max depth = 10");
+	/*if (d == 10)
+		playerType = IA_HARD;
+	else if (d < 10 && d >= 5)
+		playerType = IA_NORMAL;
+	else
+		playerType = IA_EASY;
+	*/
+
 }
 
 MinMaxDynamicPlayer::~MinMaxDynamicPlayer()

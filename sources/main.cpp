@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "menu.h"
 #include "gomoku.h"
 #include "interface.h"
 #include "player.h"
@@ -16,8 +17,9 @@ int main(int argc, char **argv) {
 	//RandomPlayer	p1;
 	//RandomPlayer	p2;
 	//NoobIA		p1;
-	HumanPlayer				black;
-	HumanPlayer				white;
+	//Menu		menu;
+	HumanPlayer	black;
+	HumanPlayer	white;
 //	MinMaxDynamicPlayer		white(5);
 	DefaultRules	rules;
 	Interface		interface;
@@ -25,9 +27,6 @@ int main(int argc, char **argv) {
 //	srand(7);
 //	MinMaxDynamicPlayer		white(9);
 //	MinMaxDynamicPlayer		black(5);
-//	DefaultRules			rules;
-//	Interface				interface;
-//	Gomoku					gomoku(white, black, rules, interface);
 	gomoku.start();
 
 	success("end of the game");

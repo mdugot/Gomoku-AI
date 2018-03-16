@@ -50,7 +50,11 @@ void Gomoku::start() {
 	whitePlayer.setCanteen(interface.whiteCanteen);
 	blackPlayer.setCanteen(interface.blackCanteen);
 	currentPlayer = &blackPlayer;
-	interface.setState(GAME);
+	interface.setState(MENU);
+	while (interface.getState() != GAME)  { //tmp fonction menu.go()
+		interface.checkEvent(*currentPlayer);
+        interface.update();
+	}
 	while (!rules.checkEnd(*currentPlayer) &&
 		interface._window.isOpen()) {
         interface.update();
@@ -66,6 +70,7 @@ void Gomoku::start() {
 		captured.clear();
 		rules.turnCounter += 1;
 	}
+	this->end();
 	printBoard();
 }
 

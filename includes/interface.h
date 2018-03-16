@@ -3,6 +3,7 @@
 
 #include "gomoku.h"
 #include "player.h"
+#include "menu.h"
 
 # define WIDTH	1200
 # define HEIGHT	900
@@ -23,9 +24,10 @@ typedef enum State {
 class Interface {
 
 	friend class Gomoku;
+	friend class Menu;
 
 	public:
-		Interface();
+		Interface(/*Menu &menu*/);
 		~Interface();
 
 		void	drawGame(void);
@@ -34,6 +36,7 @@ class Interface {
 		void	printCoordBoard(void);
 		void	makeSprite(sf::Sprite &s, sf::Texture &t, float sy, float sx, int px, int py);
 		void	cleanSpriteList(void);
+		void	cleanTextList(void);
 		void	checkClickLeft(Player &current, int x, int y);
 		bool	onBoard(int x, int y);
 		void	setStoneOnClick(Player &player, int x, int y);
@@ -50,18 +53,21 @@ class Interface {
 		sf::Vector2<int> blackCanteen[10];
 
 	protected:
+		Menu				menu;
 		Gomoku 				*gomoku;
-		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
 		
 		State				state;
 		sf::RenderWindow	_window;
 		sf::Event			_event;
 		std::list<sf::Sprite>			_allSprite;
-		//std::map<std::string, bool> _screenStatus;
+		std::list<sf::Text*>			_allText;
 		sf::Vector2<int>	coordBoard[GW][GH];
 		
 		sf::Sprite			_whiteStone;
 		sf::Sprite			_blackStone;
+		
+		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
+		//std::map<std::string, bool> _screenStatus;
 
 	private:
 		void	welcomeScreen(void);
@@ -78,6 +84,7 @@ class Interface {
 		void	loadSprite(void);
 		void	initCoordBoard(void);
 		void	initCoordCanteen(void);
+
 		
 		sf::Sprite			_backgroundSprite;
 		sf::Sprite			_boardGameSprite;

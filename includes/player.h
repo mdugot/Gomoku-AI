@@ -7,7 +7,6 @@
 class Interface;
 class Rules;
 
-
 class Player
 {
 	friend class Gomoku;

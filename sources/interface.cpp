@@ -3,6 +3,7 @@
 #include "player.h"
 #include "rules.h"
 #include "utils.h"
+#include "menu.h"
 
 using namespace sf;
 //TO-DO : fonction pour nettoyer (free) et réinitiliaser la liste de sprite du jeu à afficher.
@@ -216,23 +217,31 @@ void    Interface::stopPauseScreen(void) {
 void    Interface::drawGame(void) {
     for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
         this->_window.draw(*it);
+    }/*
+    this->_window.draw(menu.textBoxP1);
+    this->_window.draw(menu.textBoxP2);
+    this->_window.draw(menu.textBoxVariante);
+       */// DEBUG << menu.textBoxP1.getColor().r << "\n";
+    for (std::list<Text*>::iterator it = _allText.begin(); it != _allText.end(); it++) {
+        this->_window.draw(*(*it));
     }
 }
 
-//TO-DO :
-void    Interface::cleanSpriteList(void) {
+void    Interface::cleanTextList(void) {
+    for (std::list<Text*>::iterator it = _allText.begin(); it != _allText.end(); it++) {
+        it = _allText.erase(it);
+    }
+}
 
+void    Interface::cleanSpriteList(void) {
     for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
         it = _allSprite.erase(it);
     }
-
+    cleanTextList();
 //    _allSprite.erase(_allSprite.begin(), _allSprite.end());
 }
 
 void    Interface::welcomeScreen(void) {
-    //cleanSpriteList();
-    //add push_back list les éléments
-    //set status
     _allSprite.push_back(_helloSprite);
     this->state = WELCOME;
     DEBUG << "WELCOME SCREEN\n";
@@ -244,15 +253,18 @@ void    Interface::goodByeScreen(void) {
     DEBUG << "GOODBYE SCREEN\n";
     this->cleanSpriteList();
     _allSprite.push_back(_goodByeSprite);
-    //add push_back list les éléments
     this->state = GOODBYE;
 }
 
 void    Interface::menuScreen(void) {
-    //cleanSpriteList();
-    //add push_back list les éléments
-    ////this->setScreenStatus("inMenu");
+    cleanSpriteList();
+    _allSprite.push_back(menu.backgroundMenuSprite);
+    _allText.push_back(&menu.textBoxP1);
+    _allText.push_back(&menu.textBoxP2);
+    _allText.push_back(&menu.textBoxVariante);
+    this->state = MENU;
 }
+
 void    Interface::againScreen(void) {
     //cleanSpriteList();
     //add push_back list les éléments
@@ -359,6 +371,16 @@ void    Interface::checkClickLeft(Player &current, int x, int y)
     }
     else if (state == MENU){
         DEBUG << "click during Menu\n";
+        if (menu.onP1(x, y))
+            menu.switchTextBox(menu.textBoxP1, menu.choiceP1);
+        else if (menu.onP2(x, y))
+            menu.switchTextBox(menu.textBoxP2, menu.choiceP2);
+        else if (menu.onVariante(x, y))
+            menu.switchTextBox(menu.textBoxVariante, menu.variante);
+        else if (menu.onGo(x, y)){
+            menu.go(&(gomoku->getBlackPlayer()), &(gomoku->getWhitePlayer()));//setPlayer...
+            setState(GAME); //TO DO fonction go de menu
+        }
     }
     else if (state == SCORE){
         DEBUG << "click during victory or fefeat screen\n";
