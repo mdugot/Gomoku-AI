@@ -20,8 +20,8 @@ class Gomoku
 {
 	private:
 		
-		Player	&whitePlayer;
-		Player	&blackPlayer;
+		Player	*whitePlayer;
+		Player	*blackPlayer;
 		Player	*currentPlayer;
 		Rules	&rules;
 		Interface &interface;
@@ -50,14 +50,16 @@ class Gomoku
 	
 	public:
 
-		Gomoku(Player& p1, Player& p2, Rules& rules, Interface& interface);
+		Gomoku(Rules& rules, Interface& interface);
 		~Gomoku();
 
-		inline Player &getWhitePlayer() {return whitePlayer;}
-		inline Player &getBlackPlayer() {return blackPlayer;}
-		inline Player *getCurrentPlayer() {return currentPlayer;}
-		inline Rules &getRules() {return rules;}
-		inline Stone** getBoard() {return (Stone**)board;}
+		inline Player	&getWhitePlayer() {return *whitePlayer;}
+		inline Player	&getBlackPlayer() {return *blackPlayer;}
+		void		updateWhitePlayer(void);
+		void		updateBlackPlayer(void);
+		inline Player	*getCurrentPlayer() {return currentPlayer;}
+		inline Rules	&getRules() {return rules;}
+		inline Stone**	getBoard() {return (Stone**)board;}
 		inline Interface &getInterface() {return interface;}
 		inline int getNbEatenStone() {return nbEatenStone;}
 		Stone getStone(int x, int y);

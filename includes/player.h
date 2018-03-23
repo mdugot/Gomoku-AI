@@ -33,7 +33,7 @@ class Player
 	public:
 
 		Player();
-		~Player();
+		virtual ~Player();
 
 		virtual void play(Rules &rules, Interface &i )= 0;
 		virtual void observe(Rules &rules, int x, int y, std::vector<std::pair<unsigned char, unsigned char>> &captured);

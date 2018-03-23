@@ -379,7 +379,9 @@ void    Interface::checkClickLeft(Player &current, int x, int y)
             menu.switchTextBox(menu.textBoxVariante, menu.variante);
         else if (menu.onGo(x, y)){
             menu.go(&(gomoku->getBlackPlayer()), &(gomoku->getWhitePlayer()));//setPlayer...
-            setState(GAME); //TO DO fonction go de menu
+            gomoku->updateWhitePlayer();
+            gomoku->updateBlackPlayer();
+            setState(GAME);
         }
     }
     else if (state == SCORE){
