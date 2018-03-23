@@ -1,24 +1,16 @@
 #include "menu.h"
-#include "player.h"
-#include "humanPlayer.h"
-#include "minMaxDynamicPlayer.h"
-#include "randomPlayer.h"
-#include "noobIA.h"
 
 using namespace sf;
 
 Menu::Menu() {
     choiceP1 = HUMAN;
-    choiceP2 = HUMAN;
+    choiceP2 = IA_HARD;
     variante = CLASSIQUE;
     if (!arial.loadFromFile("./sprite/arial_black.ttf")){
         DEBUG << "Error load Font Arial\n";
     }
     else {
         DEBUG << "SET\n";
-        textBoxP1.setFont(arial);
-        textBoxP2.setFont(arial);
-        textBoxVariante.setFont(arial);
         textBoxP1.setCharacterSize(24);
         textBoxP2.setCharacterSize(24);
         textBoxVariante.setCharacterSize(24);
@@ -53,6 +45,7 @@ void Menu::setMiddle(Text &text)
 }
 
 void    Menu::setTextString(Text &text, TextChoice &textChoice) {
+    text.setFont(arial);
     switch (textChoice) {
         case HUMAN:
             text.setString("HUMAN");
@@ -129,24 +122,19 @@ bool    Menu::onGo(int x, int y) {
 }
 
 void    Menu::go(Player* one, Player *two) {
-    updatePlayer(one, choiceP1);
-    updatePlayer(two, choiceP2);
+    (void)one;
+    (void)two;
+    DEBUG << "TO DO go\n";
 }
 
-void    Menu::updatePlayer(Player *p, TextChoice &textC) {
-    delete p;
-    if (textC == HUMAN)
-        p = new HumanPlayer();
-    else if (textC == RANDOM)
-        p = new NoobIA();
-    else if (textC == IA_HARD)
-        p = new MinMaxDynamicPlayer(9);
-    else if (textC == IA_NORMAL)
-        p = new MinMaxDynamicPlayer(5);
-    else if (textC == IA_EASY)
-        p = new MinMaxDynamicPlayer(2);
-    else {
-        DEBUG << "ERROR SWITCH PLAYER IN GO MENU\n";
-        exit(1);
-    }
+Player  *Menu::updatePlayerOne(Player *p1) {
+    //delete ancien joueur
+    //create nouveau joueur
+    return (p1);
+}
+
+Player  *Menu::updatePlayerTwo(Player *p2) {
+    //delete ancien joueur
+    //create nouveau joueur
+    return (p2);
 }
