@@ -1,19 +1,12 @@
 #include "gomoku.h"
 #include "player.h"
-#include "humanPlayer.h"
-#include "randomPlayer.h"
-#include "minMaxDynamicPlayer.h"
-#include "noobIA.h"
 #include "rules.h"
 #include "interface.h"
 
 using namespace sf;
 
-Gomoku::Gomoku(Rules &rules, Interface &interface) : rules(rules), interface(interface)
+Gomoku::Gomoku(Player &p1, Player &p2, Rules &rules, Interface &interface) : whitePlayer(p1), blackPlayer(p2), rules(rules), interface(interface)
 {
-	whitePlayer = new HumanPlayer();
-	blackPlayer = new NoobIA();
-	
 	for (int i = 0; i < GW; i++) {
 		for (int j = 0; j < GH; j++) {
 			board[i][j] = FREE;
@@ -22,32 +15,18 @@ Gomoku::Gomoku(Rules &rules, Interface &interface) : rules(rules), interface(int
 	}
 	focus[GW/2][GH/2] = true;
 	rules.setGomoku(this);
+	whitePlayer.setGomoku(this);
+	blackPlayer.setGomoku(this);
 	interface.setGomoku(this);
-	currentPlayer = blackPlayer;
-}
-
-void	Gomoku::updateWhitePlayer()
-{
-	whitePlayer->setSpriteStone(&(interface._whiteStone));
-	whitePlayer->setCanteen(interface.whiteCanteen);
-	whitePlayer->setGomoku(this);
-	whitePlayer->setColor(WHITE);
-	whitePlayer->setEnemy(blackPlayer);
-}
-
-void	Gomoku::updateBlackPlayer()
-{
-	blackPlayer->setGomoku(this);
-	blackPlayer->setColor(BLACK);
-	blackPlayer->setEnemy(whitePlayer);
-	blackPlayer->setSpriteStone(&(interface._blackStone));
-	blackPlayer->setCanteen(interface.blackCanteen);
+	whitePlayer.setColor(WHITE);
+	whitePlayer.setEnemy(&blackPlayer);
+	blackPlayer.setColor(BLACK);
+	blackPlayer.setEnemy(&whitePlayer);
+	currentPlayer = &blackPlayer;
 }
 
 Gomoku::~Gomoku()
 {
-	delete whitePlayer;
-	delete blackPlayer;
 }
 
 void Gomoku::end() {
@@ -66,10 +45,12 @@ void Gomoku::drawStone() {
 void Gomoku::start() {
 
 	std::vector<std::pair<unsigned char, unsigned char>> captured;
-	updateWhitePlayer();
-	updateBlackPlayer();
+	whitePlayer.setSpriteStone(&(interface._whiteStone));
+	blackPlayer.setSpriteStone(&(interface._blackStone));
+	whitePlayer.setCanteen(interface.whiteCanteen);
+	blackPlayer.setCanteen(interface.blackCanteen);
+	currentPlayer = &blackPlayer;
 	interface.setState(MENU);
-	currentPlayer = blackPlayer;
 	while (interface.getState() != GAME)  { //tmp fonction menu.go()
 		interface.checkEvent(*currentPlayer);
         interface.update();
@@ -102,7 +83,6 @@ void Gomoku::start() {
 		interface.checkEvent(*currentPlayer);
 		captured.clear();
 		rules.turnCounter += 1;
-		DEBUG << "\n\n=====TURN======\n";
 	}
 	this->end();
 	printBoard();

@@ -47,7 +47,8 @@ class Menu {
 		sf::Text			textBoxP1;
 		sf::Text			textBoxP2;
         //Rules *upadteRules(Rules *rules); // si variante
-        void    updatePlayer(Player *p1, TextChoice &textChoice);
+        Player  *updatePlayerOne(Player *p1);
+        Player  *updatePlayerTwo(Player *p2);
         void    switchTextBox(sf::Text &text, TextChoice &textChoice);
         void    updateText(sf::Text &text, TextChoice &textChoice);
         void    go(Player *one, Player *two);
