@@ -3,19 +3,19 @@
 #include "player.h"
 #include "rules.h"
 #include "utils.h"
+#include "menu.h"
 
 using namespace sf;
-
 //TO-DO : fonction pour nettoyer (free) et réinitiliaser la liste de sprite du jeu à afficher.
 
 Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::Titlebar | Style::Close)
 {
    _window.setFramerateLimit(60);
+   _window.setVerticalSyncEnabled(true);
    this->loadTexture();
    this->loadSprite();
    initCoordBoard();
    initCoordCanteen();
-   // TO-DO : implement initCoordCapture[]
    this->setState(WELCOME);
    DEBUG << "INTERFACE READY\n";
 }
@@ -23,7 +23,7 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
 void    Interface::initCoordBoard(void) {
     int i = 0;
     int j = 0;
-    float step = 49.445f;//(float)((BOARD_RIGHT - BOARD_LEFT) / 18);
+    float step = 40.0f;//(float)((BOARD_RIGHT - BOARD_LEFT) / 18);
     float stepy = 0;
     float stepx = 0;
     int y = BOARD_UP;
@@ -43,14 +43,14 @@ void    Interface::initCoordBoard(void) {
 
 void    Interface::initCoordCanteen(void) {
     int i = 0;
-    float step = 49.445f;//(float)((BOARD_RIGHT - BOARD_LEFT) / 18);
+    float step = 40.0f;//(float)((BOARD_RIGHT - BOARD_LEFT) / 18);
     float stepx = 0;
     int y = BLACKCANTEENY;
     int x = BLACKCANTEENX;
     stepx = 0;
     while (i < NB_CAPTURE_TO_WIN) {
         blackCanteen[i] = Vector2<int>((int)(x + stepx), (int)(y));
-            this->putStone(this->_blackStone, blackCanteen[i].x, blackCanteen[i].y);
+            //this->putStone(this->_blackStone, blackCanteen[i].x, blackCanteen[i].y);
             stepx+= step;
         i++;
     }
@@ -61,7 +61,7 @@ void    Interface::initCoordCanteen(void) {
     stepx = 0;
     while (i < NB_CAPTURE_TO_WIN) {
         whiteCanteen[i] = Vector2<int>((int)(x - stepx), (int)(y));
-        this->putStone(this->_whiteStone, whiteCanteen[i].x, whiteCanteen[i].y);
+       // this->putStone(this->_whiteStone, whiteCanteen[i].x, whiteCanteen[i].y);
         stepx+= step;
         i++;
     }
@@ -92,8 +92,6 @@ void    Interface::setStoneOnClick(Player &current, int clickx, int clicky) {
                 clicky <= coordBoard[i][j].y + 8 && clicky >= coordBoard[i][j].y - 8) {
                 if (gomoku->getRules().canPutStone(current, i, j)) {
                     current.setCoordPlayed(i, j);
-                    this->putStone(*(gomoku->getCurrentPlayer()->getSpriteStone()), coordBoard[i][j].x, coordBoard[i][j].y);
-                    gomoku->setStone(gomoku->getCurrentPlayer()->getColor(), i, j);
                     current.setPlayed(true);
                 }
                 return; 
@@ -105,22 +103,21 @@ void    Interface::setStoneOnClick(Player &current, int clickx, int clicky) {
 }
 
 
-void	Interface::capture(Player &current, sf::Sprite *spriteEnemy, int x1, int y1, int x2, int y2) {
+void	Interface::capture(Player &current, sf::Sprite *spriteEnemy, int x1, int y1) {
     (void)current;
     (void)spriteEnemy;
     int i = getCoordBoard(x1,y1).x;
     int j = getCoordBoard(x1,y1).y;
-    int i2 = getCoordBoard(x2,y2).x;
-    int j2 = getCoordBoard(x2,y2).y;
     Vector2<int> pos;
     for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
         pos = (Vector2<int>)(*it).getPosition();
-        if ((pos.x == i && pos.y == j) || (pos.x == i2 && pos.y == j2)){
+        if ((pos.x == i && pos.y == j)){
             it = _allSprite.erase(it);
             DEBUG << "REMOVE\n";
         }
     }
-    //putStone
+//    this->putStone(*spriteEnemy, current.getCoordCanteen(current.getNbCapture() - 2).x, current.getCoordCanteen(current.getNbCapture() - 2).y);
+    this->putStone(*spriteEnemy, current.getCoordCanteen(current.getNbCapture() - 1).x, current.getCoordCanteen(current.getNbCapture() - 1).y);
 }
 
 //TO-DO : Ajout texture des autres States ici.
@@ -128,26 +125,33 @@ void    Interface::loadTexture(void) {
    if(!_stoneWhiteTexture.loadFromFile("./sprite/whiteStone.png")
     || !_stoneBlackTexture.loadFromFile("./sprite/blackStone.png")
     || !_backgroundTexture.loadFromFile("./sprite/background.png")
-    || !_boardGameTexture.loadFromFile("./sprite/go.png")) {
+    || !_boardGameTexture.loadFromFile("./sprite/goban(2).png")
+    || !_helloTexture.loadFromFile("./sprite/hello.png")
+    || !_goodByeTexture.loadFromFile("./sprite/goodBye.png")) {
        DEBUG << "Error during import " << std::endl;
+       exit(1);
    }
    else {
        _stoneWhiteTexture.setSmooth(true);
        _stoneBlackTexture.setSmooth(true);
        _backgroundTexture.setSmooth(true);
        _boardGameTexture.setSmooth(true);
+       _goodByeTexture.setSmooth(true);
+       _helloTexture.setSmooth(true);
    }
 }
 
 void    Interface::loadSprite(void) {
     makeSprite(_backgroundSprite, _backgroundTexture, 1, 1, 0, 0);
-    makeSprite(_boardGameSprite, _boardGameTexture, 1, 1, (_backgroundTexture.getSize().x - _boardGameTexture.getSize().x) / 2, (_backgroundTexture.getSize().y - _boardGameTexture.getSize().y) / 2);
-    makeSprite(_whiteStone, _stoneWhiteTexture, 0.95f, 0.95f, 0, 0);
-    makeSprite(_blackStone, _stoneBlackTexture, 0.95f, 0.95f, 0, 0);
+    makeSprite(_boardGameSprite, _boardGameTexture, 0.9f, 0.9f, (_backgroundTexture.getSize().x - (_boardGameTexture.getSize().x * 0.9)) / 2, (_backgroundTexture.getSize().y - (_boardGameTexture.getSize().y * 0.9)) / 2);
+    makeSprite(_whiteStone, _stoneWhiteTexture, 0.825f, 0.825f, 0, 0);
+    makeSprite(_blackStone, _stoneBlackTexture, 0.825f, 0.825f, 0, 0);
+    makeSprite(_goodByeSprite, _goodByeTexture, 1, 1, 0, 0);
+    makeSprite(_helloSprite, _helloTexture, 1, 1, 0, 0);
     _whiteStone.setOrigin(_stoneWhiteTexture.getSize().x / _whiteStone.getScale().x / 2, _stoneWhiteTexture.getSize().y / _whiteStone.getScale().y / 2);
     _blackStone.setOrigin(_stoneBlackTexture.getSize().x / _blackStone.getScale().x / 2, _stoneBlackTexture.getSize().y / _blackStone.getScale().y / 2);
-    _allSprite.pop_back();
-    _allSprite.pop_back();
+//    _allSprite.pop_back();
+//    _allSprite.pop_back();
    DEBUG << "loadS\n";
 }
 
@@ -155,8 +159,6 @@ void    Interface::makeSprite(Sprite &sprite, Texture &texture, float sizeX, flo
     sprite.setTexture(texture);
     sprite.setScale(sizeX, sizeY);
     sprite.setPosition(posX, posY);
-    //TO-DO : ligne temporaire, les sprites seront ensuite push_back selon le state du jeu :
-    _allSprite.push_back(sprite);
 }
 
 Interface::~Interface() {
@@ -192,7 +194,7 @@ void    Interface::setState(State newState)
                 againScreen();
                 break;
             case GOODBYE :
-                endScreen();
+                goodByeScreen();
                 break;
             case WELCOME :
                 welcomeScreen();
@@ -215,41 +217,66 @@ void    Interface::stopPauseScreen(void) {
 void    Interface::drawGame(void) {
     for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
         this->_window.draw(*it);
+    }/*
+    this->_window.draw(menu.textBoxP1);
+    this->_window.draw(menu.textBoxP2);
+    this->_window.draw(menu.textBoxVariante);
+       */// DEBUG << menu.textBoxP1.getColor().r << "\n";
+    for (std::list<Text*>::iterator it = _allText.begin(); it != _allText.end(); it++) {
+        this->_window.draw(*(*it));
     }
 }
 
-//TO-DO :
+void    Interface::cleanTextList(void) {
+    for (std::list<Text*>::iterator it = _allText.begin(); it != _allText.end(); it++) {
+        it = _allText.erase(it);
+    }
+}
+
 void    Interface::cleanSpriteList(void) {
-    /*for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
-        this->_window.draw(*it);
-    }*/
-    _allSprite.erase(_allSprite.begin(), _allSprite.end());
+    for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
+        it = _allSprite.erase(it);
+    }
+    cleanTextList();
+//    _allSprite.erase(_allSprite.begin(), _allSprite.end());
 }
 
 void    Interface::welcomeScreen(void) {
-    //cleanSpriteList();
-    //add push_back list les éléments
-    //set status
+    _allSprite.push_back(_helloSprite);
+    this->state = WELCOME;
+    DEBUG << "WELCOME SCREEN\n";
+    update();
+    sleep(1);
 }
 
-void    Interface::endScreen(void) {
-    //cleanSpriteList();
-    //add push_back list les éléments
-    //this->setScreenStatus("inEnd");
+void    Interface::goodByeScreen(void) {
+    DEBUG << "GOODBYE SCREEN\n";
+    this->cleanSpriteList();
+    _allSprite.push_back(_goodByeSprite);
+    this->state = GOODBYE;
 }
 
 void    Interface::menuScreen(void) {
-    //cleanSpriteList();
-    //add push_back list les éléments
-    ////this->setScreenStatus("inMenu");
+    cleanSpriteList();
+    _allSprite.push_back(menu.backgroundMenuSprite);
+    _allText.push_back(&menu.textBoxP1);
+    _allText.push_back(&menu.textBoxP2);
+    _allText.push_back(&menu.textBoxVariante);
+    this->state = MENU;
 }
+
 void    Interface::againScreen(void) {
     //cleanSpriteList();
     //add push_back list les éléments
 }
 
 void    Interface::gameScreen(void) {
-    //cleanSpriteList();
+    DEBUG << "GAME SCREEN\n";
+    this->cleanSpriteList();
+    _allSprite.push_back(_backgroundSprite);
+    _allSprite.push_back(_boardGameSprite);
+    this->state = GAME;
+    DEBUG << "GAMEOUT SCREEN\n";
     //add push_back list les éléments
 }
 
@@ -277,18 +304,17 @@ void    Interface::checkEvent(Player &current) {
         switch (_event.type)
         {
             case Event::Closed :
-                _window.close();
-                //add function to quit properly with clean and goodbye
+                gomoku->end();
                 break;
             case Event::KeyPressed :
             {
                 switch (_event.key.code)
                 {
                     case Keyboard::Escape :
-                       _window.close();
+                        gomoku->end();
                         break;
                     case Keyboard::Q :
-                        _window.close();
+                        gomoku->end();
                         break;
                     default :
                         break;
@@ -345,6 +371,16 @@ void    Interface::checkClickLeft(Player &current, int x, int y)
     }
     else if (state == MENU){
         DEBUG << "click during Menu\n";
+        if (menu.onP1(x, y))
+            menu.switchTextBox(menu.textBoxP1, menu.choiceP1);
+        else if (menu.onP2(x, y))
+            menu.switchTextBox(menu.textBoxP2, menu.choiceP2);
+        else if (menu.onVariante(x, y))
+            menu.switchTextBox(menu.textBoxVariante, menu.variante);
+        else if (menu.onGo(x, y)){
+            menu.go(&(gomoku->getBlackPlayer()), &(gomoku->getWhitePlayer()));//setPlayer...
+            setState(GAME); //TO DO fonction go de menu
+        }
     }
     else if (state == SCORE){
         DEBUG << "click during victory or fefeat screen\n";

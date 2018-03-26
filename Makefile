@@ -1,7 +1,7 @@
 NAME= Gomoku
 
 CC= g++
-CFLAGS= -std=c++11 -Wall -Werror -Wextra -g3 #-fsanitize=address
+CFLAGS= -std=c++11 -Wall -Wextra -g3 # -Werror -fsanitize=address
 SFMLFLAG= -L ~/.brew/opt/sfml/lib -L ./lib -lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system
 SRC_NAME= main.cpp \
           utils.cpp \
@@ -10,9 +10,13 @@ SRC_NAME= main.cpp \
           defaultRules.cpp \
           player.cpp \
           randomPlayer.cpp\
-		  humanPlayer.cpp\
-		  noobIA.cpp\
-		  interface.cpp
+	  humanPlayer.cpp\
+	  noobIA.cpp\
+	  interface.cpp\
+	  boardIterator.cpp\
+	  minMaxDynamicPlayer.cpp\
+	  heuristicBoard.cpp\
+	  menu.cpp
 SRC_PATH= ./sources/
 INC_PATH= ./includes/
 OBJ_NAME= $(SRC_NAME:.cpp=.o)

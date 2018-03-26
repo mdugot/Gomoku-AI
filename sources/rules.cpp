@@ -11,7 +11,7 @@ bool Rules::win(Player &player) {
 	int x = 0, y = 0; //pourra être utile pour s'assurer de l'endroit de la victoire et faire une animation graphique
 	if (gomoku->fiveStoneLine(player.getColor(), x, y))
 		return true;
-	else if (player.getNbCapture() == (int)NB_CAPTURE_TO_WIN)
+	else if (player.getNbCapture() >= (int)NB_CAPTURE_TO_WIN)
 		return true;
 	return false;
 }

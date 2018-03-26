@@ -10,16 +10,18 @@ Gomoku::Gomoku(Player &p1, Player &p2, Rules &rules, Interface &interface) : whi
 	for (int i = 0; i < GW; i++) {
 		for (int j = 0; j < GH; j++) {
 			board[i][j] = FREE;
+			focus[i][j] = false;
 		}
 	}
+	focus[GW/2][GH/2] = true;
 	rules.setGomoku(this);
 	whitePlayer.setGomoku(this);
 	blackPlayer.setGomoku(this);
 	interface.setGomoku(this);
-	whitePlayer.setMyColor(WHITE);
-	blackPlayer.setMyColor(BLACK);
-	blackPlayer.setEnemy(&whitePlayer);
+	whitePlayer.setColor(WHITE);
 	whitePlayer.setEnemy(&blackPlayer);
+	blackPlayer.setColor(BLACK);
+	blackPlayer.setEnemy(&whitePlayer);
 	currentPlayer = &blackPlayer;
 }
 
@@ -27,33 +29,65 @@ Gomoku::~Gomoku()
 {
 }
 
+void Gomoku::end() {
+	interface.setState(GOODBYE);
+	interface.update();
+	sleep(1);
+	interface.getWindow().close();
+	exit(1);
+}
+
+void Gomoku::drawStone() {
+	sf::Vector2<int> coord = interface.getCoordBoard(currentPlayer->coordPlayed.x, currentPlayer->coordPlayed.y);
+		interface.putStone(*(currentPlayer->stoneSprite), coord.x , coord.y);
+}
+
 void Gomoku::start() {
+
+	std::vector<std::pair<unsigned char, unsigned char>> captured;
 	whitePlayer.setSpriteStone(&(interface._whiteStone));
 	blackPlayer.setSpriteStone(&(interface._blackStone));
 	whitePlayer.setCanteen(interface.whiteCanteen);
 	blackPlayer.setCanteen(interface.blackCanteen);
 	currentPlayer = &blackPlayer;
-	interface.setState(GAME);
+	interface.setState(MENU);
+	while (interface.getState() != GAME)  { //tmp fonction menu.go()
+		interface.checkEvent(*currentPlayer);
+        interface.update();
+	}
+	int x = 0;
+	int y = 0;
 	while (!rules.checkEnd(*currentPlayer) &&
 		interface._window.isOpen()) {
+		//PLAY
         interface.update();
-		while (!currentPlayer->played) {
-			currentPlayer->play(rules, interface);
-		}
+		currentPlayer->play(rules, interface);
+		x = currentPlayer->coordPlayed.x;
+		y = currentPlayer->coordPlayed.y;
+		//UPDATE HEURISTIC
+		currentPlayer->myHeuristic.put(x, y, false);
+		currentPlayer->ennemyHeuristic.clear(x, y);
+		currentPlayer->myHeuristic.print(x, y);
+		currentPlayer->ennemyHeuristic.print(x, y);
+		//DRAW
+		drawStone();
+		//CAPTURE
+		checkCapture(*currentPlayer, x, y, *(currentPlayer->getEnemy()), captured);
+		captureAll(*currentPlayer, currentPlayer->getEnemy()->getSpriteStone(), captured);
+		//OBSERVE
+		currentPlayer->getEnemy()->observe(rules, x, y, captured);
+		currentPlayer->observeMyCapture(captured);
+		//END
 		currentPlayer->played = false;
-		if (currentPlayer == &blackPlayer) {
-			checkCapture(*currentPlayer, currentPlayer->coordPlayed.x, currentPlayer->coordPlayed.y, whitePlayer);
-			currentPlayer = &whitePlayer;
-		}
-		else {
-			checkCapture(*currentPlayer, currentPlayer->coordPlayed.x, currentPlayer->coordPlayed.y, blackPlayer);
-			currentPlayer = &blackPlayer;
-		}
+		currentPlayer = currentPlayer->getEnemy();
 		interface.checkEvent(*currentPlayer);
+		captured.clear();
 		rules.turnCounter += 1;
 	}
+	this->end();
 	printBoard();
 }
+
 
 Stone Gomoku::getStone(int x, int y) {
 	 if (x < 0 || y < 0 || x >= GW || y >= GH)
@@ -61,17 +95,34 @@ Stone Gomoku::getStone(int x, int y) {
 	return board[x][y];
 }
 
-void Gomoku::printBoard() {
+void Gomoku::updateFocus(int x, int y) {
+	for (int i = x-FOCUS; i <= x+FOCUS ; i++) {
+		for (int j = y-FOCUS; j <= y+FOCUS ; j++) {
+			if (i >= 0 && j >= 0 && i < GW && j < GH)
+				focus[i][j] = true;
+		}
+	}
+}
+
+void Gomoku::printStone(int i, int j, int lastX, int lastY) {
+	if (board[i][j] == WHITE) {
+		DEBUG << ((lastX == i && lastY == j) ? GREEN : DEFAULT_COLOR) << HLL_GREY << "O" << DEFAULT_COLOR;
+	} else if (board[i][j] == BLACK) {
+		DEBUG << ((lastX == i && lastY == j) ? RED : DARK_BLACK) << HLIGHT_GREY << "X" << DEFAULT_COLOR;
+	} else {
+		if (focus[i][j]) {
+			DEBUG << ".";
+		} else {
+			DEBUG << "#";
+		}
+	}
+}
+
+void Gomoku::printBoard(int lastX, int lastY) {
 	DEBUG << "\n";
-	for (int i = 0; i < GW; i++) {
-		for (int j = 0; j < GH; j++) {
-			if (board[i][j] == WHITE) {
-				DEBUG << DEFAULT_COLOR << HLL_GREY << "O" << DEFAULT_COLOR;
-			} else if (board[i][j] == BLACK) {
-				DEBUG << DARK_BLACK << HLIGHT_GREY << "X" << DEFAULT_COLOR;
-			} else {
-				DEBUG << ".";
-			}
+	for (int j = 0; j < GH; j++) {
+		for (int i = 0; i < GW; i++) {
+			printStone(i, j, lastX, lastY);
 		}
 		DEBUG << "\n";
 	}
@@ -111,6 +162,8 @@ bool Gomoku::leftDiagonal(Stone color, int x, int y) {
 }
 
 bool Gomoku::checkLine(Stone color, int x, int y) {
+	if (getStone(x, y) != color)
+		return false;
 	if (horizontalLine(color, x, y))
 		return true;
 	if (verticalLine(color, x, y))
@@ -135,118 +188,139 @@ bool Gomoku::fiveStoneLine(Stone color, int &x, int &y) {
 	return false;
 }
 
-bool Gomoku::checkCapture(Player &current, int x, int y, Player &enemy)
+void Gomoku::checkCapture(Player &current, unsigned char x, unsigned char y, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &result)
 {
-	if (checkLeft(current, x, y, enemy) ||
-		checkRight(current, x, y, enemy) ||
-		checkUp(current, x, y, enemy) ||
-		checkDown(current, x, y, enemy) ||
-		checkUpLeft(current, x, y, enemy) ||
-		checkDownLeft(current, x, y, enemy) ||
-		checkUpRight(current, x, y, enemy) ||
-		checkDownRight(current, x, y, enemy))
-		return (true);
-	return (false);
+	checkLeft(current, x, y, enemy, result);
+	checkRight(current, x, y, enemy, result);
+	checkUp(current, x, y, enemy, result);
+	checkDown(current, x, y, enemy, result);
+	checkUpLeft(current, x, y, enemy, result);
+	checkDownLeft(current, x, y, enemy, result);
+	checkUpRight(current, x, y, enemy, result);
+	checkDownRight(current, x, y, enemy, result);
 }
 
-void Gomoku::capture(Player &current, Sprite *spriteEnemy, int x1, int y1, int x2, int y2) {
-	current.nbCapture += 2;
-	(void)current;
-	(void)spriteEnemy;
+void Gomoku::captureAll(Player &current, sf::Sprite *spriteEnemy, std::vector<std::pair<unsigned char, unsigned char>> &captured) {
+	
+	for (auto it = captured.begin(); it != captured.end(); ++it) {
+		capture(current, spriteEnemy, it->first, it->second);
+	}
+}
+
+void Gomoku::capture(Player &current, Sprite *spriteEnemy, int x1, int y1) {
+	current.nbCapture += 1;
 	setStone(FREE, x1, y1);
-	setStone(FREE, x2, y2);
-			DEBUG << "CAPTURE = " << current.nbCapture << " " << x1 << " " << y1 << " " << x2 << " " << y2 << "\n";
-	interface.capture(current, spriteEnemy, x1, y1, x2, y2); // ajoute 2 stones de la couleur enemy du current dans sa zone de capture, pour cela check le nb de capture et put des stones au bon endroit.
+			DEBUG << "CAPTURE = " << current.nbCapture << " " << x1 << " " << y1 << "\n";
+	interface.capture(current, spriteEnemy, x1, y1); // ajoute 1 stone de la couleur enemy du current dans sa zone de capture, pour cela check le nb de capture et put des stones au bon endroit.
 }
 
-bool Gomoku::checkBetween(Stone colorEnemy, int x1, int y1, int x2, int y2) {
+bool Gomoku::checkBetween(Stone colorEnemy, unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2) {
 	return (getStone(x1, y1) == colorEnemy && getStone(x2,y2) == colorEnemy);
 }
 
-bool Gomoku::checkLeft(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+void Gomoku::checkLeft(Player &current, unsigned char xPlayed, unsigned char yPlayed, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured) {
 	if (getStone(xPlayed - 3, yPlayed) == current.getColor()) {
 		if (checkBetween(enemy.getColor(), xPlayed - 2, yPlayed, xPlayed - 1, yPlayed)) {
-			capture(current, enemy.getSpriteStone(), xPlayed - 2, yPlayed, xPlayed - 1, yPlayed);
-			DEBUG << "CAPTURE LEFT!!!!!!!!!";
-			return (true);
+			//capture(current, enemy.getSpriteStone(), xPlayed - 2, yPlayed, xPlayed - 1, yPlayed);
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed - 1, yPlayed));
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed - 2, yPlayed));
+//			DEBUG << "CAPTURE LEFT!!!!!!!!!";
 		}
 	}
-	return (false);
 }
 
-bool Gomoku::checkRight(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+void Gomoku::checkRight(Player &current, unsigned char xPlayed, unsigned char yPlayed, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured) {
 	if (getStone(xPlayed + 3, yPlayed) == current.getColor()) {
 		if (checkBetween(enemy.getColor(), xPlayed + 2, yPlayed, xPlayed + 1, yPlayed)) {
-			capture(current, enemy.getSpriteStone(), xPlayed + 2, yPlayed, xPlayed + 1, yPlayed);
-			DEBUG << "CAPTURE RIGHT!!!!!!!!!";
-			return (true);
+//			capture(current, enemy.getSpriteStone(), xPlayed + 2, yPlayed, xPlayed + 1, yPlayed);
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed + 1, yPlayed));
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed + 2, yPlayed));
+//			DEBUG << "CAPTURE RIGHT!!!!!!!!!";
 		}
 	}
-	return (false);
 }
 
-bool Gomoku::checkUp(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+void Gomoku::checkUp(Player &current, unsigned char xPlayed, unsigned char yPlayed, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured) {
 	if (getStone(xPlayed, yPlayed - 3) == current.getColor()) {
 		if (checkBetween(enemy.getColor(), xPlayed, yPlayed - 2, xPlayed, yPlayed - 1)) {
-			capture(current, enemy.getSpriteStone(), xPlayed, yPlayed - 2, xPlayed, yPlayed - 1);
-			DEBUG << "CAPTURE UP!!!!!!!!!";
-			return (true);
+			//capture(current, enemy.getSpriteStone(), xPlayed, yPlayed - 2, xPlayed, yPlayed - 1);
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed, yPlayed - 1));
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed, yPlayed - 2));
+//			DEBUG << "CAPTURE UP!!!!!!!!!";
 		}
 	}
-	return (false);
 }
 
-bool Gomoku::checkDown(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+void Gomoku::checkDown(Player &current, unsigned char xPlayed, unsigned char yPlayed, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured) {
 	if (getStone(xPlayed, yPlayed + 3) == current.getColor()) {
 		if (checkBetween(enemy.getColor(), xPlayed, yPlayed + 2, xPlayed, yPlayed + 1)) {
-			capture(current, enemy.getSpriteStone(), xPlayed, yPlayed + 2, xPlayed, yPlayed + 1);
-			DEBUG << "CAPTUREDOWN !!!!!!!!!";
-			return (true);
+//			capture(current, enemy.getSpriteStone(), xPlayed, yPlayed + 2, xPlayed, yPlayed + 1);
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed, yPlayed + 1));
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed, yPlayed + 2));
+//			DEBUG << "CAPTUREDOWN !!!!!!!!!";
 		}
 	}
-	return (false);
 }
 
-bool Gomoku::checkUpLeft(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+void Gomoku::checkUpLeft(Player &current, unsigned char xPlayed, unsigned char yPlayed, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured) {
 	if (getStone(xPlayed - 3, yPlayed - 3) == current.getColor()) {
 		if (checkBetween(enemy.getColor(), xPlayed - 2, yPlayed - 2, xPlayed - 1, yPlayed - 1)) {
-			capture(current, enemy.getSpriteStone(), xPlayed - 2, yPlayed - 2, xPlayed - 1, yPlayed - 1);
-			DEBUG << "CAPTUREUPLEFT !!!!!!!!!";
-			return (true);
+			//capture(current, enemy.getSpriteStone(), xPlayed - 2, yPlayed - 2, xPlayed - 1, yPlayed - 1);
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed - 1, yPlayed - 1));
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed - 2, yPlayed - 2));
+//			DEBUG << "CAPTUREUPLEFT !!!!!!!!!";
 		}
 	}
-	return (false);
 }
 
-bool Gomoku::checkDownLeft(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+void Gomoku::checkDownLeft(Player &current, unsigned char xPlayed, unsigned char yPlayed, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured) {
 	if (getStone(xPlayed - 3, yPlayed + 3) == current.getColor()) {
 		if (checkBetween(enemy.getColor(), xPlayed - 2, yPlayed + 2, xPlayed - 1, yPlayed + 1)) {
-			capture(current, enemy.getSpriteStone(), xPlayed - 2, yPlayed + 2, xPlayed - 1, yPlayed + 1);
-			DEBUG << "CAPTUREDOWNLEFT !!!!!!!!!";
-			return (true);
+			//capture(current, enemy.getSpriteStone(), xPlayed - 2, yPlayed + 2, xPlayed - 1, yPlayed + 1);
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed - 1, yPlayed + 1));
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed - 2, yPlayed + 2));
+//			DEBUG << "CAPTUREDOWNLEFT !!!!!!!!!";
 		}
 	}
-	return (false);
 }
 
-bool Gomoku::checkUpRight(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+void Gomoku::checkUpRight(Player &current, unsigned char xPlayed, unsigned char yPlayed, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured) {
 	if (getStone(xPlayed + 3, yPlayed - 3) == current.getColor()) {
 		if (checkBetween(enemy.getColor(), xPlayed + 2, yPlayed - 2, xPlayed + 1, yPlayed - 1)) {
-			capture(current, enemy.getSpriteStone(), xPlayed + 2, yPlayed - 2, xPlayed + 1, yPlayed - 1);
-			DEBUG << "CAPTUREUPRIGHT !!!!!!!!!";
-			return (true);
+			//capture(current, enemy.getSpriteStone(), xPlayed + 2, yPlayed - 2, xPlayed + 1, yPlayed - 1);
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed + 1, yPlayed - 1));
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed + 2, yPlayed - 2));
+//			DEBUG << "CAPTUREUPRIGHT !!!!!!!!!";
 		}
 	}
-	return (false);
 }
 
-bool Gomoku::checkDownRight(Player &current, int xPlayed, int yPlayed, Player &enemy) {
+void Gomoku::checkDownRight(Player &current, unsigned char xPlayed, unsigned char yPlayed, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured) {
 	if (getStone(xPlayed + 3, yPlayed + 3) == current.getColor()) {
 		if (checkBetween(enemy.getColor(), xPlayed + 2, yPlayed + 2, xPlayed + 1, yPlayed + 1)) {
-			capture(current, enemy.getSpriteStone(), xPlayed + 2, yPlayed + 2, xPlayed + 1, yPlayed + 1);
-			DEBUG << "DOWNRIGHT !!!!!!!!!";
-			return (true);
+			//capture(current, enemy.getSpriteStone(), xPlayed + 2, yPlayed + 2, xPlayed + 1, yPlayed + 1);
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed + 1, yPlayed + 1));
+			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed + 2, yPlayed + 2));
+//			DEBUG << "DOWNRIGHT !!!!!!!!!";
 		}
 	}
-	return (false);
 }
+/*
+int		Gomoku::
+void Gomoku::checkAlignThrees(Player &current) {
+	int nb = 0;
+	Stone color = current.getColor()
+	for (int i = 0; i < GW; i++) {
+		for (int j = 0; j < GH; j++) {
+			if (board[i][j] == FREE) {
+				nb = 0;
+				nb += checkSimpleAlignThrees(color, i, j);
+				nb += checkOtherAlignThrees(color, i, j);
+				if (nb >= 2)
+					board[i][j] = FORBIDDEN;
+				}
+			}
+		}
+	}
+}
+*/
