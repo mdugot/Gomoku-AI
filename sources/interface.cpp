@@ -271,13 +271,10 @@ void    Interface::againScreen(void) {
 }
 
 void    Interface::gameScreen(void) {
-    DEBUG << "GAME SCREEN\n";
     this->cleanSpriteList();
     _allSprite.push_back(_backgroundSprite);
     _allSprite.push_back(_boardGameSprite);
     this->state = GAME;
-    DEBUG << "GAMEOUT SCREEN\n";
-    //add push_back list les éléments
 }
 
 void    Interface::scoreScreen(void) {
@@ -372,17 +369,24 @@ void    Interface::checkClickLeft(Player &current, int x, int y)
     else if (state == MENU){
         DEBUG << "click during Menu\n";
         if (menu.onP1(x, y))
+        {
             menu.switchTextBox(menu.textBoxP1, menu.choiceP1);
-        else if (menu.onP2(x, y))
-            menu.switchTextBox(menu.textBoxP2, menu.choiceP2);
-        else if (menu.onVariante(x, y))
-            menu.switchTextBox(menu.textBoxVariante, menu.variante);
-        else if (menu.onGo(x, y)){
-            menu.go(&(gomoku->getBlackPlayer()), &(gomoku->getWhitePlayer()));//setPlayer...
-            gomoku->updateWhitePlayer();
-            gomoku->updateBlackPlayer();
-            setState(GAME);
         }
+        else if (menu.onP2(x, y))
+        {
+            menu.switchTextBox(menu.textBoxP2, menu.choiceP2);
+        }
+        else if (menu.onVariante(x, y))
+        {
+            menu.switchTextBox(menu.textBoxVariante, menu.variante);
+        }
+        else if (menu.onGo(x, y)){
+        DEBUG << "onGO1\n";
+            menu.go(&(gomoku->getBlackPlayer()), &(gomoku->getWhitePlayer()));//setPlayer...
+            setState(GAME);
+        DEBUG << "onGO5\n";
+        }
+        DEBUG << "EndClcikMenu\n";
     }
     else if (state == SCORE){
         DEBUG << "click during victory or fefeat screen\n";

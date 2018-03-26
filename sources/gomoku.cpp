@@ -12,8 +12,7 @@ using namespace sf;
 Gomoku::Gomoku(Rules &rules, Interface &interface) : rules(rules), interface(interface)
 {
 	whitePlayer = new HumanPlayer();
-	blackPlayer = new NoobIA();
-	
+	blackPlayer = new HumanPlayer();
 	for (int i = 0; i < GW; i++) {
 		for (int j = 0; j < GH; j++) {
 			board[i][j] = FREE;
@@ -37,11 +36,18 @@ void	Gomoku::updateWhitePlayer()
 
 void	Gomoku::updateBlackPlayer()
 {
-	blackPlayer->setGomoku(this);
-	blackPlayer->setColor(BLACK);
-	blackPlayer->setEnemy(whitePlayer);
+	DEBUG << "A";
 	blackPlayer->setSpriteStone(&(interface._blackStone));
+	DEBUG << "B";
 	blackPlayer->setCanteen(interface.blackCanteen);
+	DEBUG << "C_" << blackPlayer << "_\n";
+	blackPlayer->setGomoku(this);
+	DEBUG << "D";
+	blackPlayer->setColor(BLACK);
+	DEBUG << "E";
+	blackPlayer->setEnemy(whitePlayer);
+	DEBUG << "F";
+	DEBUG << "G\n";
 }
 
 Gomoku::~Gomoku()
@@ -66,20 +72,23 @@ void Gomoku::drawStone() {
 void Gomoku::start() {
 
 	std::vector<std::pair<unsigned char, unsigned char>> captured;
-	updateWhitePlayer();
-	updateBlackPlayer();
 	interface.setState(MENU);
+		write(1, "1", 1);
 	currentPlayer = blackPlayer;
-	while (interface.getState() != GAME)  { //tmp fonction menu.go()
+	while (interface.getState() == MENU)  {
 		interface.checkEvent(*currentPlayer);
         interface.update();
 	}
 	int x = 0;
 	int y = 0;
-	while (!rules.checkEnd(*currentPlayer) &&
-		interface._window.isOpen()) {
-		//PLAY
+		write(2, "2\n", 1);
+	updateWhitePlayer();
+	updateBlackPlayer();
+	currentPlayer = blackPlayer;
+	while (!rules.checkEnd(*currentPlayer)) {
+		write(1, "3", 1);
         interface.update();
+		//PLAY
 		currentPlayer->play(rules, interface);
 		x = currentPlayer->coordPlayed.x;
 		y = currentPlayer->coordPlayed.y;

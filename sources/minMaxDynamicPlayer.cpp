@@ -34,11 +34,13 @@ MinMaxDynamicPlayer::MinMaxDynamicPlayer(int d) : Player(), minMaxDepth(d)
 	else
 		playerType = IA_EASY;
 	*/
+	DEBUG << "NEW MINMAXPLAYER\n";
 
 }
 
 MinMaxDynamicPlayer::~MinMaxDynamicPlayer()
 {
+	DEBUG << "BYE MINMAXPLAYER\n";
 }
 
 std::multimap<long long, Choice> MinMaxDynamicPlayer::heuristicMap(Rules &rules, Player *player, int depth, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin, bool focus) {

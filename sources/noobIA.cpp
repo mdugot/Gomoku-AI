@@ -4,10 +4,12 @@
 
 NoobIA::NoobIA() : Player()
 {
+	DEBUG << "\nNEW NOOBIA PLAYER\n";
 }
 
 NoobIA::~NoobIA()
 {
+	DEBUG << "\nBYE NOOBIA\n";
 }
 
 void NoobIA::play(Rules &rules, Interface &i) {

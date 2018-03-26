@@ -3,9 +3,11 @@
 
 Player::Player() : myHeuristic(), ennemyHeuristic(), nbCapture(0), played(false)
 {
+	DEBUG << "NEW PLAYER\n";
 }
 
 Player::~Player() {
+	DEBUG << "BYE PLAYER\n";
 }
 
 void Player::putStone(int x, int y) {

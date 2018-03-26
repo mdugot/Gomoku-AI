@@ -4,10 +4,12 @@
 
 RandomPlayer::RandomPlayer() : Player()
 {
+	DEBUG << "NEW RANDOM\n";
 }
 
 RandomPlayer::~RandomPlayer()
 {
+	DEBUG << "BYE RANDOM\n";
 }
 
 int increment(int n, int max) {
