@@ -432,7 +432,6 @@ void    Interface::checkClickLeft(Player &current, int x, int y)
         DEBUG << "click during Welcome\n";
     }
     else if (state == MENU){
-        DEBUG << "click during Menu\n";
         if (menu.onP1(x, y))
         {
             menu.switchTextBox(menu.textBoxP1, menu.choiceP1);
@@ -446,12 +445,9 @@ void    Interface::checkClickLeft(Player &current, int x, int y)
             menu.switchTextBox(menu.textBoxVariante, menu.variante);
         }
         else if (menu.onGo(x, y)){
-        DEBUG << "onGO1\n";
             menu.go(gomoku);//setPlayer...
             setState(GAME);
-        DEBUG << "onGO5\n";
         }
-        DEBUG << "EndClcikMenu\n";
     }
     else if (state == SCORE){
         DEBUG << "click during victory or fefeat screen\n";
