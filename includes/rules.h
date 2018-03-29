@@ -20,8 +20,10 @@ class Rules
 		Gomoku *gomoku;
 		
 		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
-		bool win(Player &player);
+		bool win(Player &player, bool avoidable);
 		bool equality(Player &nextToPlay);
+		bool canAvoidDefeat(Player *player, Player *ennemy);
+		End playerWon(Player &player);
 	
 	public:
 

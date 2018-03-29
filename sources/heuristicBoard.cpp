@@ -110,9 +110,7 @@ HeuristicBoard& HeuristicBoard::clear(unsigned char x, unsigned char y)
 	return *this;
 }
 
-void HeuristicBoard::fiveValue(char x, char y, unsigned char &value, unsigned char heuristic) {
-	(void)x;
-	(void)y;
+void HeuristicBoard::fiveValue(unsigned char &value, unsigned char heuristic) {
 	if (value > 4 && heuristic < 4)
 		value = 4;
 }
@@ -152,7 +150,7 @@ void HeuristicBoard::updateThreat(char x, char y, char vx, char vy, char shift, 
 		REMOVE_THREAT(tmp);
 		tmp += after;
 		heuristic[(unsigned char)x-(before*vx)][(unsigned char)y-(before*vy)] = SET_THREAT(heuristic[(unsigned char)x-(before*vx)][(unsigned char)y-(before*vy)], tmp, mask, shift);
-		fiveValue(x, y, tmp, GET_THREAT(heuristic[(unsigned char)x][(unsigned char)y], mask, shift));
+		fiveValue(tmp, GET_THREAT(heuristic[(unsigned char)x][(unsigned char)y], mask, shift));
 		ADD_THREAT(tmp);
 	}
 	if (!afterWall) {
@@ -160,7 +158,7 @@ void HeuristicBoard::updateThreat(char x, char y, char vx, char vy, char shift, 
 		REMOVE_THREAT(tmp);
 		tmp += before;
 		heuristic[(unsigned char)x+(after*vx)][(unsigned char)y+(after*vy)] = SET_THREAT(heuristic[(unsigned char)x+(after*vx)][(unsigned char)y+(after*vy)], tmp, mask, shift);
-		fiveValue(x, y, tmp, GET_THREAT(heuristic[(unsigned char)x][(unsigned char)y], mask, shift));
+		fiveValue(tmp, GET_THREAT(heuristic[(unsigned char)x][(unsigned char)y], mask, shift));
 		ADD_THREAT(tmp);
 	}
 }
@@ -182,6 +180,8 @@ void HeuristicBoard::removeThreat(char x, char y, char vx, char vy, char shift, 
 	unsigned char tmp, oldLength;
 
 	getAdjacent(x, y, vx, vy, before, after, beforeWall, afterWall);
+	if (before + after >= 6)
+		fiveLine -= 1;
 	oldLength = before + after - 1;
 	if (!beforeWall) {
 		tmp = GET_THREAT(heuristic[(unsigned char)x-(before*vx)][(unsigned char)y-(before*vy)], mask, shift);
@@ -222,9 +222,8 @@ void HeuristicBoard::capture(unsigned char x, unsigned char y)
 	totalCaptured += 1;
 }
 
-HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y, bool prediction)
+HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y)
 {
-	(void)prediction;
 	updateThreat(x, y, 0, 1, HORIZONTAL_SHIFT, HORIZONTAL_MASK);
 	updateThreat(x, y, 1, 0, VERTICAL_SHIFT, VERTICAL_MASK);
 	updateThreat(x, y, 1, 1, DRIGHT_SHIFT, DRIGHT_MASK);

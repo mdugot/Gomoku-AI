@@ -1,7 +1,7 @@
 NAME= Gomoku
 
 CC= g++
-CFLAGS= -std=c++11 -Wall -Wextra -g3 # -Werror -fsanitize=address
+CFLAGS= -std=c++11 -Wall -Wextra -O2 -g3  #-Werror -fsanitize=address
 SFMLFLAG= -L ~/.brew/opt/sfml/lib -L ./lib -lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system
 SRC_NAME= main.cpp \
           utils.cpp \

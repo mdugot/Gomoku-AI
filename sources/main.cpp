@@ -19,14 +19,14 @@ int main(int argc, char **argv) {
 	//NoobIA		p1;
 	//Menu		menu;
 	HumanPlayer	black;
-	HumanPlayer	white;
-//	MinMaxDynamicPlayer		white(5);
+//	HumanPlayer	white;
+	MinMaxDynamicPlayer		white(6);
+//	srand(7);
+//	MinMaxDynamicPlayer		white(4);
+//	MinMaxDynamicPlayer		black(4);
 	DefaultRules	rules;
 	Interface		interface;
 	Gomoku			gomoku(white, black, rules, interface);
-//	srand(7);
-//	MinMaxDynamicPlayer		white(9);
-//	MinMaxDynamicPlayer		black(5);
 	gomoku.start();
 
 	success("end of the game");

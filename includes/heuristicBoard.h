@@ -26,6 +26,7 @@
 
 #define REMOVE_THREAT(x) score -= levels[((x) > 5 ? 5 : (x))]
 #define ADD_THREAT(x) score += levels[((x) > 5 ? 5 : (x))]
+#define CAPTURE_BONUS(x) HeuristicBoard::levels[((x) > 10 ? 5 : (x/2))]
 
 #define WATCH(x,name) if (x < 0 || x >= GW) DEBUG << RED << "WARNING " << name << " : out of limit -> " << x << "\n" << DEFAULT_COLOR
 
@@ -41,6 +42,7 @@
 class HeuristicBoard
 {
 	friend class Player;
+	friend class Rules;
 	friend class MinMaxDynamicPlayer;
 	//friend class HeuristicBoard;
 	static const long long levels[6];
@@ -55,7 +57,7 @@ class HeuristicBoard
 
 		void getAdjacent(char x, char y, char vx, char vy, char &before, char &after, char &beforeWall, char &afterWall);
 		int getBestLevel(unsigned char x, unsigned char y);
-		void fiveValue(char x, char y, unsigned char &value, unsigned char heuristic);
+		void fiveValue(unsigned char &value, unsigned char heuristic);
 		void updateThreat(char x, char y, char vx, char vy, char shift, short int mask);
 		void removeEnnemyThreat(char x, char y, char vx, char vy, char shift, short int mask);
 		void removeThreat(char x, char y, char vx, char vy, char shift, short int mask);
@@ -68,7 +70,7 @@ class HeuristicBoard
 		HeuristicBoard();
 		HeuristicBoard(HeuristicBoard *copyFrom);
 		~HeuristicBoard();
-		HeuristicBoard &put(unsigned char x, unsigned char y, bool prediction = true);
+		HeuristicBoard &put(unsigned char x, unsigned char y);
 		HeuristicBoard &clear(unsigned char x, unsigned char y);
 		void beCaptured(unsigned char x, unsigned char y);
 		void capture(unsigned char x, unsigned char y);

@@ -41,7 +41,7 @@ MinMaxDynamicPlayer::~MinMaxDynamicPlayer()
 {
 }
 
-std::multimap<long long, Choice> MinMaxDynamicPlayer::heuristicMap(Rules &rules, Player *player, int depth, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin, bool focus) {
+std::multimap<long long, Choice> MinMaxDynamicPlayer::heuristicMap(Rules &rules, Player *player, bool last, int depth, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin, bool focus) {
 	std::multimap<long long, Choice> result;
 	for (unsigned char j = 0; j < GH; j++) {
 		for (unsigned char i = 0; i < GW; i++) {
@@ -54,9 +54,7 @@ std::multimap<long long, Choice> MinMaxDynamicPlayer::heuristicMap(Rules &rules,
 						choice.ennemyHeuristic.beCaptured(it->first, it->second);
 						choice.myHeuristic.capture(it->first, it->second);
 					}
-					result.insert(std::pair<long long, Choice>(-heuristic(choice.myHeuristic, choice.ennemyHeuristic, depth), choice));
-//					if (focus)
-//						DEBUG << DARK_YELLOW << "option : " << -heuristic(choice.myHeuristic, choice.ennemyHeuristic, depth) << "=" << (int)choice.x << "/" << (int)choice.y << "\n" << DEFAULT_COLOR;
+					result.insert(std::pair<long long, Choice>(-heuristic(choice.myHeuristic, choice.ennemyHeuristic, last, depth), choice));
 				} else {
 					Choice choice(i, j, &myOrigin, &ennemyOrigin, true);
 					gomoku->checkCapture(*enemy, i, j, *this, choice.captured);
@@ -64,7 +62,7 @@ std::multimap<long long, Choice> MinMaxDynamicPlayer::heuristicMap(Rules &rules,
 						choice.ennemyHeuristic.capture(it->first, it->second);
 						choice.myHeuristic.beCaptured(it->first, it->second);
 					}
-					result.insert(std::pair<long long, Choice>(heuristic(choice.myHeuristic, choice.ennemyHeuristic, depth, true), choice));
+					result.insert(std::pair<long long, Choice>(heuristic_e(choice.myHeuristic, choice.ennemyHeuristic, last, depth), choice));
 				}
 			}
 		}
@@ -93,7 +91,7 @@ void MinMaxDynamicPlayer::startMinMax(int &rx, int &ry, Rules &rules)
 	long long best = MIN_LONG;
 	long long maxBestOption = MIN_LONG;
 	complexity = 0;
-	std::multimap<long long, Choice> choices = heuristicMap(rules, this, minMaxDepth, myHeuristic, ennemyHeuristic, true);
+	std::multimap<long long, Choice> choices = heuristicMap(rules, this, ennemyHeuristic.fiveLine, minMaxDepth, myHeuristic, ennemyHeuristic, true);
 	rx = choices.begin()->second.x;
 	ry = choices.begin()->second.y;
 	unsigned char i = 0;
@@ -140,55 +138,14 @@ void MinMaxDynamicPlayer::startMinMax(int &rx, int &ry, Rules &rules)
 	DEBUG << "complexity : " << complexity << "\n";
 }
 
-long long MinMaxDynamicPlayer::max(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH)
-{
-	if (depth <= 0 || myH.fiveLine || ennemyH.fiveLine || myH.totalCaptured >= 10 || ennemyH.totalCaptured >= 10) {
-		return heuristic(myH, ennemyH, depth+1, true);
-	}
-	long long option;
-	long long best = MIN_LONG;
-	std::multimap<long long, Choice> choices = heuristicMap(rules, this, depth, myH, ennemyH);
-	unsigned char i = 0;
-//	if (ennemyH.score >= L4) {
-//		i = depthWidths[minMaxDepth - depth];
-//	}
-	for (auto it = choices.begin(); it != choices.end(); ++it) {
-		if (i > depthWidths[minMaxDepth - depth]) {
-			break;
-		}
-		gomoku->setStone(getColor(), it->second.x, it->second.y);
-		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
-			if (gomoku->getStone(it2->first, it2->second) != enemy->getColor()) DEBUG << RED << "WRONG CAPTURE !\n" << DEFAULT_COLOR;
-			gomoku->setStone(FREE, it2->first, it2->second);
-		}
-		complexity++;
-		option = min(depth-1, minBestOption, maxBestOption, rules, it->second.myHeuristic, it->second.ennemyHeuristic);
-		gomoku->setStone(FREE, it->second.x, it->second.y);
-		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
-			gomoku->setStone(enemy->getColor(), it2->first, it2->second);
-		}
-		if (option > best) {
-			best = option;
-			if (option > maxBestOption) {
-				maxBestOption = option;
-			}
-			if (maxBestOption >= minBestOption - 1) {
-				return best;
-			}
-		}
-		i++;
-	}
-	return best;
-}
-
 long long MinMaxDynamicPlayer::min(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH)
 {
-	if (depth <= 0 || myH.fiveLine || ennemyH.fiveLine || myH.totalCaptured >= 10 || ennemyH.totalCaptured >= 10) {
-		return heuristic(myH, ennemyH, depth+1);
+	if (depth <= 0 || ennemyH.fiveLine || myH.totalCaptured >= 10) {
+		return heuristic(myH, ennemyH, ennemyH.fiveLine, depth+1);
 	}
 	long long option;
 	long long best = MAX_LONG;
-	std::multimap<long long, Choice> choices = heuristicMap(rules, enemy, depth, myH, ennemyH);
+	std::multimap<long long, Choice> choices = heuristicMap(rules, enemy, myH.fiveLine, depth, myH, ennemyH);
 	unsigned char i = 0;
 //	if (myH.score >= L4) {
 //		i = depthWidths[minMaxDepth - depth];
@@ -222,35 +179,85 @@ long long MinMaxDynamicPlayer::min(int depth, long long minBestOption, long long
 	return best;
 }
 
+long long MinMaxDynamicPlayer::max(int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH)
+{
+	if (depth <= 0 || myH.fiveLine || ennemyH.totalCaptured >= 10) {
+		return heuristic_e(myH, ennemyH, myH.fiveLine, depth+1);
+	}
+	long long option;
+	long long best = MIN_LONG;
+	std::multimap<long long, Choice> choices = heuristicMap(rules, this, ennemyH.fiveLine, depth, myH, ennemyH);
+	unsigned char i = 0;
+//	if (ennemyH.score >= L4) {
+//		i = depthWidths[minMaxDepth - depth];
+//	}
+	for (auto it = choices.begin(); it != choices.end(); ++it) {
+		if (i > depthWidths[minMaxDepth - depth]) {
+			break;
+		}
+		gomoku->setStone(getColor(), it->second.x, it->second.y);
+		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
+			if (gomoku->getStone(it2->first, it2->second) != enemy->getColor()) DEBUG << RED << "WRONG CAPTURE !\n" << DEFAULT_COLOR;
+			gomoku->setStone(FREE, it2->first, it2->second);
+		}
+		complexity++;
+		option = min(depth-1, minBestOption, maxBestOption, rules, it->second.myHeuristic, it->second.ennemyHeuristic);
+		gomoku->setStone(FREE, it->second.x, it->second.y);
+		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
+			gomoku->setStone(enemy->getColor(), it2->first, it2->second);
+		}
+		if (option > best) {
+			best = option;
+			if (option > maxBestOption) {
+				maxBestOption = option;
+			}
+			if (maxBestOption >= minBestOption - 1) {
+				return best;
+			}
+		}
+		i++;
+	}
+	return best;
+}
+
 
 void MinMaxDynamicPlayer::play(Rules &rules, Interface &i) {
 	(void)i;
 	int x = -1;
 	int y = -1;
-	if (!win(x, y, rules)) {
+//	if (!win(x, y, rules)) {
 		DEBUG << "BEFORE PLAY\n";
 		startMinMax(x, y, rules);
 		DEBUG << "AFTER PLAY\n";
-	}
+//	}
 	DEBUG << "PUT : " << x << "/" << y << "\n";
 	putStone(x, y);
 	DEBUG << "SET\n";
 	setCoordPlayed(x, y);
-
-
-
-	DEBUG << "THREAT HEURISTIC BEFORE STONE = " << heuristic(myHeuristic, ennemyHeuristic, minMaxDepth) << "\n";
-	DEBUG << "my score before stone = " << myHeuristic.score << "\n";
-	DEBUG << "ennemy score before stone = " << ennemyHeuristic.score << "\n";
-	DEBUG << "THREAT HEURISTIC AFTER STONE = " << heuristic(myHeuristic, ennemyHeuristic, minMaxDepth) << "\n";
-	DEBUG << "my score after stone = " << myHeuristic.score << "\n";
-	DEBUG << "ennemy score after stone = " << ennemyHeuristic.score << "\n";
 }
 
-long long MinMaxDynamicPlayer::heuristic(HeuristicBoard &myH, HeuristicBoard &ennemyH, int depth, bool ennemy) {
-	(void)ennemy;
-	if (depth <= 0) {
-		DEBUG << RED << "NEGATIVE DEPTH !!!!\n" << DEFAULT_COLOR;
+long long MinMaxDynamicPlayer::heuristic(HeuristicBoard &myH, HeuristicBoard &ennemyH, bool last, int depth) {
+	if (last && !canAvoidDefeat(myH, ennemyH)) {
+		return (-BIG * (depth));
+	}
+	if (ennemyH.fiveLine || ennemyH.totalCaptured >= 10) {
+		return -BIG * (depth);
+	}
+	if (myH.fiveLine || myH.totalCaptured >= 10) {
+		return BIG * (depth);
+	}
+	return (myH.score + CAPTURE_BONUS(myH.totalCaptured) - (ennemyH.score + CAPTURE_BONUS(ennemyH.totalCaptured)) );
+}
+
+bool MinMaxDynamicPlayer::canAvoidDefeat(HeuristicBoard &myH, HeuristicBoard &ennemyH) {
+	if (!ennemyH.fiveLine || myH.totalCaptured >= 10)
+		return true;
+	return false;
+}
+
+long long MinMaxDynamicPlayer::heuristic_e(HeuristicBoard &myH, HeuristicBoard &ennemyH, bool last, int depth) {
+	if (last && !canAvoidDefeat_e(myH, ennemyH)) {
+		return (BIG * (depth));
 	}
 	if (myH.fiveLine || myH.totalCaptured >= 10) {
 		return BIG * (depth);
@@ -258,24 +265,11 @@ long long MinMaxDynamicPlayer::heuristic(HeuristicBoard &myH, HeuristicBoard &en
 	if (ennemyH.fiveLine || ennemyH.totalCaptured >= 10) {
 		return -BIG * (depth);
 	}
-	return (myH.score + HeuristicBoard::levels[myH.totalCaptured]) - (ennemyH.score + HeuristicBoard::levels[ennemyH.totalCaptured]);
-
-	//if (ennemy) {
-	////	if (myH.score >= L4) {
-	////		return BIG * (depth);
-	////	}
-	////	if (ennemyH.score >= WIN_STATE) {
-	////		return (-BIG * (depth) - 1);
-	////	}
-	//	return (myH.score * L2 + HeuristicBoard::levels[myH.totalCaptured]) - (ennemyH.score + HeuristicBoard::levels[ennemyH.totalCaptured]);
-	//}
-
-//	//if (ennemyH.score >= L4) {
-//	//	return -BIG * (depth);
-//	//}
-//	//if (myH.score >= WIN_STATE) {
-//	//	return BIG * (depth);
-//	//}
-	//return (myH.score + HeuristicBoard::levels[myH.totalCaptured]) - (ennemyH.score * L2 + HeuristicBoard::levels[ennemyH.totalCaptured]);
+	return (myH.score + CAPTURE_BONUS(myH.totalCaptured) - (ennemyH.score + CAPTURE_BONUS(ennemyH.totalCaptured)) );
 }
 
+bool MinMaxDynamicPlayer::canAvoidDefeat_e(HeuristicBoard &myH, HeuristicBoard &ennemyH) {
+	if (!myH.fiveLine || ennemyH.totalCaptured >= 10)
+		return true;
+	return false;
+}

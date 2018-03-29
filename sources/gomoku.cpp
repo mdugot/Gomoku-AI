@@ -50,7 +50,8 @@ void Gomoku::start() {
 	whitePlayer.setCanteen(interface.whiteCanteen);
 	blackPlayer.setCanteen(interface.blackCanteen);
 	currentPlayer = &blackPlayer;
-	interface.setState(MENU);
+//	interface.setState(MENU);
+	interface.setState(GAME);
 	while (interface.getState() != GAME)  { //tmp fonction menu.go()
 		interface.checkEvent(*currentPlayer);
         interface.update();
@@ -65,7 +66,7 @@ void Gomoku::start() {
 		x = currentPlayer->coordPlayed.x;
 		y = currentPlayer->coordPlayed.y;
 		//UPDATE HEURISTIC
-		currentPlayer->myHeuristic.put(x, y, false);
+		currentPlayer->myHeuristic.put(x, y);
 		currentPlayer->ennemyHeuristic.clear(x, y);
 		currentPlayer->myHeuristic.print(x, y);
 		currentPlayer->ennemyHeuristic.print(x, y);
@@ -83,6 +84,9 @@ void Gomoku::start() {
 		interface.checkEvent(*currentPlayer);
 		captured.clear();
 		rules.turnCounter += 1;
+		
+//		int tmp;
+//		std::cin >> tmp;
 	}
 	this->end();
 	printBoard();
