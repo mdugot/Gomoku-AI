@@ -50,8 +50,8 @@ void Gomoku::start() {
 	whitePlayer.setCanteen(interface.whiteCanteen);
 	blackPlayer.setCanteen(interface.blackCanteen);
 	currentPlayer = &blackPlayer;
-//	interface.setState(MENU);
-	interface.setState(GAME);
+	interface.setState(MENU);
+//	interface.setState(GAME);
 	while (interface.getState() != GAME)  { //tmp fonction menu.go()
 		interface.checkEvent(*currentPlayer);
         interface.update();
