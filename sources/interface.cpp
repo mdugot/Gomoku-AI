@@ -6,7 +6,6 @@
 #include "menu.h"
 
 using namespace sf;
-//TO-DO : fonction pour nettoyer (free) et réinitiliaser la liste de sprite du jeu à afficher.
 
 Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::Titlebar | Style::Close)
 {
@@ -17,7 +16,59 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
    initCoordBoard();
    initCoordCanteen();
    this->setState(WELCOME);
+   previewStone = false;
    DEBUG << "INTERFACE READY\n";
+}
+
+Interface::~Interface() {
+
+}
+
+//TO-DO : Ajout texture des autres States ici.
+void    Interface::loadTexture(void) {
+   if(!_stoneWhiteTexture.loadFromFile("./sprite/whiteStone.png")
+    || !_stoneBlackTexture.loadFromFile("./sprite/blackStone.png")
+    || !_backgroundTexture.loadFromFile("./sprite/background.png")
+    || !_boardGameTexture.loadFromFile("./sprite/goban(2).png")
+    || !_helloTexture.loadFromFile("./sprite/hello.png")
+    || !_goodByeTexture.loadFromFile("./sprite/goodBye.png")) {
+       DEBUG << "Error during import " << std::endl;
+       exit(1);
+   }
+   else {
+       _stoneWhiteTexture.setSmooth(true);
+       _stoneBlackTexture.setSmooth(true);
+       _backgroundTexture.setSmooth(true);
+       _boardGameTexture.setSmooth(true);
+       _goodByeTexture.setSmooth(true);
+       _helloTexture.setSmooth(true);
+   }
+}
+
+void    Interface::loadSprite(void) {
+    makeSprite(_backgroundSprite, _backgroundTexture, 1, 1, 0, 0);
+    makeSprite(_boardGameSprite, _boardGameTexture, 0.9f, 0.9f, (_backgroundTexture.getSize().x - (_boardGameTexture.getSize().x * 0.9)) / 2, (_backgroundTexture.getSize().y - (_boardGameTexture.getSize().y * 0.9)) / 2);
+    makeSprite(_whiteStone, _stoneWhiteTexture, 0.825f, 0.825f, 0, 0);
+    makeSprite(_blackStone, _stoneBlackTexture, 0.825f, 0.825f, 0, 0);
+    makeSprite(_goodByeSprite, _goodByeTexture, 1, 1, 0, 0);
+    makeSprite(_helloSprite, _helloTexture, 1, 1, 0, 0);
+    makeSprite(previewStoneFree, _stoneWhiteTexture,0.825f, 0.825f, 0, 0);
+    makeSprite(previewStoneForbidden, _stoneWhiteTexture,0.825f, 0.825f, 0, 0);
+    _whiteStone.setOrigin(_stoneWhiteTexture.getSize().x / _whiteStone.getScale().x / 2, _stoneWhiteTexture.getSize().y / _whiteStone.getScale().y / 2);
+    _blackStone.setOrigin(_stoneBlackTexture.getSize().x / _blackStone.getScale().x / 2, _stoneBlackTexture.getSize().y / _blackStone.getScale().y / 2);
+    previewStoneFree.setOrigin(_stoneWhiteTexture.getSize().x / _whiteStone.getScale().x / 2, _stoneWhiteTexture.getSize().y / _whiteStone.getScale().y / 2);
+    previewStoneForbidden.setOrigin(_stoneBlackTexture.getSize().x / _blackStone.getScale().x / 2, _stoneBlackTexture.getSize().y / _blackStone.getScale().y / 2);
+    previewStoneFree.setColor(Color(0,255,0,125));
+    previewStoneForbidden.setColor(Color(255,0,0,125));
+    //    _allSprite.pop_back();
+//    _allSprite.pop_back();
+   DEBUG << "SPRITES LOADS\n";
+}
+
+void    Interface::makeSprite(Sprite &sprite, Texture &texture, float sizeX, float sizeY, int posX, int posY) {
+    sprite.setTexture(texture);
+    sprite.setScale(sizeX, sizeY);
+    sprite.setPosition(posX, posY);
 }
 
 void    Interface::initCoordBoard(void) {
@@ -83,89 +134,56 @@ void    Interface::printCoordBoard(void) {
 }
 
 void    Interface::setStoneOnClick(Player &current, int clickx, int clicky) {
+    Vector2<int> tmp = turnCoordInterfaceInGomokuBoardIndex(clickx, clicky);
+    if (tmp.x == -1)
+        return;
+    if (gomoku->getRules().canPutStone(current, tmp.x, tmp.y)) {
+        current.setCoordPlayed(tmp.x, tmp.y);
+        current.setPlayed(true);
+    }
+}
+
+Vector2<int>    Interface::turnCoordInterfaceInGomokuBoardIndex(int mouseX, int mouseY) {
     int i = 0;
     int j = 0;
+    Vector2<int> tmp;
     while (i < GW) {
         j = 0;
         while (j < GH) {
-            if (clickx <= coordBoard[i][j].x + 8 && clickx >= coordBoard[i][j].x - 8 &&
-                clicky <= coordBoard[i][j].y + 8 && clicky >= coordBoard[i][j].y - 8) {
-                if (gomoku->getRules().canPutStone(current, i, j)) {
-                    current.setCoordPlayed(i, j);
-                    current.setPlayed(true);
-                }
-                return; 
+            if (mouseX <= coordBoard[i][j].x + 11 && mouseX >= coordBoard[i][j].x - 11 &&
+                mouseY <= coordBoard[i][j].y + 11 && mouseY >= coordBoard[i][j].y - 11) {
+                tmp.x = i;
+                tmp.y = j;
+                return (tmp); 
                 }
             j++;
             }
         i++;
     }
+    tmp.x = -1;
+    tmp.y = -1;
+    return (tmp); 
 }
 
-
 void	Interface::capture(Player &current, sf::Sprite *spriteEnemy, int x1, int y1) {
-    (void)current;
-    (void)spriteEnemy;
     int i = getCoordBoard(x1,y1).x;
     int j = getCoordBoard(x1,y1).y;
+    removeStone(i,j);
+    this->putStone(*spriteEnemy, current.getCoordCanteen(current.getNbCapture() - 1).x, current.getCoordCanteen(current.getNbCapture() - 1).y);
+}
+
+void    Interface::removeStone(int i, int j) {
     Vector2<int> pos;
     for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
         pos = (Vector2<int>)(*it).getPosition();
         if ((pos.x == i && pos.y == j)){
             it = _allSprite.erase(it);
             DEBUG << "REMOVE\n";
+            break;
         }
     }
-//    this->putStone(*spriteEnemy, current.getCoordCanteen(current.getNbCapture() - 2).x, current.getCoordCanteen(current.getNbCapture() - 2).y);
-    this->putStone(*spriteEnemy, current.getCoordCanteen(current.getNbCapture() - 1).x, current.getCoordCanteen(current.getNbCapture() - 1).y);
 }
 
-//TO-DO : Ajout texture des autres States ici.
-void    Interface::loadTexture(void) {
-   if(!_stoneWhiteTexture.loadFromFile("./sprite/whiteStone.png")
-    || !_stoneBlackTexture.loadFromFile("./sprite/blackStone.png")
-    || !_backgroundTexture.loadFromFile("./sprite/background.png")
-    || !_boardGameTexture.loadFromFile("./sprite/goban(2).png")
-    || !_helloTexture.loadFromFile("./sprite/hello.png")
-    || !_goodByeTexture.loadFromFile("./sprite/goodBye.png")) {
-       DEBUG << "Error during import " << std::endl;
-       exit(1);
-   }
-   else {
-       _stoneWhiteTexture.setSmooth(true);
-       _stoneBlackTexture.setSmooth(true);
-       _backgroundTexture.setSmooth(true);
-       _boardGameTexture.setSmooth(true);
-       _goodByeTexture.setSmooth(true);
-       _helloTexture.setSmooth(true);
-   }
-}
-
-void    Interface::loadSprite(void) {
-    makeSprite(_backgroundSprite, _backgroundTexture, 1, 1, 0, 0);
-    makeSprite(_boardGameSprite, _boardGameTexture, 0.9f, 0.9f, (_backgroundTexture.getSize().x - (_boardGameTexture.getSize().x * 0.9)) / 2, (_backgroundTexture.getSize().y - (_boardGameTexture.getSize().y * 0.9)) / 2);
-    makeSprite(_whiteStone, _stoneWhiteTexture, 0.825f, 0.825f, 0, 0);
-    makeSprite(_blackStone, _stoneBlackTexture, 0.825f, 0.825f, 0, 0);
-    makeSprite(_goodByeSprite, _goodByeTexture, 1, 1, 0, 0);
-    makeSprite(_helloSprite, _helloTexture, 1, 1, 0, 0);
-    _whiteStone.setOrigin(_stoneWhiteTexture.getSize().x / _whiteStone.getScale().x / 2, _stoneWhiteTexture.getSize().y / _whiteStone.getScale().y / 2);
-    _blackStone.setOrigin(_stoneBlackTexture.getSize().x / _blackStone.getScale().x / 2, _stoneBlackTexture.getSize().y / _blackStone.getScale().y / 2);
-//    _allSprite.pop_back();
-//    _allSprite.pop_back();
-   DEBUG << "loadS\n";
-}
-
-void    Interface::makeSprite(Sprite &sprite, Texture &texture, float sizeX, float sizeY, int posX, int posY) {
-    sprite.setTexture(texture);
-    sprite.setScale(sizeX, sizeY);
-    sprite.setPosition(posX, posY);
-}
-
-Interface::~Interface() {
-
-}
-
-//TO-DO : a changer, utiliser une Enum
 void    Interface::setState(State newState)
 {
     if (state == PAUSE && newState != PAUSE) {
@@ -179,7 +197,7 @@ void    Interface::setState(State newState)
         return;
     }
     this->state = newState;
-    //appel fonction clean spriteList.
+    this->cleanInterface();
     switch (state) {
             case MENU :
                 menuScreen();
@@ -203,6 +221,7 @@ void    Interface::setState(State newState)
                 DEBUG << "ERROR SCREEN STATE ???";
                 exit(0);
                 break;
+    this->update();
     }
 }
 
@@ -215,16 +234,19 @@ void    Interface::stopPauseScreen(void) {
 }
 
 void    Interface::drawGame(void) {
+    //Affichage des sprites en premier:
     for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
         this->_window.draw(*it);
-    }/*
-    this->_window.draw(menu.textBoxP1);
-    this->_window.draw(menu.textBoxP2);
-    this->_window.draw(menu.textBoxVariante);
-       */// DEBUG << menu.textBoxP1.getColor().r << "\n";
+    }
+    //Affichage des textes par dessus :
     for (std::list<Text*>::iterator it = _allText.begin(); it != _allText.end(); it++) {
         this->_window.draw(*(*it));
     }
+}
+
+void    Interface::cleanInterface(void) {
+    this->cleanSpriteList();
+    this->cleanTextList();
 }
 
 void    Interface::cleanTextList(void) {
@@ -237,7 +259,6 @@ void    Interface::cleanSpriteList(void) {
     for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
         it = _allSprite.erase(it);
     }
-    cleanTextList();
 //    _allSprite.erase(_allSprite.begin(), _allSprite.end());
 }
 
@@ -251,13 +272,11 @@ void    Interface::welcomeScreen(void) {
 
 void    Interface::goodByeScreen(void) {
     DEBUG << "GOODBYE SCREEN\n";
-    this->cleanSpriteList();
     _allSprite.push_back(_goodByeSprite);
     this->state = GOODBYE;
 }
 
 void    Interface::menuScreen(void) {
-    cleanSpriteList();
     _allSprite.push_back(menu.backgroundMenuSprite);
     _allText.push_back(&menu.textBoxP1);
     _allText.push_back(&menu.textBoxP2);
@@ -271,13 +290,9 @@ void    Interface::againScreen(void) {
 }
 
 void    Interface::gameScreen(void) {
-    DEBUG << "GAME SCREEN\n";
-    this->cleanSpriteList();
     _allSprite.push_back(_backgroundSprite);
     _allSprite.push_back(_boardGameSprite);
     this->state = GAME;
-    DEBUG << "GAMEOUT SCREEN\n";
-    //add push_back list les éléments
 }
 
 void    Interface::scoreScreen(void) {
@@ -296,6 +311,40 @@ void    Interface::captureZone(void) {
 void    Interface::putStone(Sprite stone, int x, int y) {
         stone.setPosition(x, y);
         _allSprite.push_back(stone);
+}
+
+void    Interface::putPreviewStone(Player &current, int mouseX, int mouseY)
+{
+    Vector2<int> tmp = turnCoordInterfaceInGomokuBoardIndex(mouseX, mouseY);
+    if (tmp.x == -1)
+        return;
+    Vector2<int> coord = getCoordBoard(tmp.x, tmp.y);
+    if (gomoku->getStone(tmp.x, tmp.y) == FREE) {
+        if ((gomoku->getRules()).canPutStone(current, tmp.x, tmp.y)) {
+            this->putStone(this->previewStoneFree, coord.x, coord.y);
+        }
+        else {
+            this->putStone(this->previewStoneForbidden, coord.x, coord.y);
+        }
+        this->previewStone = true;
+        this->coordPreviewStone.x = coord.x;
+        this->coordPreviewStone.y = coord.y;
+    }
+}
+
+void    Interface::unputPreviewStone(int mouseX, int mouseY) {
+        if (!this->previewStone)
+            return;
+        Vector2<int> tmp = turnCoordInterfaceInGomokuBoardIndex(mouseX, mouseY);
+        if (tmp.x == -1)
+            return;
+        Vector2<int> coord = getCoordBoard(tmp.x, tmp.y);
+        if (coord.x != coordPreviewStone.x || coord.y != coordPreviewStone.y) {
+            this->previewStone = false;
+            removeStone(this->coordPreviewStone.x, this->coordPreviewStone.y);
+            this->coordPreviewStone.x = -1;
+            this->coordPreviewStone.y = -1;
+        }
 }
 
 void    Interface::checkEvent(Player &current) {
@@ -321,13 +370,26 @@ void    Interface::checkEvent(Player &current) {
                 }
             }
             break;
-/*            case Event::MouseMoved :
+            case Event::MouseMoved :
             {
-                //clickX = _event.mouseMove.x;
-                //clickY = _event.mouseMove.y;
+                if (state == GAME) {
+                    int x = _event.mouseMove.x;
+                    int y = _event.mouseMove.y;
+                    if (onBoard(x,y)) {
+                        if (!previewStone) {
+                            putPreviewStone(current, x, y);
+                            update();
+                        }
+                        else
+                            unputPreviewStone(x, y);
+
+                    }
+                    else if (previewStone)
+                        unputPreviewStone(x, y);
+                }
             }
             break;
-*/          case Event::MouseButtonPressed :
+            case Event::MouseButtonPressed :
             {
                 switch (_event.mouseButton.button)
                 {
@@ -372,15 +434,24 @@ void    Interface::checkClickLeft(Player &current, int x, int y)
     else if (state == MENU){
         DEBUG << "click during Menu\n";
         if (menu.onP1(x, y))
+        {
             menu.switchTextBox(menu.textBoxP1, menu.choiceP1);
-        else if (menu.onP2(x, y))
-            menu.switchTextBox(menu.textBoxP2, menu.choiceP2);
-        else if (menu.onVariante(x, y))
-            menu.switchTextBox(menu.textBoxVariante, menu.variante);
-        else if (menu.onGo(x, y)){
-            menu.go(&(gomoku->getBlackPlayer()), &(gomoku->getWhitePlayer()));//setPlayer...
-            setState(GAME); //TO DO fonction go de menu
         }
+        else if (menu.onP2(x, y))
+        {
+            menu.switchTextBox(menu.textBoxP2, menu.choiceP2);
+        }
+        else if (menu.onVariante(x, y))
+        {
+            menu.switchTextBox(menu.textBoxVariante, menu.variante);
+        }
+        else if (menu.onGo(x, y)){
+        DEBUG << "onGO1\n";
+            menu.go(gomoku);//setPlayer...
+            setState(GAME);
+        DEBUG << "onGO5\n";
+        }
+        DEBUG << "EndClcikMenu\n";
     }
     else if (state == SCORE){
         DEBUG << "click during victory or fefeat screen\n";

@@ -4,10 +4,12 @@
 
 HumanPlayer::HumanPlayer() : Player()
 {
+	DEBUG << "NEW HUMAN\n";
 }
 
 HumanPlayer::~HumanPlayer()
 {
+	DEBUG << "BYE HUMAN\n";
 }
 
 

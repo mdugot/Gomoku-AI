@@ -1,16 +1,24 @@
 #include "menu.h"
+#include "player.h"
+#include "humanPlayer.h"
+#include "minMaxDynamicPlayer.h"
+#include "randomPlayer.h"
+#include "noobIA.h"
 
 using namespace sf;
 
 Menu::Menu() {
     choiceP1 = HUMAN;
-    choiceP2 = IA_HARD;
+    choiceP2 = HUMAN;
     variante = CLASSIQUE;
     if (!arial.loadFromFile("./sprite/arial_black.ttf")){
         DEBUG << "Error load Font Arial\n";
     }
     else {
         DEBUG << "SET\n";
+        textBoxP1.setFont(arial);
+        textBoxP2.setFont(arial);
+        textBoxVariante.setFont(arial);
         textBoxP1.setCharacterSize(24);
         textBoxP2.setCharacterSize(24);
         textBoxVariante.setCharacterSize(24);
@@ -45,7 +53,6 @@ void Menu::setMiddle(Text &text)
 }
 
 void    Menu::setTextString(Text &text, TextChoice &textChoice) {
-    text.setFont(arial);
     switch (textChoice) {
         case HUMAN:
             text.setString("HUMAN");
@@ -121,20 +128,27 @@ bool    Menu::onGo(int x, int y) {
         return (false);
 }
 
-void    Menu::go(Player* one, Player *two) {
-    (void)one;
-    (void)two;
-    DEBUG << "TO DO go\n";
+void    Menu::go(Gomoku* gomoku) {
+    delete &(gomoku->getWhitePlayer());
+    delete &(gomoku->getBlackPlayer());
+    gomoku->setWhitePlayer(updatePlayer(choiceP1));
+    gomoku->setBlackPlayer(updatePlayer(choiceP2));
 }
 
-Player  *Menu::updatePlayerOne(Player *p1) {
-    //delete ancien joueur
-    //create nouveau joueur
-    return (p1);
-}
-
-Player  *Menu::updatePlayerTwo(Player *p2) {
-    //delete ancien joueur
-    //create nouveau joueur
-    return (p2);
+Player*    Menu::updatePlayer(TextChoice &textC) {
+    if (textC == HUMAN)
+        return new HumanPlayer();
+    else if (textC == RANDOM)
+        return new NoobIA();
+    else if (textC == IA_HARD)
+        return new MinMaxDynamicPlayer(9);
+    else if (textC == IA_NORMAL)
+        return new MinMaxDynamicPlayer(5);
+    else if (textC == IA_EASY)
+        return new MinMaxDynamicPlayer(2);
+    else {
+        DEBUG << "ERROR SWITCH PLAYER IN GO MENU\n";
+        exit(1);
+    }
+	return NULL;
 }

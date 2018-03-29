@@ -35,6 +35,7 @@ class Interface {
 		void	putStone(sf::Sprite, int, int);
 		void	printCoordBoard(void);
 		void	makeSprite(sf::Sprite &s, sf::Texture &t, float sy, float sx, int px, int py);
+		void	cleanInterface(void);
 		void	cleanSpriteList(void);
 		void	cleanTextList(void);
 		void	checkClickLeft(Player &current, int x, int y);
@@ -62,6 +63,7 @@ class Interface {
 		std::list<sf::Sprite>			_allSprite;
 		std::list<sf::Text*>			_allText;
 		sf::Vector2<int>	coordBoard[GW][GH];
+		sf::Vector2<int>	turnCoordInterfaceInGomokuBoardIndex(int screenX, int screenY);
 		
 		sf::Sprite			_whiteStone;
 		sf::Sprite			_blackStone;
@@ -84,8 +86,16 @@ class Interface {
 		void	loadSprite(void);
 		void	initCoordBoard(void);
 		void	initCoordCanteen(void);
+		void	putPreviewStone(Player &current, int mouseX, int mouseY);
+		void	unputPreviewStone(int mouseX, int mouseY);
+		void	removeStone(int i, int j);
 
-		
+		//to previzualize stone
+		bool				previewStone;
+		sf::Vector2<int>	coordPreviewStone;
+		sf::Sprite			previewStoneFree;
+		sf::Sprite			previewStoneForbidden;
+
 		sf::Sprite			_backgroundSprite;
 		sf::Sprite			_boardGameSprite;
 		sf::Sprite			_goodByeSprite;
