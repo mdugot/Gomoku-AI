@@ -36,18 +36,11 @@ void	Gomoku::updateWhitePlayer()
 
 void	Gomoku::updateBlackPlayer()
 {
-	DEBUG << "A";
 	blackPlayer->setSpriteStone(&(interface._blackStone));
-	DEBUG << "B";
 	blackPlayer->setCanteen(interface.blackCanteen);
-	DEBUG << "C_" << blackPlayer << "_\n";
 	blackPlayer->setGomoku(this);
-	DEBUG << "D";
 	blackPlayer->setColor(BLACK);
-	DEBUG << "E";
 	blackPlayer->setEnemy(whitePlayer);
-	DEBUG << "F";
-	DEBUG << "G\n";
 }
 
 Gomoku::~Gomoku()
@@ -73,7 +66,6 @@ void Gomoku::start() {
 
 	std::vector<std::pair<unsigned char, unsigned char>> captured;
 	interface.setState(MENU);
-		write(1, "1", 1);
 	currentPlayer = blackPlayer;
 	while (interface.getState() == MENU)  {
 		interface.checkEvent(*currentPlayer);
@@ -81,12 +73,10 @@ void Gomoku::start() {
 	}
 	int x = 0;
 	int y = 0;
-		write(2, "2\n", 1);
 	updateWhitePlayer();
 	updateBlackPlayer();
 	currentPlayer = blackPlayer;
 	while (!rules.checkEnd(*currentPlayer)) {
-		write(1, "3", 1);
         interface.update();
 		//PLAY
 		currentPlayer->play(rules, interface);
@@ -111,7 +101,6 @@ void Gomoku::start() {
 		interface.checkEvent(*currentPlayer);
 		captured.clear();
 		rules.turnCounter += 1;
-		DEBUG << "\n\n=====TURN======\n";
 	}
 	this->end();
 	printBoard();
