@@ -128,25 +128,27 @@ bool    Menu::onGo(int x, int y) {
         return (false);
 }
 
-void    Menu::go(Player* one, Player *two) {
-    updatePlayer(one, choiceP1);
-    updatePlayer(two, choiceP2);
+void    Menu::go(Gomoku* gomoku) {
+    delete &(gomoku->getWhitePlayer());
+    delete &(gomoku->getBlackPlayer());
+    gomoku->setWhitePlayer(updatePlayer(choiceP1));
+    gomoku->setBlackPlayer(updatePlayer(choiceP2));
 }
 
-void    Menu::updatePlayer(Player *p, TextChoice &textC) {
-    delete p;
+Player*    Menu::updatePlayer(TextChoice &textC) {
     if (textC == HUMAN)
-        p = new HumanPlayer();
+        return new HumanPlayer();
     else if (textC == RANDOM)
-        p = new NoobIA();
+        return new NoobIA();
     else if (textC == IA_HARD)
-        p = new MinMaxDynamicPlayer(9);
+        return new MinMaxDynamicPlayer(9);
     else if (textC == IA_NORMAL)
-        p = new MinMaxDynamicPlayer(5);
+        return new MinMaxDynamicPlayer(5);
     else if (textC == IA_EASY)
-        p = new MinMaxDynamicPlayer(2);
+        return new MinMaxDynamicPlayer(2);
     else {
         DEBUG << "ERROR SWITCH PLAYER IN GO MENU\n";
         exit(1);
     }
+	return NULL;
 }

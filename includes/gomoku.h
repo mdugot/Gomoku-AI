@@ -55,6 +55,8 @@ class Gomoku
 
 		inline Player	&getWhitePlayer() {return *whitePlayer;}
 		inline Player	&getBlackPlayer() {return *blackPlayer;}
+		inline void		setWhitePlayer(Player *p) {whitePlayer = p;}
+		inline void		setBlackPlayer(Player *p) {blackPlayer = p;}
 		void		updateWhitePlayer(void);
 		void		updateBlackPlayer(void);
 		inline Player	*getCurrentPlayer() {return currentPlayer;}

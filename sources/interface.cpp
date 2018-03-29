@@ -382,7 +382,7 @@ void    Interface::checkClickLeft(Player &current, int x, int y)
         }
         else if (menu.onGo(x, y)){
         DEBUG << "onGO1\n";
-            menu.go(&(gomoku->getBlackPlayer()), &(gomoku->getWhitePlayer()));//setPlayer...
+            menu.go(gomoku);//setPlayer...
             setState(GAME);
         DEBUG << "onGO5\n";
         }
