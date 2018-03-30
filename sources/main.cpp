@@ -18,15 +18,15 @@ int main(int argc, char **argv) {
 	//RandomPlayer	p2;
 	//NoobIA		p1;
 	//Menu		menu;
-	HumanPlayer	black;
-//	HumanPlayer	white;
-//	MinMaxDynamicPlayer		white(6);
-//	srand(7);
-	MinMaxDynamicPlayer		white(6);
-//	MinMaxDynamicPlayer		black(9);
+	//HumanPlayer	black;
+	//HumanPlayer	white;
+//	MinMaxDynamicPlayer		white(5);
 	DefaultRules	rules;
 	Interface		interface;
-	Gomoku			gomoku(white, black, rules, interface);
+	Gomoku			gomoku(rules, interface);
+//	srand(7);
+//	MinMaxDynamicPlayer		white(9);
+//	MinMaxDynamicPlayer		black(5);
 	gomoku.start();
 
 	success("end of the game");

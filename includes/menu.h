@@ -47,11 +47,10 @@ class Menu {
 		sf::Text			textBoxP1;
 		sf::Text			textBoxP2;
         //Rules *upadteRules(Rules *rules); // si variante
-        Player  *updatePlayerOne(Player *p1);
-        Player  *updatePlayerTwo(Player *p2);
+        Player *updatePlayer(TextChoice &textChoice);
         void    switchTextBox(sf::Text &text, TextChoice &textChoice);
         void    updateText(sf::Text &text, TextChoice &textChoice);
-        void    go(Player *one, Player *two);
+        void    go(Gomoku* gomoku);
         TextChoice  choiceP1;
         TextChoice  choiceP2;
         TextChoice  variante;
