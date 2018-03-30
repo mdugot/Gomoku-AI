@@ -15,6 +15,8 @@
 #include <map>
 #include <iterator>
 #include <cmath>
+#include <thread>
+#include <mutex>
 
 
 #include "colors.h"

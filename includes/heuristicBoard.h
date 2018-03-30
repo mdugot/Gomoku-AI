@@ -76,6 +76,7 @@ class HeuristicBoard
 		void capture(unsigned char x, unsigned char y);
 		void print(int lastX = -1, int lastY = -1);
 		bool checkDoubleFreeThree(unsigned char x, unsigned char y);
+		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
 
 };
 

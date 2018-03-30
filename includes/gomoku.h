@@ -51,6 +51,7 @@ class Gomoku
 	public:
 
 		Gomoku(Player& p1, Player& p2, Rules& rules, Interface& interface);
+		Gomoku(Gomoku* copyFrom, Rules &copyRules);
 		~Gomoku();
 
 		inline Player &getWhitePlayer() {return whitePlayer;}
@@ -58,6 +59,7 @@ class Gomoku
 		inline Player *getCurrentPlayer() {return currentPlayer;}
 		inline Rules &getRules() {return rules;}
 		inline Stone** getBoard() {return (Stone**)board;}
+		inline bool** getFocus() {return (bool**)focus;}
 		inline Interface &getInterface() {return interface;}
 		inline int getNbEatenStone() {return nbEatenStone;}
 		Stone getStone(int x, int y);

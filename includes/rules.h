@@ -19,7 +19,6 @@ class Rules
 		unsigned int turnCounter;
 		Gomoku *gomoku;
 		
-		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
 		bool win(Player &player, bool avoidable);
 		bool equality(Player &nextToPlay);
 		bool canAvoidDefeat(Player *player, Player *ennemy);
@@ -28,9 +27,13 @@ class Rules
 	public:
 
 		Rules();
-		~Rules();
+		virtual ~Rules();
 
+		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
+		inline void setTurnCounter(unsigned int t) {this->turnCounter = t;}
+		inline unsigned int getTurnCounter() {return this->turnCounter;}
 		virtual bool canPutStone(Player &player, int x, int y) = 0;
+		virtual Rules *copy() = 0;
 
 		End checkEnd(Player &nextToPlay);
 };

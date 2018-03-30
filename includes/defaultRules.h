@@ -14,6 +14,7 @@ class DefaultRules : public Rules
 
 
 		virtual bool canPutStone(Player &player, int x, int y);
+		virtual Rules *copy();
 };
 
 

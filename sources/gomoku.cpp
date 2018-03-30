@@ -25,6 +25,13 @@ Gomoku::Gomoku(Player &p1, Player &p2, Rules &rules, Interface &interface) : whi
 	currentPlayer = &blackPlayer;
 }
 
+Gomoku::Gomoku(Gomoku *copyFrom, Rules &copyRules) : whitePlayer(copyFrom->getWhitePlayer()), blackPlayer(copyFrom->getBlackPlayer()), rules(copyRules), interface(copyFrom->getInterface())
+{
+	memcpy((void*)board, (void*)(copyFrom->getBoard()), sizeof(Stone[GW][GH]));
+	memcpy((void*)focus, (void*)(copyFrom->getFocus()), sizeof(bool[GW][GH]));
+	currentPlayer = copyFrom->getCurrentPlayer();
+}
+
 Gomoku::~Gomoku()
 {
 }
@@ -50,8 +57,8 @@ void Gomoku::start() {
 	whitePlayer.setCanteen(interface.whiteCanteen);
 	blackPlayer.setCanteen(interface.blackCanteen);
 	currentPlayer = &blackPlayer;
-	interface.setState(MENU);
-//	interface.setState(GAME);
+//	interface.setState(MENU);
+	interface.setState(GAME);
 	while (interface.getState() != GAME)  { //tmp fonction menu.go()
 		interface.checkEvent(*currentPlayer);
         interface.update();
@@ -88,8 +95,8 @@ void Gomoku::start() {
 //		int tmp;
 //		std::cin >> tmp;
 	}
+	DEBUG << "Game end after " << rules.turnCounter << " turns\n";
 	this->end();
-	printBoard();
 }
 
 

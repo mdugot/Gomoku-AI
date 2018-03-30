@@ -20,10 +20,10 @@ int main(int argc, char **argv) {
 	//Menu		menu;
 	HumanPlayer	black;
 //	HumanPlayer	white;
-	MinMaxDynamicPlayer		white(6);
+//	MinMaxDynamicPlayer		white(6);
 //	srand(7);
-//	MinMaxDynamicPlayer		white(4);
-//	MinMaxDynamicPlayer		black(4);
+	MinMaxDynamicPlayer		white(6);
+//	MinMaxDynamicPlayer		black(9);
 	DefaultRules	rules;
 	Interface		interface;
 	Gomoku			gomoku(white, black, rules, interface);

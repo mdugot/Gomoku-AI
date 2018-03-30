@@ -26,8 +26,8 @@ void Player::observe(Rules &rules, int x, int y, std::vector<std::pair<unsigned 
 		myHeuristic.beCaptured(it->first, it->second);
 		ennemyHeuristic.capture(it->first, it->second);
 		DEBUG << RED << "CAPTURED BY ENNEMY !\n" << DEFAULT_COLOR;
-		myHeuristic.print(x, y);
-		ennemyHeuristic.print(x, y);
+//		myHeuristic.print(x, y);
+//		ennemyHeuristic.print(x, y);
 	}
 }
 
@@ -36,7 +36,7 @@ void Player::observeMyCapture(std::vector<std::pair<unsigned char, unsigned char
 		myHeuristic.capture(it->first, it->second);
 		ennemyHeuristic.beCaptured(it->first, it->second);
 		DEBUG << GREEN << "CAPTURE ENNEMY STONES !\n" << DEFAULT_COLOR;
-		myHeuristic.print();
-		ennemyHeuristic.print();
+//		myHeuristic.print();
+//		ennemyHeuristic.print();
 	}
 }
