@@ -16,6 +16,7 @@
 # define BLACKCANTEENY 40
 # define WHITECANTEENX 960
 # define WHITECANTEENY 860
+# define CENTER_MAX_DISTANCE 20
 
 typedef enum State {
 	WELCOME = 1, MENU = 2, GAME = 3, SCORE = 4, AGAIN = 5, PAUSE = 6, GOODBYE = 0

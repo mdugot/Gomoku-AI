@@ -150,8 +150,8 @@ Vector2<int>    Interface::turnCoordInterfaceInGomokuBoardIndex(int mouseX, int 
     while (i < GW) {
         j = 0;
         while (j < GH) {
-            if (mouseX <= coordBoard[i][j].x + 11 && mouseX >= coordBoard[i][j].x - 11 &&
-                mouseY <= coordBoard[i][j].y + 11 && mouseY >= coordBoard[i][j].y - 11) {
+            if (mouseX <= coordBoard[i][j].x + CENTER_MAX_DISTANCE && mouseX >= coordBoard[i][j].x - CENTER_MAX_DISTANCE &&
+                mouseY <= coordBoard[i][j].y + CENTER_MAX_DISTANCE && mouseY >= coordBoard[i][j].y - CENTER_MAX_DISTANCE) {
                 tmp.x = i;
                 tmp.y = j;
                 return (tmp); 
