@@ -48,6 +48,7 @@ class Gomoku
 		void	capture(Player &current, sf::Sprite *spriteEnemy, int x1, int y1);
 		void	captureAll(Player &current, sf::Sprite *spriteEnemy, std::vector<std::pair<unsigned char, unsigned char>> &captured);
 		void	drawStone();
+		void	initGomoku();
 	
 	public:
 

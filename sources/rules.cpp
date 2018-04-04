@@ -29,7 +29,7 @@ bool Rules::canAvoidDefeat(Player *player, Player *ennemy) {
 }
 
 bool Rules::win(Player &player, bool avoidable) {
-	int x = 0, y = 0; //pourra être utile pour s'assurer de l'endroit de la victoire et faire une animation graphique
+	int x = 0, y = 0;
 	if (gomoku->fiveStoneLine(player.getColor(), x, y) &&
 		!(avoidable && canAvoidDefeat(player.getEnemy(), &player)) )
 		return true;

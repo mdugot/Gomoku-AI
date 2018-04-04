@@ -11,9 +11,13 @@ using namespace sf;
 
 Gomoku::Gomoku(Rules &rules, Interface &interface) : rules(rules), interface(interface)
 {
-	clone = false;
 	whitePlayer = new HumanPlayer();
 	blackPlayer = new HumanPlayer();
+	initGomoku();
+}
+
+void	Gomoku::initGomoku() {
+	clone = false;
 	for (int i = 0; i < GW; i++) {
 		for (int j = 0; j < GH; j++) {
 			board[i][j] = FREE;
@@ -74,46 +78,64 @@ void Gomoku::drawStone() {
 }
 
 void Gomoku::start() {
-
-	std::vector<std::pair<unsigned char, unsigned char>> captured;
+	bool again = true;
+	End end = NO_END;
 	interface.setState(MENU);
-	currentPlayer = blackPlayer;
-	while (interface.getState() == MENU)  {
-		interface.checkEvent(*currentPlayer);
-        interface.update();
+	while (again) {
+		std::vector<std::pair<unsigned char, unsigned char>> captured;
+		currentPlayer = blackPlayer;
+		while (interface.getState() == MENU)  {
+			interface.checkEvent(*currentPlayer);
+			interface.update();
+		}
+		int x = 0;
+		int y = 0;
+		updateWhitePlayer();
+		updateBlackPlayer();
+		currentPlayer = blackPlayer;
+		while (!(end = rules.checkEnd(*currentPlayer))) {
+			interface.update();
+			//PLAY
+			currentPlayer->play(rules, interface);
+			x = currentPlayer->coordPlayed.x;
+			y = currentPlayer->coordPlayed.y;
+			//UPDATE HEURISTIC
+			currentPlayer->myHeuristic.put(x, y);
+			currentPlayer->ennemyHeuristic.clear(x, y);
+			currentPlayer->myHeuristic.print(x, y);
+			currentPlayer->ennemyHeuristic.print(x, y);
+			//DRAW
+			drawStone();
+			//CAPTURE
+			checkCapture(*currentPlayer, x, y, *(currentPlayer->getEnemy()), captured);
+			captureAll(*currentPlayer, currentPlayer->getEnemy()->getSpriteStone(), captured);
+			//OBSERVE
+			currentPlayer->getEnemy()->observe(rules, x, y, captured);
+			currentPlayer->observeMyCapture(captured);
+			//END
+			currentPlayer->played = false;
+			currentPlayer = currentPlayer->getEnemy();
+			interface.checkEvent(*currentPlayer);
+			captured.clear();
+			rules.turnCounter += 1;
+		}
+		if (end == WHITE_WIN)
+			interface.setState(WHITEWIN);
+		else if (end == BLACK_WIN)
+			interface.setState(BLACKWIN);
+		else if (end == EQUALITY)
+			interface.setState(EQUAL);
+		DEBUG << "Game end after " << rules.turnCounter << " turns\n";
+		while (interface.getState() != AGAIN) {
+			interface.update();
+			interface.checkEvent(*currentPlayer);
+		}
+		while (interface.getState() == AGAIN) {
+			interface.update();
+			interface.checkEvent(*currentPlayer);
+		}
+		initGomoku();
 	}
-	int x = 0;
-	int y = 0;
-	updateWhitePlayer();
-	updateBlackPlayer();
-	currentPlayer = blackPlayer;
-	while (!rules.checkEnd(*currentPlayer)) {
-        interface.update();
-		//PLAY
-		currentPlayer->play(rules, interface);
-		x = currentPlayer->coordPlayed.x;
-		y = currentPlayer->coordPlayed.y;
-		//UPDATE HEURISTIC
-		currentPlayer->myHeuristic.put(x, y);
-		currentPlayer->ennemyHeuristic.clear(x, y);
-		currentPlayer->myHeuristic.print(x, y);
-		currentPlayer->ennemyHeuristic.print(x, y);
-		//DRAW
-		drawStone();
-		//CAPTURE
-		checkCapture(*currentPlayer, x, y, *(currentPlayer->getEnemy()), captured);
-		captureAll(*currentPlayer, currentPlayer->getEnemy()->getSpriteStone(), captured);
-		//OBSERVE
-		currentPlayer->getEnemy()->observe(rules, x, y, captured);
-		currentPlayer->observeMyCapture(captured);
-		//END
-		currentPlayer->played = false;
-		currentPlayer = currentPlayer->getEnemy();
-		interface.checkEvent(*currentPlayer);
-		captured.clear();
-		rules.turnCounter += 1;
-	}
-	DEBUG << "Game end after " << rules.turnCounter << " turns\n";
 	this->end();
 }
 

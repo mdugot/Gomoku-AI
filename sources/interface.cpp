@@ -31,7 +31,15 @@ void    Interface::loadTexture(void) {
     || !_backgroundTexture.loadFromFile("./sprite/background.png")
     || !_boardGameTexture.loadFromFile("./sprite/goban(2).png")
     || !_helloTexture.loadFromFile("./sprite/hello.png")
-    || !_goodByeTexture.loadFromFile("./sprite/goodBye.png")) {
+    || !_goodByeTexture.loadFromFile("./sprite/goodBye.png")
+    || !_againTexture.loadFromFile("./sprite/again.png")
+    || !_whiteWinTexture.loadFromFile("./sprite/white_win.png")
+    || !_blackWinTexture.loadFromFile("./sprite/black_win.png")
+    || !_equalityTexture.loadFromFile("./sprite/equality.png")
+    || !_againYesTexture.loadFromFile("./sprite/againYesBox.png")
+    || !_againNoTexture.loadFromFile("./sprite/againNoBox.png")
+    || !_boxTexture.loadFromFile("./sprite/box.png")
+    ) {
        DEBUG << "Error during import " << std::endl;
        exit(1);
    }
@@ -42,6 +50,11 @@ void    Interface::loadTexture(void) {
        _boardGameTexture.setSmooth(true);
        _goodByeTexture.setSmooth(true);
        _helloTexture.setSmooth(true);
+       _againTexture.setSmooth(true);
+       _whiteWinTexture.setSmooth(true);
+       _blackWinTexture.setSmooth(true);
+       _equalityTexture.setSmooth(true);
+       _boxTexture.setSmooth(true);
    }
 }
 
@@ -52,6 +65,14 @@ void    Interface::loadSprite(void) {
     makeSprite(_blackStone, _stoneBlackTexture, 0.825f, 0.825f, 0, 0);
     makeSprite(_goodByeSprite, _goodByeTexture, 1, 1, 0, 0);
     makeSprite(_helloSprite, _helloTexture, 1, 1, 0, 0);
+    makeSprite(_againSprite, _againTexture, 1, 1, 0, 0);
+    makeSprite(_whiteWinSprite, _whiteWinTexture, 1, 1, 0, 0);
+    makeSprite(_blackWinSprite, _blackWinTexture, 1, 1, 0, 0);
+    makeSprite(_equalitySprite, _equalityTexture, 1, 1, 0, 0);
+    makeSprite(_boxSprite, _boxTexture, 1, 1, 0, 0);
+    makeSprite(_againYesSprite, _againYesTexture, 1, 1, YES_LEFT, YES_UP);
+    makeSprite(_againNoSprite, _againNoTexture, 1, 1, NO_LEFT, NO_UP);
+    makeSprite(_boxSelectSprite, _boxTexture, 1, 1, 0, 0);
     makeSprite(previewStoneFree, _stoneWhiteTexture,0.825f, 0.825f, 0, 0);
     makeSprite(previewStoneForbidden, _stoneWhiteTexture,0.825f, 0.825f, 0, 0);
     _whiteStone.setOrigin(_stoneWhiteTexture.getSize().x / _whiteStone.getScale().x / 2, _stoneWhiteTexture.getSize().y / _whiteStone.getScale().y / 2);
@@ -60,8 +81,7 @@ void    Interface::loadSprite(void) {
     previewStoneForbidden.setOrigin(_stoneBlackTexture.getSize().x / _blackStone.getScale().x / 2, _stoneBlackTexture.getSize().y / _blackStone.getScale().y / 2);
     previewStoneFree.setColor(Color(0,255,0,125));
     previewStoneForbidden.setColor(Color(255,0,0,125));
-    //    _allSprite.pop_back();
-//    _allSprite.pop_back();
+    _boxSelectSprite.setColor(Color(125,175,125,200));
    DEBUG << "SPRITES LOADS\n";
 }
 
@@ -205,8 +225,14 @@ void    Interface::setState(State newState)
             case GAME :
                 gameScreen();
                 break;
-            case SCORE :
-                scoreScreen();
+            case WHITEWIN :
+                whiteWinScreen();
+                break;
+            case BLACKWIN :
+                blackWinScreen();
+                break;
+            case EQUAL :
+                equalScreen();
                 break;
             case AGAIN :
                 againScreen();
@@ -277,6 +303,7 @@ void    Interface::goodByeScreen(void) {
 }
 
 void    Interface::menuScreen(void) {
+    DEBUG << "MENU SCREEN\n";
     _allSprite.push_back(menu.backgroundMenuSprite);
     _allText.push_back(&menu.textBoxP1);
     _allText.push_back(&menu.textBoxP2);
@@ -285,8 +312,11 @@ void    Interface::menuScreen(void) {
 }
 
 void    Interface::againScreen(void) {
-    //cleanSpriteList();
-    //add push_back list les éléments
+    DEBUG << "AGAIN SCREEN\n";
+    _allSprite.push_back(_againSprite);
+    _allSprite.push_back(_againYesSprite);
+    _allSprite.push_back(_againNoSprite);
+    this->state = AGAIN;
 }
 
 void    Interface::gameScreen(void) {
@@ -295,9 +325,22 @@ void    Interface::gameScreen(void) {
     this->state = GAME;
 }
 
-void    Interface::scoreScreen(void) {
-    //cleanSpriteList();
-    //add push_back list les éléments
+void    Interface::whiteWinScreen(void) {
+    DEBUG << "WHITE WIN SCREEN\n";
+    _allSprite.push_back(_whiteWinSprite);
+    this->state = WHITEWIN;
+}
+
+void    Interface::blackWinScreen(void) {
+    DEBUG << "BLACK WIN SCREEN\n";
+    _allSprite.push_back(_blackWinSprite);
+    this->state = BLACKWIN;
+}
+
+void    Interface::equalScreen(void) {
+    DEBUG << "EQUAL WIN SCREEN\n";
+    _allSprite.push_back(_equalitySprite);
+    this->state = EQUAL;
 }
 
 void    Interface::timer(void) {
@@ -387,6 +430,9 @@ void    Interface::checkEvent(Player &current) {
                     else if (previewStone)
                         unputPreviewStone(x, y);
                 }
+                else if (state == AGAIN) {
+                    //TO DO : box YES or NO en surbrillance
+                }
             }
             break;
             case Event::MouseButtonPressed :
@@ -414,6 +460,26 @@ bool    Interface::onBoard(int x, int y)
         x >= BOARD_LEFT - MARGE &&
         y >= BOARD_UP - MARGE &&
         y <= BOARD_DOWN  + MARGE)
+        return true;
+    else
+        return false;
+}
+
+bool    Interface::onAgainYes(int x, int y) {
+    if (x <= YES_RIGHT + MARGE && 
+        x >= YES_LEFT - MARGE &&
+        y >= YES_UP - MARGE &&
+        y <= YES_DOWN  + MARGE)
+        return true;
+    else
+        return false;
+}
+
+bool    Interface::onAgainNo(int x, int y) {
+    if (x <= NO_RIGHT + MARGE && 
+        x >= NO_LEFT - MARGE &&
+        y >= NO_UP - MARGE &&
+        y <= NO_DOWN  + MARGE)
         return true;
     else
         return false;
@@ -449,11 +515,18 @@ void    Interface::checkClickLeft(Player &current, int x, int y)
             setState(GAME);
         }
     }
-    else if (state == SCORE){
-        DEBUG << "click during victory or fefeat screen\n";
+    else if (state == BLACKWIN || state == WHITEWIN || state == EQUAL){
+        setState(AGAIN);
+        DEBUG << "click during victory or equality screen\n";
     }
     else if (state == AGAIN){
         DEBUG << "click during Again\n";
+        if (onAgainYes(x, y)){
+            setState(MENU);
+        }
+        else if (onAgainNo(x, y)) {
+            gomoku->end();
+        }
     }
     else if (state == PAUSE){
         DEBUG << "click during Pause\n";
