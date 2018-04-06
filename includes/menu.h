@@ -64,6 +64,7 @@ class Menu {
     public:
         Menu();
         ~Menu();
+        inline sf::Font &getArial(void) {return arial;}
 };
 
 #endif

@@ -15,6 +15,7 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
    this->loadSprite();
    this->loadSoundBuffer();
    this->loadSoundAndOpenMusic();
+   this->loadText();
    initCoordBoard();
    initCoordCanteen();
    this->setState(WELCOME);
@@ -119,6 +120,30 @@ void    Interface::loadSoundAndOpenMusic(void) {
         ambiance2.setPlayingOffset(sf::seconds(30));
         ambiance2.play();
     }
+}
+void    Interface::setText(Text *text, Font &font, int size, Color color, int posX, int posY, String str) {
+    text->setFont(font);
+    text->setCharacterSize(size);
+    text->setColor(color);
+    text->setPosition(posX, posY);
+    text->setString(str);
+    menu.setMiddle(*text);
+}
+
+void    Interface::loadText(void) {
+    /*help1.setFont(menu.getArial());
+    help1.setCharacterSize(24);
+    help1.setColor(Color::Black);
+    help1.setString("1");
+    help1.setPosition(50, 50);
+    */
+    setText(&timeToPlayText, menu.getArial(), 24, Color::Black, 600, 860, "Time to play :");
+    setText(&nbTurnText, menu.getArial(),24, Color::Black, 600, 30, "TURN :");
+    setText(&help1, menu.getArial(), 36, Color::Blue, 300, 300, "1");
+    setText(&help2, menu.getArial(), 36, Color(255,0,128), 400, 300, "2");
+    setText(&help3, menu.getArial(), 36, Color::Yellow, 500, 300, "3");
+    setText(&help4, menu.getArial(), 36, Color::Red, 600, 300, "4");
+    setText(&help5, menu.getArial(), 36, Color::Green, 700, 300, "5");
 }
 
 void    Interface::initCoordBoard(void) {
@@ -356,6 +381,13 @@ void    Interface::againScreen(void) {
 void    Interface::gameScreen(void) {
     _allSprite.push_back(_backgroundSprite);
     _allSprite.push_back(_boardGameSprite);
+    _allText.push_back(&nbTurnText);
+    _allText.push_back(&timeToPlayText);
+    _allText.push_back(&help1);
+    _allText.push_back(&help2);
+    _allText.push_back(&help3);
+    _allText.push_back(&help4);
+    _allText.push_back(&help5);
     ambiance2.stop();
     ambiance1.play();
     this->state = GAME;

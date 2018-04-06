@@ -97,6 +97,8 @@ class Interface {
 		void	loadSprite(void);
 		void	loadSoundBuffer(void);
 		void	loadSoundAndOpenMusic(void);
+		void	loadText(void);
+		void	setText(sf::Text *text, sf::Font &font, int size, sf::Color color, int posX, int posY, sf::String str);
 		void	initCoordBoard(void);
 		void	initCoordCanteen(void);
 		void	putPreviewStone(Player &current, int mouseX, int mouseY);
@@ -148,6 +150,14 @@ class Interface {
 		sf::Sound			testSound;
 		sf::Music			ambiance1;
 		sf::Music			ambiance2;
+
+		sf::Text			timeToPlayText;
+		sf::Text			nbTurnText;
+		sf::Text			help1;
+		sf::Text			help2;
+		sf::Text			help3;
+		sf::Text			help4;
+		sf::Text			help5;
 
 };
 

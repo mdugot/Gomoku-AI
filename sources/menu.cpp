@@ -43,7 +43,6 @@ Menu::Menu() {
 }
 
 Menu::~Menu() {
-    //delete sprite / text ??
 }
 
 void Menu::setMiddle(Text &text)
