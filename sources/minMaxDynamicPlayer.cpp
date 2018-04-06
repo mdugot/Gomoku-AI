@@ -296,7 +296,7 @@ long long MinMaxDynamicPlayer::heuristic(HeuristicBoard &myH, HeuristicBoard &en
 	if (myH.fiveLine || myH.totalCaptured >= 10) {
 		return BIG * (depth);
 	}
-	return (myH.score + CAPTURE_BONUS(myH.totalCaptured) - (ennemyH.score + CAPTURE_BONUS(ennemyH.totalCaptured)) );
+	return (myH.score + CAPTURE_BONUS(myH.totalCaptured) - L2*(ennemyH.score + CAPTURE_BONUS(ennemyH.totalCaptured)) );
 }
 
 bool MinMaxDynamicPlayer::canAvoidDefeat(HeuristicBoard &myH, HeuristicBoard &ennemyH) {
@@ -315,7 +315,7 @@ long long MinMaxDynamicPlayer::heuristic_e(HeuristicBoard &myH, HeuristicBoard &
 	if (ennemyH.fiveLine || ennemyH.totalCaptured >= 10) {
 		return -BIG * (depth);
 	}
-	return (myH.score + CAPTURE_BONUS(myH.totalCaptured) - (ennemyH.score + CAPTURE_BONUS(ennemyH.totalCaptured)) );
+	return (myH.score + CAPTURE_BONUS(myH.totalCaptured) - L2*(ennemyH.score + CAPTURE_BONUS(ennemyH.totalCaptured)) );
 }
 
 bool MinMaxDynamicPlayer::canAvoidDefeat_e(HeuristicBoard &myH, HeuristicBoard &ennemyH) {

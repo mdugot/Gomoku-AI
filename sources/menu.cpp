@@ -141,11 +141,11 @@ Player*    Menu::updatePlayer(TextChoice &textC) {
     else if (textC == RANDOM)
         return new NoobIA();
     else if (textC == IA_HARD)
-        return new MinMaxDynamicPlayer({8, 8, 6, 6, 4, 4, 2, 2, 2, 2, 0});
+        return new MinMaxDynamicPlayer({11, 11, 7, 7, 7, 3, 3, 1, 1, 1, 0});
     else if (textC == IA_NORMAL)
-        return new MinMaxDynamicPlayer({14, 12, 8, 6, 4, 4, 0});
+        return new MinMaxDynamicPlayer({11, 11, 7, 7, 5, 5, 0});
     else if (textC == IA_EASY)
-        return new MinMaxDynamicPlayer({12, 8, 0});
+        return new MinMaxDynamicPlayer({7, 3, 0});
     else {
         DEBUG << "ERROR SWITCH PLAYER IN GO MENU\n";
         exit(1);
