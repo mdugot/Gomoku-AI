@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <strings.h>
 #include <string.h>
+#include <array>
 #include <unistd.h>
 #include <time.h>
 #include <iostream>

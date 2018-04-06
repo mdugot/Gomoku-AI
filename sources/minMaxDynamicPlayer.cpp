@@ -1,7 +1,7 @@
 #include "minMaxDynamicPlayer.h"
 #include "rules.h"
 
-const unsigned char MinMaxDynamicPlayer::depthWidths[10] = {16, 12, 8, 8, 4, 4, 4, 4, 4, 4};
+//const unsigned char MinMaxDynamicPlayer::depthWidths[10] = {16, 12, 8, 8, 4, 4, 4, 4, 4, 4};
 std::mutex MinMaxDynamicPlayer::mutex;
 
 Choice::Choice(unsigned char x, unsigned char y, HeuristicBoard *myHeuristic, HeuristicBoard *ennemyHeuristic, bool ennemy) : x(x), y(y), myHeuristic(myHeuristic), ennemyHeuristic(ennemyHeuristic)
@@ -24,10 +24,18 @@ Choice::~Choice()
 }
 
 
-MinMaxDynamicPlayer::MinMaxDynamicPlayer(int d) : Player(), minMaxDepth(d)
+MinMaxDynamicPlayer::MinMaxDynamicPlayer(std::array<unsigned char, 11> dw) : Player()
 {
-	if (d > 10)
-		failure("max depth = 10");
+	minMaxDepth = 0;
+	int i = 0;
+	for (i = 0; dw[i] > 0; i++) {
+		if (i >= 10)
+			failure("max depth width for min-max is 10");
+		depthWidths[i] = dw[i];
+		minMaxDepth += 1;
+	}
+	depthWidths[i] = 0;
+		
 	/*if (d == 10)
 		playerType = IA_HARD;
 	else if (d < 10 && d >= 5)
@@ -123,7 +131,7 @@ void MinMaxDynamicPlayer::startThread(int &rx, int &ry, long long &option, long 
 		}
 		complexity++;
 
-		tmp = min(&gomokuCopy, usedDepth, MAX_LONG, maxBestOption, *copyRules, it->second.myHeuristic, it->second.ennemyHeuristic);
+		tmp = min(&gomokuCopy, usedDepth - 1, MAX_LONG, maxBestOption, *copyRules, it->second.myHeuristic, it->second.ennemyHeuristic);
 
 		gomokuCopy.setStone(FREE, it->second.x, it->second.y);
 		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
@@ -288,7 +296,7 @@ long long MinMaxDynamicPlayer::heuristic(HeuristicBoard &myH, HeuristicBoard &en
 	if (myH.fiveLine || myH.totalCaptured >= 10) {
 		return BIG * (depth);
 	}
-	return (myH.score + CAPTURE_BONUS(myH.totalCaptured) - (ennemyH.score + CAPTURE_BONUS(ennemyH.totalCaptured)) );
+	return (myH.score + CAPTURE_BONUS(myH.totalCaptured) - L2*(ennemyH.score + CAPTURE_BONUS(ennemyH.totalCaptured)) );
 }
 
 bool MinMaxDynamicPlayer::canAvoidDefeat(HeuristicBoard &myH, HeuristicBoard &ennemyH) {
@@ -307,7 +315,7 @@ long long MinMaxDynamicPlayer::heuristic_e(HeuristicBoard &myH, HeuristicBoard &
 	if (ennemyH.fiveLine || ennemyH.totalCaptured >= 10) {
 		return -BIG * (depth);
 	}
-	return (myH.score + CAPTURE_BONUS(myH.totalCaptured) - (ennemyH.score + CAPTURE_BONUS(ennemyH.totalCaptured)) );
+	return (myH.score + CAPTURE_BONUS(myH.totalCaptured) - L2*(ennemyH.score + CAPTURE_BONUS(ennemyH.totalCaptured)) );
 }
 
 bool MinMaxDynamicPlayer::canAvoidDefeat_e(HeuristicBoard &myH, HeuristicBoard &ennemyH) {

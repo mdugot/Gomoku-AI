@@ -4,8 +4,8 @@
 #include "player.h"
 
 #define NUM_THREADS 4
-#define STARTING_ROUND 4
-#define STARTING_DEPTH 6
+#define STARTING_ROUND 3
+#define STARTING_DEPTH 7
 
 class Choice
 {
@@ -23,11 +23,11 @@ class Choice
 
 class MinMaxDynamicPlayer : public Player
 {
-	static const unsigned char depthWidths[10];
 	static std::mutex mutex;
 
 	private:
 
+		unsigned char depthWidths[11];
 		unsigned long complexity;
 		int usedDepth;
 		int minMaxDepth;
@@ -46,7 +46,7 @@ class MinMaxDynamicPlayer : public Player
 
 	public:
 
-		MinMaxDynamicPlayer(int d);
+		MinMaxDynamicPlayer(std::array<unsigned char, 11> dw);
 		~MinMaxDynamicPlayer();
 		virtual void play(Rules &rules, Interface &interfacce);
 };
