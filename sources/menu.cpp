@@ -141,7 +141,8 @@ Player*    Menu::updatePlayer(TextChoice &textC) {
     else if (textC == RANDOM)
         return new NoobIA();
     else if (textC == IA_HARD)
-        return new MinMaxDynamicPlayer({11, 11, 7, 7, 7, 3, 3, 1, 1, 1, 0});
+        return new MinMaxDynamicPlayer({13, 11, 11, 7, 5, 5, 0, 0, 0, 0, 0});
+        //return new MinMaxDynamicPlayer({11, 11, 7, 7, 7, 3, 3, 1, 1, 1, 0});
     else if (textC == IA_NORMAL)
         return new MinMaxDynamicPlayer({11, 11, 7, 7, 5, 5, 0});
     else if (textC == IA_EASY)

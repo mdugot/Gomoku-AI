@@ -18,7 +18,7 @@ bool Rules::canAvoidDefeat(Player *player, Player *ennemy) {
 						choice.ennemyHeuristic.beCaptured(it->first, it->second);
 						choice.myHeuristic.capture(it->first, it->second);
 					}
-					if (!choice.ennemyHeuristic.fiveLine || choice.myHeuristic.totalCaptured >= 10) {
+					if (!choice.ennemyHeuristic.fiveLine || choice.myHeuristic.totalCaptured >= NB_CAPTURE_TO_WIN) {
 						DEBUG << BLUE << "avoid with " << (int)i << "/" << (int)j << DEFAULT_COLOR << "\n";
 						return true;
 					}
@@ -74,4 +74,8 @@ End Rules::checkEnd(Player &nextToPlay) {
 		return EQUALITY;
 	}
 	return NO_END;
+}
+
+bool Rules::canPutStone(Player &player, int x, int y) {
+	return canPutStone(player.getMyHeuristic(), x, y);
 }

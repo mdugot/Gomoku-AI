@@ -207,16 +207,16 @@ void HeuristicBoard::removeThreat(char x, char y, char vx, char vy, char shift, 
 
 void HeuristicBoard::beCaptured(unsigned char x, unsigned char y)
 {
-	removeThreat(x, y, 0, 1, HORIZONTAL_SHIFT, HORIZONTAL_MASK);
-	removeThreat(x, y, 1, 0, VERTICAL_SHIFT, VERTICAL_MASK);
+	removeThreat(x, y, 1, 0, HORIZONTAL_SHIFT, HORIZONTAL_MASK);
+	removeThreat(x, y, 0, 1, VERTICAL_SHIFT, VERTICAL_MASK);
 	removeThreat(x, y, 1, 1, DRIGHT_SHIFT, DRIGHT_MASK);
 	removeThreat(x, y, -1, 1, DLEFT_SHIFT, DLEFT_MASK);
 }
 
 void HeuristicBoard::capture(unsigned char x, unsigned char y)
 {
-	removeEnnemyThreat(x, y, 0, 1, HORIZONTAL_SHIFT, HORIZONTAL_MASK);
-	removeEnnemyThreat(x, y, 1, 0, VERTICAL_SHIFT, VERTICAL_MASK);
+	removeEnnemyThreat(x, y, 1, 0, HORIZONTAL_SHIFT, HORIZONTAL_MASK);
+	removeEnnemyThreat(x, y, 0, 1, VERTICAL_SHIFT, VERTICAL_MASK);
 	removeEnnemyThreat(x, y, 1, 1, DRIGHT_SHIFT, DRIGHT_MASK);
 	removeEnnemyThreat(x, y, -1, 1, DLEFT_SHIFT, DLEFT_MASK);
 	totalCaptured += 1;
@@ -224,8 +224,8 @@ void HeuristicBoard::capture(unsigned char x, unsigned char y)
 
 HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y)
 {
-	updateThreat(x, y, 0, 1, HORIZONTAL_SHIFT, HORIZONTAL_MASK);
-	updateThreat(x, y, 1, 0, VERTICAL_SHIFT, VERTICAL_MASK);
+	updateThreat(x, y, 1, 0, HORIZONTAL_SHIFT, HORIZONTAL_MASK);
+	updateThreat(x, y, 0, 1, VERTICAL_SHIFT, VERTICAL_MASK);
 	updateThreat(x, y, 1, 1, DRIGHT_SHIFT, DRIGHT_MASK);
 	updateThreat(x, y, -1, 1, DLEFT_SHIFT, DLEFT_MASK);
 	return clear(x, y);
@@ -234,8 +234,8 @@ HeuristicBoard& HeuristicBoard::put(unsigned char x, unsigned char y)
 bool HeuristicBoard::checkDoubleFreeThree(unsigned char x, unsigned char y)
 {
 	unsigned char n = 0;
-	searchFreeThree(x, y, 0, 1, HORIZONTAL_SHIFT, HORIZONTAL_MASK, n);
-	searchFreeThree(x, y, 1, 0, VERTICAL_SHIFT, VERTICAL_MASK, n);
+	searchFreeThree(x, y, 1, 0, HORIZONTAL_SHIFT, HORIZONTAL_MASK, n);
+	searchFreeThree(x, y, 0, 1, VERTICAL_SHIFT, VERTICAL_MASK, n);
 	searchFreeThree(x, y, 1, 1, DRIGHT_SHIFT, DRIGHT_MASK, n);
 	searchFreeThree(x, y, -1, 1, DLEFT_SHIFT, DLEFT_MASK, n);
 	return (n >= 2);

@@ -4,7 +4,7 @@
 #include "gomoku.h"
 #include "player.h"
 
-#define NB_CAPTURE_TO_WIN 10
+#define NB_CAPTURE_TO_WIN 10 
 
 typedef enum End {
 	BLACK_WIN = 1, WHITE_WIN = 2, EQUALITY = 3, NO_END = 0
@@ -32,7 +32,8 @@ class Rules
 		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
 		inline void setTurnCounter(unsigned int t) {this->turnCounter = t;}
 		inline unsigned int getTurnCounter() {return this->turnCounter;}
-		virtual bool canPutStone(Player &player, int x, int y) = 0;
+		virtual bool canPutStone(HeuristicBoard *h, int x, int y) = 0;
+		bool canPutStone(Player &player, int x, int y);
 		virtual Rules *copy() = 0;
 
 		End checkEnd(Player &nextToPlay);
