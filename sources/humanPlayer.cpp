@@ -5,6 +5,7 @@
 HumanPlayer::HumanPlayer() : Player()
 {
 	DEBUG << "NEW HUMAN\n";
+	human = true;
 }
 
 HumanPlayer::~HumanPlayer()

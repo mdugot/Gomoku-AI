@@ -1,7 +1,7 @@
 #include "gomoku.h"
 #include "player.h"
 
-Player::Player() : myHeuristic(), ennemyHeuristic(), nbCapture(0), played(false)
+Player::Player() : myHeuristic(), ennemyHeuristic(), nbCapture(0), played(false), human(false)
 {
 	DEBUG << "NEW PLAYER\n";
 }

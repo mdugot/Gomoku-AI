@@ -69,7 +69,7 @@ void Gomoku::end() {
 	interface.update();
 	sleep(1);
 	interface.getWindow().close();
-	exit(1);
+	exit(EXIT_SUCCESS);
 }
 
 void Gomoku::drawStone() {

@@ -95,6 +95,8 @@ class Interface {
 		void	timer(void);
 		void	loadTexture(void);
 		void	loadSprite(void);
+		void	loadSoundBuffer(void);
+		void	loadSoundAndOpenMusic(void);
 		void	initCoordBoard(void);
 		void	initCoordCanteen(void);
 		void	putPreviewStone(Player &current, int mouseX, int mouseY);
@@ -136,6 +138,17 @@ class Interface {
 		sf::Texture			_againYesTexture;
 		sf::Texture			_againNoTexture;
 		sf::Texture			_boxTexture;
+
+		sf::SoundBuffer		bipSB;
+		sf::SoundBuffer		captureSB;
+		sf::SoundBuffer		testSB;
+
+		sf::Sound			bipSound;
+		sf::Sound			captureSound;
+		sf::Sound			testSound;
+		sf::Music			ambiance1;
+		sf::Music			ambiance2;
+
 };
 
 #endif

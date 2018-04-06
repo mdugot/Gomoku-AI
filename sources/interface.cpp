@@ -13,6 +13,8 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
    _window.setVerticalSyncEnabled(true);
    this->loadTexture();
    this->loadSprite();
+   this->loadSoundBuffer();
+   this->loadSoundAndOpenMusic();
    initCoordBoard();
    initCoordCanteen();
    this->setState(WELCOME);
@@ -21,7 +23,6 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
 }
 
 Interface::~Interface() {
-
 }
 
 //TO-DO : Ajout texture des autres States ici.
@@ -89,6 +90,35 @@ void    Interface::makeSprite(Sprite &sprite, Texture &texture, float sizeX, flo
     sprite.setTexture(texture);
     sprite.setScale(sizeX, sizeY);
     sprite.setPosition(posX, posY);
+}
+
+void    Interface::loadSoundBuffer(void) {
+     if (!bipSB.loadFromFile("./sound/bip.wav")
+        || !captureSB.loadFromFile("./sound/capture.wav")) {
+         DEBUG << "ERROR DURING LOAD SOUND BUFFER\n";
+         exit(1);
+     }
+}
+
+void    Interface::loadSoundAndOpenMusic(void) {
+    bipSound.setBuffer(bipSB);
+    captureSound.setBuffer(captureSB);
+    testSound.setBuffer(testSB);
+    if (!ambiance1.openFromFile("./sound/ambiance1.wav")
+        || !ambiance2.openFromFile("./sound/ambiance2.wav")) {
+            DEBUG << "ERROR DURING OPEN MUSIC\n";
+            exit(1);
+        }
+    else {
+        /*bipSound.setVolume(50);
+        captureSound.setVolume(50);
+        testSound.setVolume(50);
+        ambiance1.setVolume(30);
+        ambiance2.setVolume(30);*/
+        ambiance1.setLoop(true);
+        ambiance2.setPlayingOffset(sf::seconds(30));
+        ambiance2.play();
+    }
 }
 
 void    Interface::initCoordBoard(void) {
@@ -160,6 +190,7 @@ void    Interface::setStoneOnClick(Player &current, int clickx, int clicky) {
     if (gomoku->getRules().canPutStone(current, tmp.x, tmp.y)) {
         current.setCoordPlayed(tmp.x, tmp.y);
         current.setPlayed(true);
+        bipSound.play();
     }
 }
 
@@ -188,6 +219,7 @@ Vector2<int>    Interface::turnCoordInterfaceInGomokuBoardIndex(int mouseX, int 
 void	Interface::capture(Player &current, sf::Sprite *spriteEnemy, int x1, int y1) {
     int i = getCoordBoard(x1,y1).x;
     int j = getCoordBoard(x1,y1).y;
+    captureSound.play();
     removeStone(i,j);
     this->putStone(*spriteEnemy, current.getCoordCanteen(current.getNbCapture() - 1).x, current.getCoordCanteen(current.getNbCapture() - 1).y);
 }
@@ -316,12 +348,16 @@ void    Interface::againScreen(void) {
     _allSprite.push_back(_againSprite);
     _allSprite.push_back(_againYesSprite);
     _allSprite.push_back(_againNoSprite);
+    ambiance1.stop();
+    ambiance2.play();
     this->state = AGAIN;
 }
 
 void    Interface::gameScreen(void) {
     _allSprite.push_back(_backgroundSprite);
     _allSprite.push_back(_boardGameSprite);
+    ambiance2.stop();
+    ambiance1.play();
     this->state = GAME;
 }
 
@@ -415,6 +451,8 @@ void    Interface::checkEvent(Player &current) {
             break;
             case Event::MouseMoved :
             {
+                if (!current.getHuman())
+                    break;
                 if (state == GAME) {
                     int x = _event.mouseMove.x;
                     int y = _event.mouseMove.y;
@@ -459,7 +497,7 @@ bool    Interface::onBoard(int x, int y)
     if (x <= BOARD_RIGHT + MARGE && 
         x >= BOARD_LEFT - MARGE &&
         y >= BOARD_UP - MARGE &&
-        y <= BOARD_DOWN  + MARGE)
+        y <= BOARD_DOWN  + MARGE) 
         return true;
     else
         return false;
@@ -479,7 +517,7 @@ bool    Interface::onAgainNo(int x, int y) {
     if (x <= NO_RIGHT + MARGE && 
         x >= NO_LEFT - MARGE &&
         y >= NO_UP - MARGE &&
-        y <= NO_DOWN  + MARGE)
+        y <= NO_DOWN  + MARGE) 
         return true;
     else
         return false;

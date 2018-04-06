@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>

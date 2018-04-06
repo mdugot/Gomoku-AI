@@ -34,11 +34,13 @@ class Player
 
 		Player();
 		virtual ~Player();
+		bool	human;
 
 		virtual void play(Rules &rules, Interface &i )= 0;
 		virtual void observe(Rules &rules, int x, int y, std::vector<std::pair<unsigned char, unsigned char>> &captured);
 		virtual void observeMyCapture(std::vector<std::pair<unsigned char, unsigned char>> &captured);
 		inline Stone getColor() {return stoneColor;}
+		inline bool	getHuman() {return human;}
 		inline HeuristicBoard *getMyHeuristic() {return &myHeuristic;}
 		inline HeuristicBoard *getEnnemyHeuristic() {return &ennemyHeuristic;}
 		inline Player *getEnemy() {return enemy;}
