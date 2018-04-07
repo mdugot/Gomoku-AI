@@ -19,6 +19,7 @@
 #include <cmath>
 #include <thread>
 #include <mutex>
+#include <memory>
 
 
 #include "colors.h"

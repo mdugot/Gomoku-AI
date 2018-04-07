@@ -15,8 +15,8 @@ DefaultRules::~DefaultRules()
 	return cpy;
 }
 
-bool DefaultRules::canPutStone(Player &player, int x, int y) {
-	if (player.getMyHeuristic()->checkDoubleFreeThree((unsigned char)x, (unsigned char)y))
+bool DefaultRules::canPutStone(HeuristicBoard *heuristic, int x, int y) {
+	if (heuristic->checkDoubleFreeThree((unsigned char)x, (unsigned char)y))
 		return false;
 	if (gomoku->getStone(x, y) == FREE)
 		return true;

@@ -255,7 +255,7 @@ void    Interface::removeStone(int i, int j) {
         pos = (Vector2<int>)(*it).getPosition();
         if ((pos.x == i && pos.y == j)){
             it = _allSprite.erase(it);
-            DEBUG << "REMOVE\n";
+//            DEBUG << "REMOVE\n";
             break;
         }
     }
@@ -458,7 +458,7 @@ void    Interface::unputPreviewStone(int mouseX, int mouseY) {
         }
 }
 
-void    Interface::checkEvent(Player &current) {
+void    Interface::checkEvent(Player *current) {
     while (_window.pollEvent(_event))
     {
         switch (_event.type)
@@ -489,8 +489,8 @@ void    Interface::checkEvent(Player &current) {
                     int x = _event.mouseMove.x;
                     int y = _event.mouseMove.y;
                     if (onBoard(x,y)) {
-                        if (!previewStone) {
-                            putPreviewStone(current, x, y);
+                        if (!previewStone && current) {
+                            putPreviewStone(*current, x, y);
                             update();
                         }
                         else
@@ -555,12 +555,12 @@ bool    Interface::onAgainNo(int x, int y) {
         return false;
 }
 
-void    Interface::checkClickLeft(Player &current, int x, int y)
+void    Interface::checkClickLeft(Player *current, int x, int y)
 {
     if (state == GAME)
     {
-        if (onBoard(x, y))
-            this->setStoneOnClick(current, x, y);
+        if (onBoard(x, y) && current)
+            this->setStoneOnClick(*current, x, y);
         else
             DEBUG << "out of board add other feature interaction\n";
     }

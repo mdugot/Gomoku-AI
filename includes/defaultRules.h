@@ -13,7 +13,7 @@ class DefaultRules : public Rules
 		~DefaultRules();
 
 
-		virtual bool canPutStone(Player &player, int x, int y);
+		virtual bool canPutStone(HeuristicBoard *h, int x, int y);
 		virtual Rules *copy();
 };
 

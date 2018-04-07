@@ -47,9 +47,9 @@ class Interface {
 		void	cleanInterface(void);
 		void	cleanSpriteList(void);
 		void	cleanTextList(void);
-		void	checkClickLeft(Player &current, int x, int y);
+		void	checkClickLeft(Player *current, int x, int y);
 		void	setStoneOnClick(Player &player, int x, int y);
-		void	checkEvent(Player &current);
+		void	checkEvent(Player *current);
 		void	checkEventAgain();
 		
 		void	setState(State newState);
