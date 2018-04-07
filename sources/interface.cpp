@@ -483,7 +483,7 @@ void    Interface::checkEvent(Player *current) {
             break;
             case Event::MouseMoved :
             {
-                if (!current.getHuman())
+                if (current && !current->getHuman())
                     break;
                 if (state == GAME) {
                     int x = _event.mouseMove.x;
