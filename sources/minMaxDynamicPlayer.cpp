@@ -1,22 +1,25 @@
 #include "minMaxDynamicPlayer.h"
 #include "rules.h"
 
-//const unsigned char MinMaxDynamicPlayer::depthWidths[10] = {16, 12, 8, 8, 4, 4, 4, 4, 4, 4};
 std::mutex MinMaxDynamicPlayer::mutex;
 
-Choice::Choice(unsigned char x, unsigned char y, HeuristicBoard *myHeuristic, HeuristicBoard *ennemyHeuristic, bool ennemy) : x(x), y(y), myHeuristic(myHeuristic), ennemyHeuristic(ennemyHeuristic)
+Choice::Choice(unsigned char x, unsigned char y, HeuristicBoard *myHeuristic, HeuristicBoard *ennemyHeuristic, Player *player, Gomoku *gomoku, Rules *rules, bool ennemy) : x(x), y(y), gomoku(gomoku, *rules), myHeuristic(myHeuristic), ennemyHeuristic(ennemyHeuristic)
 {
 	if (!ennemy) {
+		this->gomoku.setStone(player->getColor(), x, y);
+		this->gomoku.updateFocus(x, y);
+		this->myHeuristic.setGomoku(&this->gomoku);
+		this->ennemyHeuristic.setGomoku(&this->gomoku);
 		this->myHeuristic.put(x, y);
 		this->ennemyHeuristic.clear(x, y);
 	} else {
+		this->gomoku.setStone(player->getColor(), x, y);
+		this->gomoku.updateFocus(x, y);
+		this->myHeuristic.setGomoku(&this->gomoku);
+		this->ennemyHeuristic.setGomoku(&this->gomoku);
 		this->myHeuristic.clear(x, y);
 		this->ennemyHeuristic.put(x, y);
 	}
-}
-
-Choice::Choice() : x(0), y(0), myHeuristic(), ennemyHeuristic()
-{
 }
 
 Choice::~Choice()
@@ -35,14 +38,6 @@ MinMaxDynamicPlayer::MinMaxDynamicPlayer(std::array<unsigned char, 11> dw) : Pla
 		minMaxDepth += 1;
 	}
 	depthWidths[i] = 0;
-		
-	/*if (d == 10)
-		playerType = IA_HARD;
-	else if (d < 10 && d >= 5)
-		playerType = IA_NORMAL;
-	else
-		playerType = IA_EASY;
-	*/
 	DEBUG << "NEW MINMAXPLAYER\n";
 
 }
@@ -52,72 +47,54 @@ MinMaxDynamicPlayer::~MinMaxDynamicPlayer()
 	DEBUG << "BYE MINMAXPLAYER\n";
 }
 
-std::multimap<long long, Choice> MinMaxDynamicPlayer::heuristicMap(Gomoku *gomoku, Rules &rules, bool last, int depth, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin, bool focus) {
-	std::multimap<long long, Choice> result;
+void MinMaxDynamicPlayer::heuristicMap(std::multimap<long long, std::unique_ptr<Choice>> &result, Gomoku *gomoku, Rules &rules, bool last, int depth, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin) {
+	rules.setGomoku(gomoku);
 	for (unsigned char j = 0; j < GH; j++) {
 		for (unsigned char i = 0; i < GW; i++) {
-			if ((!focus || gomoku->isFocus(i, j)) && rules.canPutStone(&myOrigin, i, j)) {
+			if (gomoku->isFocus(i, j) && rules.canPutStone(&myOrigin, i, j)) {
 
-				Gomoku gomokuCopy = Gomoku(this->gomoku, rules);
 
-				gomokuCopy.setStone(getColor(), i, j);
+				Choice *choice = new Choice(i, j, &myOrigin, &ennemyOrigin, this, gomoku, &rules);
 
-				Choice choice(i, j, &myOrigin, &ennemyOrigin);
-				choice.myHeuristic.setGomoku(&gomokuCopy);
-				choice.ennemyHeuristic.setGomoku(&gomokuCopy);
-
-				gomokuCopy.checkCapture(*this, i, j, *enemy, choice.captured);
-				for (auto it2 = choice.captured.begin(); it2 != choice.captured.end(); ++it2) {
-					gomokuCopy.setStone(FREE, it2->first, it2->second);
+				choice->gomoku.checkCapture(*this, i, j, *enemy, choice->captured);
+				for (auto it2 = choice->captured.begin(); it2 != choice->captured.end(); ++it2) {
+					choice->gomoku.setStone(FREE, it2->first, it2->second);
 				}
 
-				for (auto it = choice.captured.begin(); it != choice.captured.end(); ++it) {
-					int x = it->first;
-					int y = it->second;
-					choice.ennemyHeuristic.beCaptured(it->first, it->second);
-					choice.myHeuristic.capture(it->first, it->second);
+				for (auto it = choice->captured.begin(); it != choice->captured.end(); ++it) {
+					choice->ennemyHeuristic.beCaptured(it->first, it->second);
+					choice->myHeuristic.capture(it->first, it->second);
 				}
 
-				choice.myHeuristic.setGomoku(gomoku);
-				choice.ennemyHeuristic.setGomoku(gomoku);
-				result.insert(std::pair<long long, Choice>(-heuristic(choice.myHeuristic, choice.ennemyHeuristic, last, depth), choice));
+				result.insert(std::pair<long long, std::unique_ptr<Choice>>(-heuristic(choice->myHeuristic, choice->ennemyHeuristic, last, depth), std::unique_ptr<Choice>(choice)));
 			}
 		}
 	}
-	return result;
 }
 
-std::multimap<long long, Choice> MinMaxDynamicPlayer::heuristicMap_e(Gomoku *gomoku, Rules &rules, bool last, int depth, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin) {
-	std::multimap<long long, Choice> result;
+void MinMaxDynamicPlayer::heuristicMap_e(std::multimap<long long, std::unique_ptr<Choice>> &result, Gomoku *gomoku, Rules &rules, bool last, int depth, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin) {
+	rules.setGomoku(gomoku);
 	for (unsigned char j = 0; j < GH; j++) {
 		for (unsigned char i = 0; i < GW; i++) {
-			if (rules.canPutStone(&ennemyOrigin, i, j)) {
-				Gomoku gomokuCopy = Gomoku(this->gomoku, rules);
+			if (gomoku->isFocus(i, j) && rules.canPutStone(&ennemyOrigin, i, j)) {
 
-				gomokuCopy.setStone(enemy->getColor(), i, j);
+				Choice *choice = new Choice(i, j, &myOrigin, &ennemyOrigin, enemy, gomoku, &rules, true);
 
-				Choice choice(i, j, &myOrigin, &ennemyOrigin, true);
-				choice.myHeuristic.setGomoku(&gomokuCopy);
-				choice.ennemyHeuristic.setGomoku(&gomokuCopy);
-
-				gomokuCopy.checkCapture(*enemy, i, j, *this, choice.captured);
-				for (auto it2 = choice.captured.begin(); it2 != choice.captured.end(); ++it2) {
-					gomokuCopy.setStone(FREE, it2->first, it2->second);
+				choice->gomoku.checkCapture(*enemy, i, j, *this, choice->captured);
+				for (auto it2 = choice->captured.begin(); it2 != choice->captured.end(); ++it2) {
+					choice->gomoku.setStone(FREE, it2->first, it2->second);
 				}
 
-				for (auto it = choice.captured.begin(); it != choice.captured.end(); ++it) {
-					choice.ennemyHeuristic.capture(it->first, it->second);
-					choice.myHeuristic.beCaptured(it->first, it->second);
+				for (auto it = choice->captured.begin(); it != choice->captured.end(); ++it) {
+					choice->ennemyHeuristic.capture(it->first, it->second);
+					choice->myHeuristic.beCaptured(it->first, it->second);
 				}
 
-				choice.myHeuristic.setGomoku(gomoku);
-				choice.ennemyHeuristic.setGomoku(gomoku);
-				result.insert(std::pair<long long, Choice>(heuristic_e(choice.myHeuristic, choice.ennemyHeuristic, last, depth), choice));
+				result.insert(std::pair<long long, std::unique_ptr<Choice>>(heuristic_e(choice->myHeuristic, choice->ennemyHeuristic, last, depth), std::unique_ptr<Choice>(choice)));
 
 			}
 		}
 	}
-	return result;
 }
 
 bool MinMaxDynamicPlayer::win(int &rx, int &ry, Rules &rules) {
@@ -147,9 +124,10 @@ void MinMaxDynamicPlayer::startMinMax(int &rx, int &ry, Rules &rules)
 		usedDepth = minMaxDepth;
 
 	complexity = 0;
-	std::multimap<long long, Choice> choices = heuristicMap(gomoku, rules, ennemyHeuristic.fiveLine, usedDepth, myHeuristic, ennemyHeuristic, true);
-	rx = choices.begin()->second.x;
-	ry = choices.begin()->second.y;
+	std::multimap<long long, std::unique_ptr<Choice>> choices;
+	heuristicMap(choices, gomoku, rules, ennemyHeuristic.fiveLine, usedDepth, myHeuristic, ennemyHeuristic);
+	rx = choices.begin()->second->x;
+	ry = choices.begin()->second->y;
 	std::thread threads[NUM_THREADS];
 
 	for (int i = 0; i < NUM_THREADS; i++) {
@@ -160,7 +138,7 @@ void MinMaxDynamicPlayer::startMinMax(int &rx, int &ry, Rules &rules)
 	DEBUG << "complexity : " << complexity << "\n";
 }
 
-void MinMaxDynamicPlayer::startThread(int &rx, int &ry, long long &option, long long &best, long long &maxBestOption, std::multimap<long long, Choice> &choices, int threadIndex) {
+void MinMaxDynamicPlayer::startThread(int &rx, int &ry, long long &option, long long &best, long long &maxBestOption, std::multimap<long long, std::unique_ptr<Choice>> &choices, int threadIndex) {
 
 	if ((size_t)threadIndex >= choices.size())
 		return ;
@@ -168,45 +146,21 @@ void MinMaxDynamicPlayer::startThread(int &rx, int &ry, long long &option, long 
 	long long tmp;
 	unsigned char i = threadIndex;
 	Rules *copyRules = gomoku->getRules().copy();
-	Gomoku gomokuCopy = Gomoku(this->gomoku, *copyRules);
-	copyRules->setGomoku(&gomokuCopy);
-
-//	mutex.lock();
-//	DEBUG << GREEN << "START THREAD " << threadIndex << DEFAULT_COLOR << "\n";
-//	DEBUG << DARK_GREEN << "rule adress : " << (void*)copyRules << DEFAULT_COLOR << "\n";
-//	DEBUG << DARK_GREEN << "gomoku rule adress : " << (void*)&(gomokuCopy.getRules()) << DEFAULT_COLOR << "\n";
-//	mutex.unlock();
 
 	auto it = std::next(choices.begin(), threadIndex);
 	while (1) {
-		it->second.myHeuristic.setGomoku(&gomokuCopy);
-		it->second.ennemyHeuristic.setGomoku(&gomokuCopy);
 
-		int x = it->second.x;
-		int y = it->second.y;
 
 		if (i > depthWidths[0]) {
-			//mutex.lock();
-			//DEBUG << DARK_YELLOW << "break\n" << DEFAULT_COLOR;
-			//mutex.unlock();
 			break;
 		}
 
-		gomokuCopy.setStone(getColor(), it->second.x, it->second.y);
-		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
-			gomokuCopy.setStone(FREE, it2->first, it2->second);
-		}
 		complexity++;
 
-		tmp = min(&gomokuCopy, usedDepth - 1, MAX_LONG, maxBestOption, *copyRules, it->second.myHeuristic, it->second.ennemyHeuristic);
-
-		gomokuCopy.setStone(FREE, it->second.x, it->second.y);
-		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
-			gomokuCopy.setStone(enemy->getColor(), it2->first, it2->second);
-		}
+		tmp = min(&it->second->gomoku, usedDepth - 1, MAX_LONG, maxBestOption, *copyRules, it->second->myHeuristic, it->second->ennemyHeuristic);
 
 		mutex.lock();
-		DEBUG << YELLOW << "try : " << (int)it->second.x << "/" << (int)it->second.y << DEFAULT_COLOR << " - " << (int)i << "\n";
+		DEBUG << YELLOW << "try : " << (int)it->second->x << "/" << (int)it->second->y << DEFAULT_COLOR << " - " << (int)i << "\n";
 		if (tmp >= BIG) {
 			DEBUG << GREEN << "I CAN WIN : " <<  tmp << DEFAULT_COLOR << "\n";
 		} else if (tmp <= -BIG) {
@@ -218,8 +172,8 @@ void MinMaxDynamicPlayer::startThread(int &rx, int &ry, long long &option, long 
 		option = tmp;
 		if (option > best) {
 			best = option;
-			rx = it->second.x;
-			ry = it->second.y;
+			rx = it->second->x;
+			ry = it->second->y;
 		}
 		if (option > maxBestOption) {
 			maxBestOption = option;
@@ -236,32 +190,24 @@ void MinMaxDynamicPlayer::startThread(int &rx, int &ry, long long &option, long 
 	delete copyRules;
 }
 
-long long MinMaxDynamicPlayer::min(Gomoku *gomoku, int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH)
+long long MinMaxDynamicPlayer::min(Gomoku *origin, int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH)
 {
 	if (depth <= 0 || ennemyH.fiveLine || myH.totalCaptured >= NB_CAPTURE_TO_WIN) {
 		return heuristic(myH, ennemyH, ennemyH.fiveLine, depth+1);
 	}
 	long long option;
 	long long best = MAX_LONG;
-	std::multimap<long long, Choice> choices = heuristicMap_e(gomoku, rules, myH.fiveLine, depth, myH, ennemyH);
+	std::multimap<long long, std::unique_ptr<Choice>> choices;
+	heuristicMap_e(choices, origin, rules, myH.fiveLine, depth, myH, ennemyH);
 	unsigned char i = 0;
 	for (auto it = choices.begin(); it != choices.end(); ++it) {
 		if (i > depthWidths[usedDepth - depth]) {
 			break;
 		}
 
-		int x = it->second.x;
-		int y = it->second.y;
-		gomoku->setStone(enemy->getColor(), it->second.x, it->second.y);
-		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
-			gomoku->setStone(FREE, it2->first, it2->second);
-		}
+
 		complexity++;
-		option = max(gomoku, depth-1, minBestOption, maxBestOption, rules, it->second.myHeuristic, it->second.ennemyHeuristic);
-		gomoku->setStone(FREE, it->second.x, it->second.y);
-		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
-			gomoku->setStone(getColor(), it2->first, it2->second);
-		}
+		option = max(&it->second->gomoku, depth-1, minBestOption, maxBestOption, rules, it->second->myHeuristic, it->second->ennemyHeuristic);
 		if (option < best) {
 			best = option;
 			if (option < minBestOption) {
@@ -276,36 +222,24 @@ long long MinMaxDynamicPlayer::min(Gomoku *gomoku, int depth, long long minBestO
 	return best;
 }
 
-long long MinMaxDynamicPlayer::max(Gomoku *gomoku, int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH)
+long long MinMaxDynamicPlayer::max(Gomoku *origin, int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH)
 {
 	if (depth <= 0 || myH.fiveLine || ennemyH.totalCaptured >= NB_CAPTURE_TO_WIN) {
 		return heuristic_e(myH, ennemyH, myH.fiveLine, depth+1);
 	}
 	long long option;
 	long long best = MIN_LONG;
-	std::multimap<long long, Choice> choices = heuristicMap(gomoku, rules, ennemyH.fiveLine, depth, myH, ennemyH);
+	std::multimap<long long, std::unique_ptr<Choice>> choices;
+	heuristicMap(choices, origin, rules, ennemyH.fiveLine, depth, myH, ennemyH);
 	unsigned char i = 0;
-//	if (ennemyH.score >= L4) {
-//		i = depthWidths[usedDepth - depth];
-//	}
 	for (auto it = choices.begin(); it != choices.end(); ++it) {
 		if (i > depthWidths[usedDepth - depth]) {
 			break;
 		}
 
-		int x = it->second.x;
-		int y = it->second.y;
-		gomoku->setStone(getColor(), it->second.x, it->second.y);
-		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
-//			if (gomoku->getStone(it2->first, it2->second) != enemy->getColor()) DEBUG << RED << "WRONG CAPTURE !\n" << DEFAULT_COLOR;
-			gomoku->setStone(FREE, it2->first, it2->second);
-		}
+
 		complexity++;
-		option = min(gomoku, depth-1, minBestOption, maxBestOption, rules, it->second.myHeuristic, it->second.ennemyHeuristic);
-		gomoku->setStone(FREE, it->second.x, it->second.y);
-		for (auto it2 = it->second.captured.begin(); it2 != it->second.captured.end(); ++it2) {
-			gomoku->setStone(enemy->getColor(), it2->first, it2->second);
-		}
+		option = min(&it->second->gomoku, depth-1, minBestOption, maxBestOption, rules, it->second->myHeuristic, it->second->ennemyHeuristic);
 		if (option > best) {
 			best = option;
 			if (option > maxBestOption) {

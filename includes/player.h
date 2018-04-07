@@ -25,7 +25,6 @@ class Player
 		bool	played;
 		sf::Vector2<int> coordPlayed; // MEMO : x et y ==> coordonnée du board dans Gomoku
 
-		inline virtual void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku; myHeuristic.gomoku = gomoku; ennemyHeuristic.gomoku = gomoku;}
 		inline virtual void setColor(Stone color) {this->stoneColor = color; myHeuristic.stone = color; ennemyHeuristic.stone = (color == WHITE ? BLACK : WHITE);}
 		void putStone(int x, int y);
 		sf::Vector2<int> canteen[10];
@@ -46,6 +45,7 @@ class Player
 		inline int getNbCapture() {return nbCapture;}
 		inline sf::Vector2<int> getCoordPlayed(void) {return (coordPlayed);}
 		inline sf::Vector2<int> getCoordCanteen(int index) {return (canteen[index]);}
+		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku; myHeuristic.gomoku = gomoku; ennemyHeuristic.gomoku = gomoku;}
 		inline void	setEnemy(Player *en) {this->enemy = en;}
 		inline void	setNbCapture(int nb) {this->nbCapture = nb;}
 		inline void setCoordPlayed(int x, int y) {coordPlayed.x = x; coordPlayed.y = y;}

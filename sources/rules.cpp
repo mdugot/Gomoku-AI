@@ -12,7 +12,7 @@ bool Rules::canAvoidDefeat(Player *player, Player *ennemy) {
 	for (unsigned char j = 0; j < GH; j++) {
 		for (unsigned char i = 0; i < GW; i++) {
 			if (canPutStone(*player, i, j)) {
-					Choice choice(i, j, player->getMyHeuristic(), player->getEnnemyHeuristic());
+					Choice choice(i, j, player->getMyHeuristic(), player->getEnnemyHeuristic(), player, gomoku, this);
 					gomoku->checkCapture(*player, i, j, *ennemy, choice.captured);
 					for (auto it = choice.captured.begin(); it != choice.captured.end(); ++it) {
 						choice.ennemyHeuristic.beCaptured(it->first, it->second);

@@ -16,6 +16,14 @@ Gomoku::Gomoku(Rules &rules, Interface &interface) : rules(rules), interface(int
 	initGomoku();
 }
 
+Gomoku::Gomoku(Gomoku *copyFrom, Rules &copyRules) : whitePlayer(copyFrom->aWhitePlayer()), blackPlayer(copyFrom->aBlackPlayer()), rules(copyRules), interface(copyFrom->getInterface())
+{
+	clone = true;
+	memcpy((void*)board, (void*)(copyFrom->getBoard()), sizeof(Stone[GW][GH]));
+	memcpy((void*)focus, (void*)(copyFrom->getFocus()), sizeof(bool[GW][GH]));
+	currentPlayer = copyFrom->getCurrentPlayer();
+}
+
 void	Gomoku::initGomoku() {
 	clone = false;
 	for (int i = 0; i < GW; i++) {
@@ -48,14 +56,6 @@ void	Gomoku::updateBlackPlayer()
 	blackPlayer->setEnemy(whitePlayer);
 }
 
-Gomoku::Gomoku(Gomoku *copyFrom, Rules &copyRules) : whitePlayer(copyFrom->aWhitePlayer()), blackPlayer(copyFrom->aBlackPlayer()), rules(copyRules), interface(copyFrom->getInterface())
-{
-	clone = true;
-	memcpy((void*)board, (void*)(copyFrom->getBoard()), sizeof(Stone[GW][GH]));
-	memcpy((void*)focus, (void*)(copyFrom->getFocus()), sizeof(bool[GW][GH]));
-	currentPlayer = copyFrom->getCurrentPlayer();
-}
-
 Gomoku::~Gomoku()
 {
 	if (!clone) {
@@ -85,13 +85,14 @@ void Gomoku::start() {
 		std::vector<std::pair<unsigned char, unsigned char>> captured;
 		currentPlayer = blackPlayer;
 		while (interface.getState() == MENU)  {
-			interface.checkEvent(*currentPlayer);
+			interface.checkEvent(NULL);
 			interface.update();
 		}
 		int x = 0;
 		int y = 0;
 		updateWhitePlayer();
 		updateBlackPlayer();
+		DEBUG << "PLAYER UPDATED\n";
 		currentPlayer = blackPlayer;
 		while (!(end = rules.checkEnd(*currentPlayer))) {
 			interface.update();
@@ -115,7 +116,7 @@ void Gomoku::start() {
 			//END
 			currentPlayer->played = false;
 			currentPlayer = currentPlayer->getEnemy();
-			interface.checkEvent(*currentPlayer);
+			interface.checkEvent(currentPlayer);
 			captured.clear();
 			rules.turnCounter += 1;
 		}
@@ -128,11 +129,11 @@ void Gomoku::start() {
 		DEBUG << "Game end after " << rules.turnCounter << " turns\n";
 		while (interface.getState() != AGAIN) {
 			interface.update();
-			interface.checkEvent(*currentPlayer);
+			interface.checkEvent(currentPlayer);
 		}
 		while (interface.getState() == AGAIN) {
 			interface.update();
-			interface.checkEvent(*currentPlayer);
+			interface.checkEvent(currentPlayer);
 		}
 		initGomoku();
 	}

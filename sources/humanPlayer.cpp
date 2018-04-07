@@ -17,7 +17,7 @@ void HumanPlayer::play(Rules &rules, Interface &i) {
 	(void)rules;
 	while (!this->played)
 	{
-		i.checkEvent(*this);
+		i.checkEvent(this);
 	}
     putStone(coordPlayed.x, coordPlayed.y);
 	return;
