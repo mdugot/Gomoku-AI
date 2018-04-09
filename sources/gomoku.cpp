@@ -34,6 +34,7 @@ void	Gomoku::initGomoku() {
 	}
 	focus[GW/2][GH/2] = true;
 	rules.setGomoku(this);
+	rules.turnCounter = 0;
 	interface.setGomoku(this);
 	currentPlayer = blackPlayer;
 }
@@ -96,8 +97,11 @@ void Gomoku::start() {
 		currentPlayer = blackPlayer;
 		while (!(end = rules.checkEnd(*currentPlayer))) {
 			interface.update();
+			//interface.updateAllGameText();
 			//PLAY
+			interface.setTimeToPlay(interface._clockTurn.restart());
 			currentPlayer->play(rules, interface);
+			interface.setTimeToPlay(interface._clockTurn.getElapsedTime());
 			x = currentPlayer->coordPlayed.x;
 			y = currentPlayer->coordPlayed.y;
 			//UPDATE HEURISTIC
@@ -105,6 +109,7 @@ void Gomoku::start() {
 			currentPlayer->ennemyHeuristic.clear(x, y);
 			currentPlayer->myHeuristic.print(x, y);
 			currentPlayer->ennemyHeuristic.print(x, y);
+			//DEBUG << "[]= " << currentPlayer->myHeuristic.getBestLevel(3,3) << "test\n";
 			//DRAW
 			drawStone();
 			//CAPTURE

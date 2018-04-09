@@ -12,6 +12,7 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <list>
 #include <vector>
 #include <map>
@@ -38,6 +39,8 @@
 
 void success(std::string message);
 void failure(std::string message);
+std::string  floatToString(float nb);
+std::string  intToString(int nb);
 
 #endif
 

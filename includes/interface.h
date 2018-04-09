@@ -59,6 +59,10 @@ class Interface {
 		inline	sf::RenderWindow	&getWindow(void) {return this->_window;}
 		inline	sf::Event			&getEvent(void) {return this->_event;}
 		inline	sf::Vector2<int>		&getCoordBoard(int x, int y){return (coordBoard[x][y]);}	
+		inline	float				getTimeOfGameInSeconds(void) {return this->_timeOfGame.asSeconds();}
+		inline	void				setTimeOfGame(sf::Time newTime) {this->_timeOfGame = newTime;}
+		inline	float				getTimeToPlayInSeconds(void) {return this->_timeToPlay.asSeconds();}
+		inline	void				setTimeToPlay(sf::Time newTime) {this->_timeToPlay = newTime;}
 		sf::Vector2<int> whiteCanteen[10];
 		sf::Vector2<int> blackCanteen[10];
 
@@ -69,6 +73,11 @@ class Interface {
 		State				state;
 		sf::RenderWindow	_window;
 		sf::Event			_event;
+		sf::Clock			_clockTurn;
+		sf::Clock			_clockOfGame;
+		sf::Time			_timeToPlay;
+		sf::Time			_timeOfGame;
+		float				previousTime;
 		std::list<sf::Sprite>			_allSprite;
 		std::list<sf::Text*>			_allText;
 		sf::Vector2<int>	coordBoard[GW][GH];
@@ -104,9 +113,14 @@ class Interface {
 		void	putPreviewStone(Player &current, int mouseX, int mouseY);
 		void	unputPreviewStone(int mouseX, int mouseY);
 		void	removeStone(int i, int j);
+		void	removeText(sf::Vector2<int> coordOfText);
 		bool	onBoard(int x, int y);
 		bool	onAgainYes(int x, int y);
 		bool	onAgainNo(int x, int y);
+		void	updateTimerOfGame(void);
+		void	updateTimerToPlay(void);
+		void	updateNbOfTurn(void);
+		void	updateAllGameText(void);
 
 		//to previzualize stone
 		bool				previewStone;
@@ -152,6 +166,7 @@ class Interface {
 		sf::Music			ambiance2;
 
 		sf::Text			timeToPlayText;
+		sf::Text			timeOfGameText;
 		sf::Text			nbTurnText;
 		sf::Text			help1;
 		sf::Text			help2;

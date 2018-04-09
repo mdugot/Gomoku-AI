@@ -131,19 +131,17 @@ void    Interface::setText(Text *text, Font &font, int size, Color color, int po
 }
 
 void    Interface::loadText(void) {
-    /*help1.setFont(menu.getArial());
-    help1.setCharacterSize(24);
-    help1.setColor(Color::Black);
-    help1.setString("1");
-    help1.setPosition(50, 50);
-    */
-    setText(&timeToPlayText, menu.getArial(), 24, Color::Black, 600, 860, "Time to play :");
-    setText(&nbTurnText, menu.getArial(),24, Color::Black, 600, 30, "TURN :");
-    setText(&help1, menu.getArial(), 36, Color::Blue, 300, 300, "1");
-    setText(&help2, menu.getArial(), 36, Color(255,0,128), 400, 300, "2");
-    setText(&help3, menu.getArial(), 36, Color::Yellow, 500, 300, "3");
-    setText(&help4, menu.getArial(), 36, Color::Red, 600, 300, "4");
-    setText(&help5, menu.getArial(), 36, Color::Green, 700, 300, "5");
+    setText(&timeOfGameText, menu.getArial(), 18, Color::Black, 10, 390, "Time of Game :\n0.00");
+    setText(&nbTurnText, menu.getArial(),18, Color::Blue, 10, 450, "TURN :\n 00");
+    setText(&timeToPlayText, menu.getArial(), 18, /*Color(0, 125, 250)*/Color::Red, 10, 500, "Player's time :\n0,000");
+    setText(&help1, menu.getArial(), 24, Color::Blue, 300, 300, "1");
+    setText(&help2, menu.getArial(), 24, Color(255,0,128), 400, 300, "2");
+    setText(&help3, menu.getArial(), 24, Color::Yellow, 500, 300, "3");
+    setText(&help4, menu.getArial(), 24, Color::Red, 600, 300, "4");
+    setText(&help5, menu.getArial(), 24, Color::Green, 700, 300, "5");
+    timeOfGameText.setOrigin(0,0);
+    timeToPlayText.setOrigin(0,0);
+    nbTurnText.setOrigin(0,0);
 }
 
 void    Interface::initCoordBoard(void) {
@@ -255,7 +253,17 @@ void    Interface::removeStone(int i, int j) {
         pos = (Vector2<int>)(*it).getPosition();
         if ((pos.x == i && pos.y == j)){
             it = _allSprite.erase(it);
-//            DEBUG << "REMOVE\n";
+            break;
+        }
+    }
+}
+
+void    Interface::removeText(Vector2<int> coord) {
+    Vector2<int> pos;
+    for (std::list<Text*>::iterator it = _allText.begin(); it != _allText.end(); it++) {
+        pos = (Vector2<int>)((*it)->getPosition());
+        if ((pos.x == coord.x && pos.y == coord.y)){
+            it = _allText.erase(it);
             break;
         }
     }
@@ -379,6 +387,8 @@ void    Interface::againScreen(void) {
 }
 
 void    Interface::gameScreen(void) {
+    setTimeOfGame(_clockOfGame.restart());
+    setTimeToPlay(_clockTurn.restart());
     _allSprite.push_back(_backgroundSprite);
     _allSprite.push_back(_boardGameSprite);
     _allText.push_back(&nbTurnText);
@@ -608,8 +618,51 @@ void    Interface::checkClickLeft(Player *current, int x, int y)
         DEBUG << "click during unknow state\n";
 }
 
+void    Interface::updateTimerOfGame(void) {
+        setTimeOfGame(this->_clockOfGame.getElapsedTime());
+        String str = "Time of Game :\n" + intToString(((int)getTimeOfGameInSeconds()));
+        timeOfGameText.setString(str);
+//        removeText(timeOfGameText.getPosition());
+        _allText.push_back(&timeOfGameText);
+}
+
+void    Interface::updateTimerToPlay(void) {
+        String str = "Player's time :\n" + floatToString(getTimeToPlayInSeconds());
+        timeToPlayText.setString(str);
+//        removeText(timeToPlayText.getPosition());
+        _allText.push_back(&timeToPlayText);
+}
+
+void    Interface::updateNbOfTurn(void) {
+        String str = "Nb of turn :\n" + intToString(((gomoku->getRules()).getTurnCounter()));
+        nbTurnText.setString(str);
+//        removeText(timeToPlayText.getPosition());
+        _allText.push_back(&nbTurnText);
+
+}
+
+/*
+void    Interface::updateHelperToPlay() {
+ //appeler ici l'heuristic du current player pour le parcourir et afficher les texts help1, help2 ect...
+}
+*/
+
+void    Interface::updateAllGameText() {
+    cleanTextList();
+    updateTimerOfGame();
+    updateTimerToPlay();
+    updateNbOfTurn();
+    /*
+    if (helpPlayer) {
+        updateHelperToPlay();
+    }
+    */
+}
+
 void    Interface::update(void) {
         this->_window.clear();
+        if (state == GAME)
+            this->updateAllGameText();
         this->drawGame();
         this->_window.display();
 }

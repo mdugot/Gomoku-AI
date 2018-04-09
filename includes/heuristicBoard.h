@@ -56,7 +56,6 @@ class HeuristicBoard
 		char stone;
 
 		void getAdjacent(char x, char y, char vx, char vy, char &before, char &after, char &beforeWall, char &afterWall);
-		int getBestLevel(unsigned char x, unsigned char y);
 		void fiveValue(unsigned char &value, unsigned char heuristic);
 		void updateThreat(char x, char y, char vx, char vy, char shift, short int mask);
 		void removeEnnemyThreat(char x, char y, char vx, char vy, char shift, short int mask);
@@ -75,6 +74,7 @@ class HeuristicBoard
 		void beCaptured(unsigned char x, unsigned char y);
 		void capture(unsigned char x, unsigned char y);
 		void print(int lastX = -1, int lastY = -1);
+		int getBestLevel(unsigned char x, unsigned char y);
 		bool checkDoubleFreeThree(unsigned char x, unsigned char y);
 		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku;}
 		inline Gomoku* getGomoku(void) {return gomoku;}
