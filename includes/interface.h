@@ -24,8 +24,8 @@
 # define BLACKCANTEENY 40
 # define WHITECANTEENX 960
 # define WHITECANTEENY 860
-# define HELPERX	30
-# define HELPERY	25
+# define HELPERX	35
+# define HELPERY	30
 # define CENTER_MAX_DISTANCE 20
 
 typedef enum State {

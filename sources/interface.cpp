@@ -41,7 +41,7 @@ void    Interface::loadTexture(void) {
     || !_equalityTexture.loadFromFile("./sprite/equality.png")
     || !_againYesTexture.loadFromFile("./sprite/againYesBox.png")
     || !_againNoTexture.loadFromFile("./sprite/againNoBox.png")
-    || !_boxTexture.loadFromFile("./sprite/box.png")
+    || !_boxTexture.loadFromFile("./sprite/boxCube.png")
     ) {
        DEBUG << "Error during import " << std::endl;
        exit(1);
@@ -72,7 +72,7 @@ void    Interface::loadSprite(void) {
     makeSprite(_whiteWinSprite, _whiteWinTexture, 1, 1, 1, 1);
     makeSprite(_blackWinSprite, _blackWinTexture, 1, 1, 1, 1);
     makeSprite(_equalitySprite, _equalityTexture, 1, 1, 1, 1);
-    makeSprite(_boxSprite, _boxTexture, 1, 1, 0, 0);
+    makeSprite(_boxSprite, _boxTexture, 1, 1, HELPERX - 10, HELPERY - 10);
     makeSprite(_againYesSprite, _againYesTexture, 1, 1, YES_LEFT, YES_UP);
     makeSprite(_againNoSprite, _againNoTexture, 1, 1, NO_LEFT, NO_UP);
     makeSprite(_boxSelectSprite, _boxTexture, 1, 1, 0, 0);
@@ -391,8 +391,10 @@ void    Interface::gameScreen(void) {
     _allText.push_back(&timeOfGameText);
     _allText.push_back(&nbTurnText);
     _allText.push_back(&timeToPlayText);
-    if (gomoku->getBlackPlayer().getHuman() == true || gomoku->getWhitePlayer().getHuman() == true)
+    if (gomoku->getBlackPlayer().getHuman() == true || gomoku->getWhitePlayer().getHuman() == true) {
         _allText.push_back(&visualAidText);
+        _allSprite.push_back(_boxSprite);
+    }
     //_allText.push_back(&help1);
     //_allText.push_back(&help2);
     //_allText.push_back(&help3);
@@ -539,10 +541,10 @@ void    Interface::checkEvent(Player *current) {
 
 bool    Interface::onVisualAid(int x, int y)
 {
-    if (x <= BOARD_LEFT - 10 && 
-        x >= HELPERX &&
-        y >= HELPERY &&
-        y <= 100) {
+    if (x <= BOARD_LEFT - 50 && 
+        x >= HELPERX - 10 &&
+        y >= HELPERY - 10 &&
+        y <= 110) {
         return true;}
     else {
         return false;}
