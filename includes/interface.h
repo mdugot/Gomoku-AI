@@ -24,6 +24,8 @@
 # define BLACKCANTEENY 40
 # define WHITECANTEENX 960
 # define WHITECANTEENY 860
+# define HELPERX	30
+# define HELPERY	25
 # define CENTER_MAX_DISTANCE 20
 
 typedef enum State {
@@ -117,13 +119,17 @@ class Interface {
 		bool	onBoard(int x, int y);
 		bool	onAgainYes(int x, int y);
 		bool	onAgainNo(int x, int y);
+		bool	onVisualAid(int x, int y);
 		void	updateTimerOfGame(void);
 		void	updateTimerToPlay(void);
 		void	updateNbOfTurn(void);
 		void	updateAllGameText(void);
+		void	updateVisualAid(void);
 
 		//to previzualize stone
 		bool				previewStone;
+		bool				viewWinner;
+		bool				visualAid;
 		sf::Vector2<int>	coordPreviewStone;
 		sf::Sprite			previewStoneFree;
 		sf::Sprite			previewStoneForbidden;
@@ -157,11 +163,11 @@ class Interface {
 
 		sf::SoundBuffer		bipSB;
 		sf::SoundBuffer		captureSB;
-		sf::SoundBuffer		testSB;
+		sf::SoundBuffer		victorySB;
 
 		sf::Sound			bipSound;
 		sf::Sound			captureSound;
-		sf::Sound			testSound;
+		sf::Sound			victorySound;
 		sf::Music			ambiance1;
 		sf::Music			ambiance2;
 
@@ -173,6 +179,7 @@ class Interface {
 		sf::Text			help3;
 		sf::Text			help4;
 		sf::Text			help5;
+		sf::Text			visualAidText;
 
 };
 

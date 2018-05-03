@@ -20,6 +20,7 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
    initCoordCanteen();
    this->setState(WELCOME);
    previewStone = false;
+   viewWinner = false;
    DEBUG << "INTERFACE READY\n";
 }
 
@@ -68,9 +69,9 @@ void    Interface::loadSprite(void) {
     makeSprite(_goodByeSprite, _goodByeTexture, 1, 1, 0, 0);
     makeSprite(_helloSprite, _helloTexture, 1, 1, 0, 0);
     makeSprite(_againSprite, _againTexture, 1, 1, 0, 0);
-    makeSprite(_whiteWinSprite, _whiteWinTexture, 1, 1, 0, 0);
-    makeSprite(_blackWinSprite, _blackWinTexture, 1, 1, 0, 0);
-    makeSprite(_equalitySprite, _equalityTexture, 1, 1, 0, 0);
+    makeSprite(_whiteWinSprite, _whiteWinTexture, 1, 1, 1, 1);
+    makeSprite(_blackWinSprite, _blackWinTexture, 1, 1, 1, 1);
+    makeSprite(_equalitySprite, _equalityTexture, 1, 1, 1, 1);
     makeSprite(_boxSprite, _boxTexture, 1, 1, 0, 0);
     makeSprite(_againYesSprite, _againYesTexture, 1, 1, YES_LEFT, YES_UP);
     makeSprite(_againNoSprite, _againNoTexture, 1, 1, NO_LEFT, NO_UP);
@@ -95,7 +96,8 @@ void    Interface::makeSprite(Sprite &sprite, Texture &texture, float sizeX, flo
 
 void    Interface::loadSoundBuffer(void) {
      if (!bipSB.loadFromFile("./sound/bip.wav")
-        || !captureSB.loadFromFile("./sound/capture.wav")) {
+        || !captureSB.loadFromFile("./sound/capture.wav")
+        || !victorySB.loadFromFile("./sound/victory.wav")) {
          DEBUG << "ERROR DURING LOAD SOUND BUFFER\n";
          exit(1);
      }
@@ -104,7 +106,7 @@ void    Interface::loadSoundBuffer(void) {
 void    Interface::loadSoundAndOpenMusic(void) {
     bipSound.setBuffer(bipSB);
     captureSound.setBuffer(captureSB);
-    testSound.setBuffer(testSB);
+    victorySound.setBuffer(victorySB);
     if (!ambiance1.openFromFile("./sound/ambiance1.wav")
         || !ambiance2.openFromFile("./sound/ambiance2.wav")) {
             DEBUG << "ERROR DURING OPEN MUSIC\n";
@@ -131,17 +133,20 @@ void    Interface::setText(Text *text, Font &font, int size, Color color, int po
 }
 
 void    Interface::loadText(void) {
-    setText(&timeOfGameText, menu.getArial(), 18, Color::Black, 10, 390, "Time of Game :\n0.00");
-    setText(&nbTurnText, menu.getArial(),18, Color::Blue, 10, 450, "TURN :\n 00");
-    setText(&timeToPlayText, menu.getArial(), 18, /*Color(0, 125, 250)*/Color::Red, 10, 500, "Player's time :\n0,000");
-    setText(&help1, menu.getArial(), 24, Color::Blue, 300, 300, "1");
-    setText(&help2, menu.getArial(), 24, Color(255,0,128), 400, 300, "2");
-    setText(&help3, menu.getArial(), 24, Color::Yellow, 500, 300, "3");
-    setText(&help4, menu.getArial(), 24, Color::Red, 600, 300, "4");
-    setText(&help5, menu.getArial(), 24, Color::Green, 700, 300, "5");
+    Font &arial = menu.getArial();
+    setText(&timeOfGameText, arial, 18, Color::Black, 10, 400, "Time of Game :\n0.00");
+    setText(&nbTurnText, arial,18, Color::Blue, 10, 450, "TURN :\n 00");
+    setText(&timeToPlayText, arial, 18, Color(0, 125, 250), 10, 500, "Player's time :\n0,000");
+    setText(&help1, arial, 24, Color::Blue, 300, 300, "1");
+    setText(&help2, arial, 24, Color(255,0,128), 400, 300, "2");
+    setText(&help3, arial, 24, Color::Yellow, 500, 300, "3");
+    setText(&help4, arial, 24, Color::Red, 600, 300, "4");
+    setText(&help5, arial, 24, Color::Green, 700, 300, "5");
+    setText(&visualAidText, arial, 18, Color::Red, HELPERX, HELPERY, "    To activ\nVisualHelper :\n     [false]");
     timeOfGameText.setOrigin(0,0);
     timeToPlayText.setOrigin(0,0);
     nbTurnText.setOrigin(0,0);
+    visualAidText.setOrigin(0,0);
 }
 
 void    Interface::initCoordBoard(void) {
@@ -282,7 +287,6 @@ void    Interface::setState(State newState)
         return;
     }
     this->state = newState;
-    this->cleanInterface();
     switch (state) {
             case MENU :
                 menuScreen();
@@ -312,8 +316,8 @@ void    Interface::setState(State newState)
                 DEBUG << "ERROR SCREEN STATE ???";
                 exit(0);
                 break;
-    this->update();
     }
+    this->update();
 }
 
 void    Interface::startPauseScreen(void) {
@@ -336,21 +340,8 @@ void    Interface::drawGame(void) {
 }
 
 void    Interface::cleanInterface(void) {
-    this->cleanSpriteList();
-    this->cleanTextList();
-}
-
-void    Interface::cleanTextList(void) {
-    for (std::list<Text*>::iterator it = _allText.begin(); it != _allText.end(); it++) {
-        it = _allText.erase(it);
-    }
-}
-
-void    Interface::cleanSpriteList(void) {
-    for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
-        it = _allSprite.erase(it);
-    }
-//    _allSprite.erase(_allSprite.begin(), _allSprite.end());
+    _allText.clear();
+    _allSprite.clear();
 }
 
 void    Interface::welcomeScreen(void) {
@@ -363,12 +354,16 @@ void    Interface::welcomeScreen(void) {
 
 void    Interface::goodByeScreen(void) {
     DEBUG << "GOODBYE SCREEN\n";
-    _allSprite.push_back(_goodByeSprite);
     this->state = GOODBYE;
+    cleanInterface();
+    _allSprite.push_back(_goodByeSprite);
+    ambiance1.stop();
+    ambiance2.stop();
 }
 
 void    Interface::menuScreen(void) {
     DEBUG << "MENU SCREEN\n";
+    cleanInterface();
     _allSprite.push_back(menu.backgroundMenuSprite);
     _allText.push_back(&menu.textBoxP1);
     _allText.push_back(&menu.textBoxP2);
@@ -378,6 +373,7 @@ void    Interface::menuScreen(void) {
 
 void    Interface::againScreen(void) {
     DEBUG << "AGAIN SCREEN\n";
+    cleanInterface();
     _allSprite.push_back(_againSprite);
     _allSprite.push_back(_againYesSprite);
     _allSprite.push_back(_againNoSprite);
@@ -387,17 +383,21 @@ void    Interface::againScreen(void) {
 }
 
 void    Interface::gameScreen(void) {
+    cleanInterface();
     setTimeOfGame(_clockOfGame.restart());
     setTimeToPlay(_clockTurn.restart());
     _allSprite.push_back(_backgroundSprite);
     _allSprite.push_back(_boardGameSprite);
+    _allText.push_back(&timeOfGameText);
     _allText.push_back(&nbTurnText);
     _allText.push_back(&timeToPlayText);
-    _allText.push_back(&help1);
-    _allText.push_back(&help2);
-    _allText.push_back(&help3);
-    _allText.push_back(&help4);
-    _allText.push_back(&help5);
+    if (gomoku->getBlackPlayer().getHuman() == true || gomoku->getWhitePlayer().getHuman() == true)
+        _allText.push_back(&visualAidText);
+    //_allText.push_back(&help1);
+    //_allText.push_back(&help2);
+    //_allText.push_back(&help3);
+    //_allText.push_back(&help4);
+    //_allText.push_back(&help5);
     ambiance2.stop();
     ambiance1.play();
     this->state = GAME;
@@ -405,18 +405,21 @@ void    Interface::gameScreen(void) {
 
 void    Interface::whiteWinScreen(void) {
     DEBUG << "WHITE WIN SCREEN\n";
+    victorySound.play();
     _allSprite.push_back(_whiteWinSprite);
     this->state = WHITEWIN;
 }
 
 void    Interface::blackWinScreen(void) {
     DEBUG << "BLACK WIN SCREEN\n";
+    victorySound.play();
     _allSprite.push_back(_blackWinSprite);
     this->state = BLACKWIN;
 }
 
 void    Interface::equalScreen(void) {
     DEBUG << "EQUAL WIN SCREEN\n";
+    victorySound.play();
     _allSprite.push_back(_equalitySprite);
     this->state = EQUAL;
 }
@@ -534,6 +537,17 @@ void    Interface::checkEvent(Player *current) {
     }
 }
 
+bool    Interface::onVisualAid(int x, int y)
+{
+    if (x <= BOARD_LEFT - 10 && 
+        x >= HELPERX &&
+        y >= HELPERY &&
+        y <= 100) {
+        return true;}
+    else {
+        return false;}
+}
+
 bool    Interface::onBoard(int x, int y)
 {
     if (x <= BOARD_RIGHT + MARGE && 
@@ -571,32 +585,43 @@ void    Interface::checkClickLeft(Player *current, int x, int y)
     {
         if (onBoard(x, y) && current)
             this->setStoneOnClick(*current, x, y);
-        else
-            DEBUG << "out of board add other feature interaction\n";
+        else if (onVisualAid(x,y) && (gomoku->getBlackPlayer().getHuman() == true || gomoku->getWhitePlayer().getHuman() == true))
+                updateVisualAid();
     }
     else if (state == WELCOME){
-        DEBUG << "click during Welcome\n";
+        //DEBUG << "click during Welcome\n";
     }
     else if (state == MENU){
         if (menu.onP1(x, y))
         {
+            bipSound.play();
             menu.switchTextBox(menu.textBoxP1, menu.choiceP1);
         }
         else if (menu.onP2(x, y))
         {
+            bipSound.play();
             menu.switchTextBox(menu.textBoxP2, menu.choiceP2);
         }
         else if (menu.onVariante(x, y))
         {
+            //bipSound.play();
             menu.switchTextBox(menu.textBoxVariante, menu.variante);
         }
         else if (menu.onGo(x, y)){
+            bipSound.play();
             menu.go(gomoku);//setPlayer...
             setState(GAME);
         }
     }
     else if (state == BLACKWIN || state == WHITEWIN || state == EQUAL){
-        setState(AGAIN);
+        if (viewWinner) {
+            setState(AGAIN);
+            viewWinner = false;
+        }
+        else {
+            removeStone(1,1);
+            viewWinner = true;
+        }
         DEBUG << "click during victory or equality screen\n";
     }
     else if (state == AGAIN){
@@ -622,24 +647,37 @@ void    Interface::updateTimerOfGame(void) {
         setTimeOfGame(this->_clockOfGame.getElapsedTime());
         String str = "Time of Game :\n" + intToString(((int)getTimeOfGameInSeconds()));
         timeOfGameText.setString(str);
-//        removeText(timeOfGameText.getPosition());
-        _allText.push_back(&timeOfGameText);
+        //removeStone(timeOfGameText.getPosition().x, timeOfGameText.getPosition().y);
+        //_allText.push_back(&timeOfGameText);
 }
 
 void    Interface::updateTimerToPlay(void) {
         String str = "Player's time :\n" + floatToString(getTimeToPlayInSeconds());
         timeToPlayText.setString(str);
-//        removeText(timeToPlayText.getPosition());
-        _allText.push_back(&timeToPlayText);
 }
 
 void    Interface::updateNbOfTurn(void) {
         String str = "Nb of turn :\n" + intToString(((gomoku->getRules()).getTurnCounter()));
         nbTurnText.setString(str);
-//        removeText(timeToPlayText.getPosition());
-        _allText.push_back(&nbTurnText);
-
 }
+
+void    Interface::updateVisualAid(void) {
+        String str = "    To Activ\nVisualHelper :\n     [";
+        if (visualAid) {
+            visualAid = false;
+            visualAidText.setColor(Color::Red);
+            str += "false]";
+        }
+        else {
+            visualAidText.setColor(Color(50,200,50));
+            visualAid = true;
+            str += "TRUE]";
+        }
+        visualAidText.setString(str);
+        bipSound.play();
+        update();
+}
+
 
 /*
 void    Interface::updateHelperToPlay() {
@@ -648,7 +686,6 @@ void    Interface::updateHelperToPlay() {
 */
 
 void    Interface::updateAllGameText() {
-    cleanTextList();
     updateTimerOfGame();
     updateTimerToPlay();
     updateNbOfTurn();

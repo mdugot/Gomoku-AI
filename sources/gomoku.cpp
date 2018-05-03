@@ -66,6 +66,7 @@ Gomoku::~Gomoku()
 }
 
 void Gomoku::end() {
+	interface.cleanInterface();
 	interface.setState(GOODBYE);
 	interface.update();
 	sleep(1);
