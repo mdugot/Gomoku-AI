@@ -82,6 +82,7 @@ class Interface {
 		float				previousTime;
 		std::list<sf::Sprite>			_allSprite;
 		std::list<sf::Text*>			_allText;
+		std::list<sf::Text*>			_allHelpText;
 		sf::Vector2<int>	coordBoard[GW][GH];
 		sf::Vector2<int>	turnCoordInterfaceInGomokuBoardIndex(int screenX, int screenY);
 		
@@ -125,6 +126,8 @@ class Interface {
 		void	updateNbOfTurn(void);
 		void	updateAllGameText(void);
 		void	updateVisualAid(void);
+		void	updateHelperToPlay(void);
+		void	putHelpText(sf::Text &text, int x, int y);
 
 		//to previzualize stone
 		bool				previewStone;

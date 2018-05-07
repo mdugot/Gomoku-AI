@@ -98,7 +98,6 @@ void Gomoku::start() {
 		currentPlayer = blackPlayer;
 		while (!(end = rules.checkEnd(*currentPlayer))) {
 			interface.update();
-			//interface.updateAllGameText();
 			//PLAY
 			interface.setTimeToPlay(interface._clockTurn.restart());
 			currentPlayer->play(rules, interface);
@@ -132,7 +131,6 @@ void Gomoku::start() {
 			interface.setState(BLACKWIN);
 		else if (end == EQUALITY)
 			interface.setState(EQUAL);
-		DEBUG << "Game end after " << rules.turnCounter << " turns\n";
 		while (interface.getState() != AGAIN) {
 			interface.update();
 			interface.checkEvent(currentPlayer);

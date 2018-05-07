@@ -337,10 +337,15 @@ void    Interface::drawGame(void) {
     for (std::list<Text*>::iterator it = _allText.begin(); it != _allText.end(); it++) {
         this->_window.draw(*(*it));
     }
+    //En jeu si demandé affichage de l'aide au joueur :
+    /*for (std::list<Text>::iterator it = _allHelpText.begin(); it != _allHelpText.end(); it++) {
+        this->_window.draw(*it);
+    }*/
 }
 
 void    Interface::cleanInterface(void) {
     _allText.clear();
+    _allHelpText.clear();
     _allSprite.clear();
 }
 
@@ -680,22 +685,42 @@ void    Interface::updateVisualAid(void) {
         update();
 }
 
-
-/*
-void    Interface::updateHelperToPlay() {
- //appeler ici l'heuristic du current player pour le parcourir et afficher les texts help1, help2 ect...
+void    Interface::putHelpText(Text &text, int x, int y) {
+            text.setPosition(coordBoard[x][y].x, coordBoard[x][y].y);
+            _window.draw(text);
 }
-*/
+
+void    Interface::updateHelperToPlay() {
+    if (!(gomoku->getCurrentPlayer()->getHuman()))
+        return;
+    HeuristicBoard currentHeuristic = gomoku->getCurrentPlayer()->getMyHeuristic();
+    int level;
+    for (short x = 0; x < GH; x++) {
+        for (short y = 0; y < GW; y++) {
+            level = currentHeuristic.getBestLevel(x,y);
+            if (level == 0)
+                continue;
+            else if (level == 1)
+                putHelpText(help1, x, y);
+            else if (level == 2)
+                putHelpText(help2, x, y);
+            else if (level == 3)
+                putHelpText(help3, x, y);
+            else if (level == 4)
+                putHelpText(help4, x, y);
+            else if (level == 5)
+                putHelpText(help5, x, y);
+            else if (level > 5)
+                DEBUG << "OTHER TEXT !!";
+        }
+    }
+    //appeler ici l'heuristic du current player pour le parcourir et afficher les texts help1, help2 ect...
+}
 
 void    Interface::updateAllGameText() {
     updateTimerOfGame();
     updateTimerToPlay();
     updateNbOfTurn();
-    /*
-    if (helpPlayer) {
-        updateHelperToPlay();
-    }
-    */
 }
 
 void    Interface::update(void) {
@@ -703,5 +728,7 @@ void    Interface::update(void) {
         if (state == GAME)
             this->updateAllGameText();
         this->drawGame();
+        if ((state == GAME /* || state == BLACKWIN || state == WHITEWIN || state == EQUAL*/) && visualAid)
+            updateHelperToPlay();
         this->_window.display();
 }
