@@ -97,6 +97,8 @@ void Gomoku::start() {
 		DEBUG << "PLAYER UPDATED\n";
 		currentPlayer = blackPlayer;
 		while (!(end = rules.checkEnd(*currentPlayer))) {
+			if (interface.visualAid)
+				interface.updateHelperToPlay();
 			interface.update();
 			//PLAY
 			interface.setTimeToPlay(interface._clockTurn.restart());
@@ -109,7 +111,6 @@ void Gomoku::start() {
 			currentPlayer->ennemyHeuristic.clear(x, y);
 			currentPlayer->myHeuristic.print(x, y);
 			currentPlayer->ennemyHeuristic.print(x, y);
-			//DEBUG << "[]= " << currentPlayer->myHeuristic.getBestLevel(3,3) << "test\n";
 			//DRAW
 			drawStone();
 			//CAPTURE
@@ -125,6 +126,7 @@ void Gomoku::start() {
 			captured.clear();
 			rules.turnCounter += 1;
 		}
+		interface._allHelpSprite.clear();
 		if (end == WHITE_WIN)
 			interface.setState(WHITEWIN);
 		else if (end == BLACK_WIN)

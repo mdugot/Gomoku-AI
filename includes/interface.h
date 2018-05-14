@@ -26,6 +26,8 @@
 # define WHITECANTEENY 860
 # define HELPERX	35
 # define HELPERY	30
+# define CHRONOX		1020
+# define CHRONOY		40
 # define CENTER_MAX_DISTANCE 20
 
 typedef enum State {
@@ -49,6 +51,7 @@ class Interface {
 		void	cleanInterface(void);
 		void	cleanSpriteList(void);
 		void	cleanTextList(void);
+		void	cleanHelpList(void);
 		void	checkClickLeft(Player *current, int x, int y);
 		void	setStoneOnClick(Player &player, int x, int y);
 		void	checkEvent(Player *current);
@@ -82,7 +85,7 @@ class Interface {
 		float				previousTime;
 		std::list<sf::Sprite>			_allSprite;
 		std::list<sf::Text*>			_allText;
-		std::list<sf::Text*>			_allHelpText;
+		std::list<sf::Sprite>			_allHelpSprite;
 		sf::Vector2<int>	coordBoard[GW][GH];
 		sf::Vector2<int>	turnCoordInterfaceInGomokuBoardIndex(int screenX, int screenY);
 		
@@ -127,7 +130,8 @@ class Interface {
 		void	updateAllGameText(void);
 		void	updateVisualAid(void);
 		void	updateHelperToPlay(void);
-		void	putHelpText(sf::Text &text, int x, int y);
+		//void	putHelpText(sf::Text &text, int x, int y);
+		void	putHelpSprite(sf::Sprite sprite, int x, int y);
 
 		//to previzualize stone
 		bool				previewStone;
@@ -149,6 +153,13 @@ class Interface {
 		sf::Sprite			_boxSelectSprite;
 		sf::Sprite			_againYesSprite;
 		sf::Sprite			_againNoSprite;
+		sf::Sprite			_help1Sprite;
+		sf::Sprite			_help2Sprite;
+		sf::Sprite			_help3Sprite;
+		sf::Sprite			_help4Sprite;
+		sf::Sprite			_help5Sprite;
+		sf::Sprite			_help5PlusSprite;
+		sf::Sprite			_chronoSprite;
 
 		sf::Texture			_stoneWhiteTexture;
 		sf::Texture			_stoneBlackTexture;
@@ -163,6 +174,14 @@ class Interface {
 		sf::Texture			_againYesTexture;
 		sf::Texture			_againNoTexture;
 		sf::Texture			_boxTexture;
+		sf::Texture			_help1Texture;
+		sf::Texture			_help2Texture;
+		sf::Texture			_help3Texture;
+		sf::Texture			_help4Texture;
+		sf::Texture			_help5Texture;
+		sf::Texture			_help5PlusTexture;
+		sf::Texture			_chronoTexture;
+
 
 		sf::SoundBuffer		bipSB;
 		sf::SoundBuffer		captureSB;
@@ -177,11 +196,11 @@ class Interface {
 		sf::Text			timeToPlayText;
 		sf::Text			timeOfGameText;
 		sf::Text			nbTurnText;
-		sf::Text			help1;
+		/*sf::Text			help1;
 		sf::Text			help2;
 		sf::Text			help3;
 		sf::Text			help4;
-		sf::Text			help5;
+		sf::Text			help5;*/
 		sf::Text			visualAidText;
 
 };
