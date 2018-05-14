@@ -46,6 +46,7 @@ class Interface {
 		void	drawGame(void);
 		void	update(void);
 		void	putStone(sf::Sprite, int, int);
+		void	putStoneToHelp(int gomokuX, int gomokuY);
 		void	printCoordBoard(void);
 		void	makeSprite(sf::Sprite &s, sf::Texture &t, float sy, float sx, int px, int py);
 		void	cleanInterface(void);
@@ -160,6 +161,7 @@ class Interface {
 		sf::Sprite			_help5Sprite;
 		sf::Sprite			_help5PlusSprite;
 		sf::Sprite			_chronoSprite;
+		sf::Sprite			_bestSprite;
 
 		sf::Texture			_stoneWhiteTexture;
 		sf::Texture			_stoneBlackTexture;
@@ -181,6 +183,7 @@ class Interface {
 		sf::Texture			_help5Texture;
 		sf::Texture			_help5PlusTexture;
 		sf::Texture			_chronoTexture;
+		sf::Texture			_bestTexture;
 
 
 		sf::SoundBuffer		bipSB;

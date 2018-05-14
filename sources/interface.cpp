@@ -48,6 +48,7 @@ void    Interface::loadTexture(void) {
     || !_help4Texture.loadFromFile("./sprite/help4.png")
     || !_help5Texture.loadFromFile("./sprite/help5.png")
     || !_help5PlusTexture.loadFromFile("./sprite/help5Plus.png")
+    || !_bestTexture.loadFromFile("./sprite/best.png")
     || !_chronoTexture.loadFromFile("./sprite/chrono.png")
     ) {
        DEBUG << "Error during import " << std::endl;
@@ -71,6 +72,7 @@ void    Interface::loadTexture(void) {
        _help4Texture.setSmooth(true);
        _help5Texture.setSmooth(true);
        _help5PlusTexture.setSmooth(true);
+       _bestTexture.setSmooth(true);
        _chronoTexture.setSmooth(true);
    }
 }
@@ -98,9 +100,11 @@ void    Interface::loadSprite(void) {
     makeSprite(_help4Sprite, _help4Texture,0.82f, 0.82f, 0, 0);
     makeSprite(_help5Sprite, _help5Texture,0.82f, 0.82f, 0, 0);
     makeSprite(_help5PlusSprite, _help5PlusTexture,0.82f, 0.82f, 0, 0);
+    makeSprite(_bestSprite, _bestTexture, 0.825f, 0.825f, 0, 0);
     makeSprite(_chronoSprite, _chronoTexture,0.8f, 0.8f, CHRONOX, CHRONOY);
     _whiteStone.setOrigin(_stoneWhiteTexture.getSize().x / _whiteStone.getScale().x / 2, _stoneWhiteTexture.getSize().y / _whiteStone.getScale().y / 2);
     _blackStone.setOrigin(_stoneBlackTexture.getSize().x / _blackStone.getScale().x / 2, _stoneBlackTexture.getSize().y / _blackStone.getScale().y / 2);
+    _bestSprite.setOrigin(_bestTexture.getSize().x / _bestSprite.getScale().x / 2, _bestTexture.getSize().y / _bestSprite.getScale().y / 2);
     _help1Sprite.setOrigin(_help1Texture.getSize().x / _help1Sprite.getScale().x / 2, _help1Texture.getSize().y / _help1Sprite.getScale().y / 2);
     _help2Sprite.setOrigin(_help1Texture.getSize().x / _help1Sprite.getScale().x / 2, _help1Texture.getSize().y / _help1Sprite.getScale().y / 2);
     _help3Sprite.setOrigin(_help1Texture.getSize().x / _help1Sprite.getScale().x / 2, _help1Texture.getSize().y / _help1Sprite.getScale().y / 2);
@@ -474,6 +478,11 @@ void    Interface::putStone(Sprite stone, int x, int y) {
         _allSprite.push_back(stone);
 }
 
+void    Interface::putStoneToHelp(int i, int j) {
+        Vector2<int> coord = coordBoard[i][j];
+        _bestSprite.setPosition(coord.x, coord.y);
+}
+
 void    Interface::putPreviewStone(Player &current, int mouseX, int mouseY)
 {
     Vector2<int> tmp = turnCoordInterfaceInGomokuBoardIndex(mouseX, mouseY);
@@ -727,6 +736,7 @@ void    Interface::updateHelperToPlay() {
     if (!(gomoku->getCurrentPlayer()->getHuman()))
         return;
     _allHelpSprite.clear();
+    //appeler ici l'heuristic du current player pour le parcourir et afficher les texts help1, help2 ect...
     HeuristicBoard currentHeuristic = gomoku->getCurrentPlayer()->getMyHeuristic();
     int level;
     for (short x = 0; x < GH; x++) {
@@ -748,7 +758,8 @@ void    Interface::updateHelperToPlay() {
                 putHelpSprite(_help5PlusSprite, x, y);
         }
     }
-    //appeler ici l'heuristic du current player pour le parcourir et afficher les texts help1, help2 ect...
+    //affichage du sprite best au coordonné précédemment enregistré par le helper...
+    _allHelpSprite.push_back(_bestSprite);
 }
 
 void    Interface::updateAllGameText() {

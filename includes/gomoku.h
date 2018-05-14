@@ -6,6 +6,7 @@
 #include "boardIterator.h"
 class Interface;
 class Player;
+class MinMaxDynamicPlayer;
 class Rules;
 
 #define GW 19
@@ -23,6 +24,7 @@ class Gomoku
 		bool clone;
 		Player	*whitePlayer;
 		Player	*blackPlayer;
+		MinMaxDynamicPlayer	*helper;
 		Player	*currentPlayer;
 		Rules	&rules;
 		Interface &interface;

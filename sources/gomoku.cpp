@@ -3,6 +3,7 @@
 #include "humanPlayer.h"
 #include "randomPlayer.h"
 #include "minMaxDynamicPlayer.h"
+#include "helper.h"
 #include "noobIA.h"
 #include "rules.h"
 #include "interface.h"
@@ -13,6 +14,7 @@ Gomoku::Gomoku(Rules &rules, Interface &interface) : rules(rules), interface(int
 {
 	whitePlayer = new HumanPlayer();
 	blackPlayer = new HumanPlayer();
+	helper = new MinMaxDynamicPlayer({7, 7, 5, 5, 3, 3, 0});
 	initGomoku();
 }
 
@@ -98,7 +100,10 @@ void Gomoku::start() {
 		currentPlayer = blackPlayer;
 		while (!(end = rules.checkEnd(*currentPlayer))) {
 			if (interface.visualAid)
+			{
+				helper->playToHelp(rules, interface);
 				interface.updateHelperToPlay();
+			}
 			interface.update();
 			//PLAY
 			interface.setTimeToPlay(interface._clockTurn.restart());
