@@ -269,11 +269,8 @@ void MinMaxDynamicPlayer::playToHelp(Rules &rules, Interface &i) {
 	(void)i;
 	int x = -1;
 	int y = -1;
-    DEBUG << "HELPER 1 : ";
-	//startMinMax(x, y, rules);
-    DEBUG << "HELPER 2 : ";
+	startMinMax(x, y, rules);
 	i.putStoneToHelp(x, y);
-    DEBUG << "HELPER ADVICE : ";
 }
 
 long long MinMaxDynamicPlayer::heuristic(HeuristicBoard &myH, HeuristicBoard &ennemyH, bool last, int depth) {

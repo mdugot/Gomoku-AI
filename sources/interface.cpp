@@ -759,6 +759,7 @@ void    Interface::updateHelperToPlay() {
         }
     }
     //affichage du sprite best au coordonné précédemment enregistré par le helper...
+    gomoku->getCurrentPlayer()->getHelper()->play(gomoku->getRules(), *this);
     _allHelpSprite.push_back(_bestSprite);
 }
 
@@ -769,9 +770,9 @@ void    Interface::updateAllGameText() {
 }
 
 void    Interface::update(void) {
-        this->_window.clear();
         if (state == GAME)
             this->updateAllGameText();
+        this->_window.clear();
         this->drawGame();
         //if ((state == GAME /* || state == BLACKWIN || state == WHITEWIN || state == EQUAL*/) && visualAid)
         //    updateHelperToPlay();

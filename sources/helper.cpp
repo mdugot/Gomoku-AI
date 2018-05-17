@@ -13,9 +13,6 @@ Helper::~Helper() {
 void Helper::play(Rules &rules, Interface &i) {
 	int x = -1;
 	int y = -1;
-    DEBUG << "HELPER 1 : ";
-	//startMinMax(x, y, rules);
-    DEBUG << "HELPER 2 : ";
-	i.putStoneToHelp(3, 3);
-    DEBUG << "HELPER ADVICE : ";
+	startMinMax(x, y, rules);
+	i.putStoneToHelp(x, y);
 }

@@ -24,7 +24,9 @@ class Gomoku
 		bool clone;
 		Player	*whitePlayer;
 		Player	*blackPlayer;
-		MinMaxDynamicPlayer	*helper;
+		Player	*helperWhite;
+		Player	*helperBlack;
+		//Player	*currentHelper;
 		Player	*currentPlayer;
 		Rules	&rules;
 		Interface &interface;
@@ -64,18 +66,22 @@ class Gomoku
 		inline Player	*aBlackPlayer() {return blackPlayer;}
 		inline void		setWhitePlayer(Player *p) {whitePlayer = p;}
 		inline void		setBlackPlayer(Player *p) {blackPlayer = p;}
-		void		updateWhitePlayer(void);
-		void		updateBlackPlayer(void);
+		void			updateWhitePlayer(void);
+		void			updateBlackPlayer(void);
+		void			updateWhiteHelper(void);
+		void			updateBlackHelper(void);
+		void			updatePlayer(void);
 		inline Player	*getCurrentPlayer() {return currentPlayer;}
+		//inline Player	*getCurrentHelper() {return currentHelper;}
 		inline Rules	&getRules() {return rules;}
 		inline Stone**	getBoard() {return (Stone**)board;}
-		inline bool** getFocus() {return (bool**)focus;}
+		inline bool**	getFocus() {return (bool**)focus;}
 		inline Interface &getInterface() {return interface;}
-		inline int getNbEatenStone() {return nbEatenStone;}
-		Stone getStone(int x, int y);
-		inline void setStone(Stone stone, int x, int y) {board[x][y] = stone;}
-		inline bool isFocus(int x, int y) {return focus[x][y];}
-		void updateFocus(int x, int j);
+		inline int		getNbEatenStone() {return nbEatenStone;}
+		Stone			getStone(int x, int y);
+		inline void		setStone(Stone stone, int x, int y) {board[x][y] = stone;}
+		inline bool		isFocus(int x, int y) {return focus[x][y];}
+		void			updateFocus(int x, int j);
 
 		bool fiveStoneLine(Stone color, int &x, int &y);
 		void checkCapture(Player &current, unsigned char x, unsigned char y, Player &enemy, std::vector<std::pair<unsigned char, unsigned char>> &captured);

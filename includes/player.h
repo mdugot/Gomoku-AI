@@ -20,6 +20,7 @@ class Player
 		int nbCapture;
 		Gomoku *gomoku;
 		Player *enemy;
+		Player *myHelper;
 		Stone stoneColor;
 		sf::Sprite	*stoneSprite;
 		bool	played;
@@ -43,12 +44,14 @@ class Player
 		inline HeuristicBoard *getMyHeuristic() {return &myHeuristic;}
 		inline HeuristicBoard *getEnnemyHeuristic() {return &ennemyHeuristic;}
 		inline Player *getEnemy() {return enemy;}
+		inline Player *getHelper() {return myHelper;}
 		inline sf::Sprite *getSpriteStone() {return stoneSprite;}
 		inline int getNbCapture() {return nbCapture;}
 		inline sf::Vector2<int> getCoordPlayed(void) {return (coordPlayed);}
 		inline sf::Vector2<int> getCoordCanteen(int index) {return (canteen[index]);}
 		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku; myHeuristic.gomoku = gomoku; ennemyHeuristic.gomoku = gomoku;}
 		inline void	setEnemy(Player *en) {this->enemy = en;}
+		inline void	setHelper(Player *h) {this->myHelper = h;}
 		inline void	setNbCapture(int nb) {this->nbCapture = nb;}
 		inline void setCoordPlayed(int x, int y) {coordPlayed.x = x; coordPlayed.y = y;}
 		inline void	setSpriteStone(sf::Sprite *stone) {this->stoneSprite = stone;}
