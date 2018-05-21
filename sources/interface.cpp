@@ -111,11 +111,11 @@ void    Interface::loadSoundAndOpenMusic(void) {
             exit(1);
         }
     else {
-        /*bipSound.setVolume(50);
+        bipSound.setVolume(50);
         captureSound.setVolume(50);
         testSound.setVolume(50);
-        ambiance1.setVolume(30);
-        ambiance2.setVolume(30);*/
+        ambiance1.setVolume(5);
+        ambiance2.setVolume(5);
         ambiance1.setLoop(true);
         ambiance2.setPlayingOffset(sf::seconds(30));
         ambiance2.play();
