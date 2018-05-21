@@ -2,12 +2,14 @@
 #include "menu.h"
 #include "gomoku.h"
 #include "interface.h"
+/*
 #include "player.h"
 #include "humanPlayer.h"
 #include "noobIA.h"
 #include "heuristicBoard.h"
 #include "randomPlayer.h"
 #include "minMaxDynamicPlayer.h"
+*/
 #include "defaultRules.h"
 
 int main(int argc, char **argv) {
@@ -20,7 +22,7 @@ int main(int argc, char **argv) {
 	//Menu		menu;
 	//HumanPlayer	black;
 	//HumanPlayer	white;
-//	MinMaxDynamicPlayer		white(5);
+	//MinMaxDynamicPlayer		helper(5);
 	DefaultRules	rules;
 	Interface		interface;
 	Gomoku			gomoku(rules, interface);

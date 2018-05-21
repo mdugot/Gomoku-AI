@@ -15,6 +15,7 @@ SRC_NAME= main.cpp \
 	  interface.cpp\
 	  boardIterator.cpp\
 	  minMaxDynamicPlayer.cpp\
+	  helper.cpp\
 	  heuristicBoard.cpp\
 	  menu.cpp
 SRC_PATH= ./sources/

@@ -24,6 +24,10 @@
 # define BLACKCANTEENY 40
 # define WHITECANTEENX 960
 # define WHITECANTEENY 860
+# define HELPERX	35
+# define HELPERY	30
+# define CHRONOX		1020
+# define CHRONOY		40
 # define CENTER_MAX_DISTANCE 20
 
 typedef enum State {
@@ -42,11 +46,13 @@ class Interface {
 		void	drawGame(void);
 		void	update(void);
 		void	putStone(sf::Sprite, int, int);
+		void	putStoneToHelp(int gomokuX, int gomokuY);
 		void	printCoordBoard(void);
 		void	makeSprite(sf::Sprite &s, sf::Texture &t, float sy, float sx, int px, int py);
 		void	cleanInterface(void);
 		void	cleanSpriteList(void);
 		void	cleanTextList(void);
+		void	cleanHelpList(void);
 		void	checkClickLeft(Player *current, int x, int y);
 		void	setStoneOnClick(Player &player, int x, int y);
 		void	checkEvent(Player *current);
@@ -80,6 +86,7 @@ class Interface {
 		float				previousTime;
 		std::list<sf::Sprite>			_allSprite;
 		std::list<sf::Text*>			_allText;
+		std::list<sf::Sprite>			_allHelpSprite;
 		sf::Vector2<int>	coordBoard[GW][GH];
 		sf::Vector2<int>	turnCoordInterfaceInGomokuBoardIndex(int screenX, int screenY);
 		
@@ -117,13 +124,20 @@ class Interface {
 		bool	onBoard(int x, int y);
 		bool	onAgainYes(int x, int y);
 		bool	onAgainNo(int x, int y);
+		bool	onVisualAid(int x, int y);
 		void	updateTimerOfGame(void);
 		void	updateTimerToPlay(void);
 		void	updateNbOfTurn(void);
 		void	updateAllGameText(void);
+		void	updateVisualAid(void);
+		void	updateHelperToPlay(void);
+		//void	putHelpText(sf::Text &text, int x, int y);
+		void	putHelpSprite(sf::Sprite sprite, int x, int y);
 
 		//to previzualize stone
 		bool				previewStone;
+		bool				viewWinner;
+		bool				visualAid;
 		sf::Vector2<int>	coordPreviewStone;
 		sf::Sprite			previewStoneFree;
 		sf::Sprite			previewStoneForbidden;
@@ -140,6 +154,14 @@ class Interface {
 		sf::Sprite			_boxSelectSprite;
 		sf::Sprite			_againYesSprite;
 		sf::Sprite			_againNoSprite;
+		sf::Sprite			_help1Sprite;
+		sf::Sprite			_help2Sprite;
+		sf::Sprite			_help3Sprite;
+		sf::Sprite			_help4Sprite;
+		sf::Sprite			_help5Sprite;
+		sf::Sprite			_help5PlusSprite;
+		sf::Sprite			_chronoSprite;
+		sf::Sprite			_bestSprite;
 
 		sf::Texture			_stoneWhiteTexture;
 		sf::Texture			_stoneBlackTexture;
@@ -154,25 +176,35 @@ class Interface {
 		sf::Texture			_againYesTexture;
 		sf::Texture			_againNoTexture;
 		sf::Texture			_boxTexture;
+		sf::Texture			_help1Texture;
+		sf::Texture			_help2Texture;
+		sf::Texture			_help3Texture;
+		sf::Texture			_help4Texture;
+		sf::Texture			_help5Texture;
+		sf::Texture			_help5PlusTexture;
+		sf::Texture			_chronoTexture;
+		sf::Texture			_bestTexture;
+
 
 		sf::SoundBuffer		bipSB;
 		sf::SoundBuffer		captureSB;
-		sf::SoundBuffer		testSB;
+		sf::SoundBuffer		victorySB;
 
 		sf::Sound			bipSound;
 		sf::Sound			captureSound;
-		sf::Sound			testSound;
+		sf::Sound			victorySound;
 		sf::Music			ambiance1;
 		sf::Music			ambiance2;
 
 		sf::Text			timeToPlayText;
 		sf::Text			timeOfGameText;
 		sf::Text			nbTurnText;
-		sf::Text			help1;
+		/*sf::Text			help1;
 		sf::Text			help2;
 		sf::Text			help3;
 		sf::Text			help4;
-		sf::Text			help5;
+		sf::Text			help5;*/
+		sf::Text			visualAidText;
 
 };
 

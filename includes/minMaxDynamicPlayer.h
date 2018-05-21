@@ -34,7 +34,6 @@ class MinMaxDynamicPlayer : public Player
 
 		long long min(Gomoku *gomoku, int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH);
 		long long max(Gomoku *gomoku, int depth, long long minBestOption, long long maxBestOption, Rules &rules, HeuristicBoard myH, HeuristicBoard ennemyH);
-		void startMinMax(int &rx, int &ry, Rules &rules);
 		bool win(int &rx, int &ry, Rules &rules);
 		void heuristicMap(std::multimap<long long, std::unique_ptr<Choice>> &result, Gomoku *gomoku, Rules &rules, bool last, int depht, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin);
 		void heuristicMap_e(std::multimap<long long, std::unique_ptr<Choice>> &result, Gomoku *gomoku, Rules &rules, bool last, int depht, HeuristicBoard &myOrigin, HeuristicBoard &ennemyOrigin);
@@ -50,6 +49,8 @@ class MinMaxDynamicPlayer : public Player
 		MinMaxDynamicPlayer(std::array<unsigned char, 11> dw);
 		~MinMaxDynamicPlayer();
 		virtual void play(Rules &rules, Interface &interfacce);
+		void startMinMax(int &rx, int &ry, Rules &rules);
+		void playToHelp(Rules &rules, Interface &interface);
 };
 
 #endif

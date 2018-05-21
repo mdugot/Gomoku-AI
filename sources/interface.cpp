@@ -20,6 +20,7 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
    initCoordCanteen();
    this->setState(WELCOME);
    previewStone = false;
+   viewWinner = false;
    DEBUG << "INTERFACE READY\n";
 }
 
@@ -40,7 +41,15 @@ void    Interface::loadTexture(void) {
     || !_equalityTexture.loadFromFile("./sprite/equality.png")
     || !_againYesTexture.loadFromFile("./sprite/againYesBox.png")
     || !_againNoTexture.loadFromFile("./sprite/againNoBox.png")
-    || !_boxTexture.loadFromFile("./sprite/box.png")
+    || !_boxTexture.loadFromFile("./sprite/boxCube.png")
+    || !_help1Texture.loadFromFile("./sprite/help1.png")
+    || !_help2Texture.loadFromFile("./sprite/help2.png")
+    || !_help3Texture.loadFromFile("./sprite/help3.png")
+    || !_help4Texture.loadFromFile("./sprite/help4.png")
+    || !_help5Texture.loadFromFile("./sprite/help5.png")
+    || !_help5PlusTexture.loadFromFile("./sprite/help5Plus.png")
+    || !_bestTexture.loadFromFile("./sprite/best.png")
+    || !_chronoTexture.loadFromFile("./sprite/chrono.png")
     ) {
        DEBUG << "Error during import " << std::endl;
        exit(1);
@@ -57,6 +66,14 @@ void    Interface::loadTexture(void) {
        _blackWinTexture.setSmooth(true);
        _equalityTexture.setSmooth(true);
        _boxTexture.setSmooth(true);
+       _help1Texture.setSmooth(true);
+       _help2Texture.setSmooth(true);
+       _help3Texture.setSmooth(true);
+       _help4Texture.setSmooth(true);
+       _help5Texture.setSmooth(true);
+       _help5PlusTexture.setSmooth(true);
+       _bestTexture.setSmooth(true);
+       _chronoTexture.setSmooth(true);
    }
 }
 
@@ -68,17 +85,32 @@ void    Interface::loadSprite(void) {
     makeSprite(_goodByeSprite, _goodByeTexture, 1, 1, 0, 0);
     makeSprite(_helloSprite, _helloTexture, 1, 1, 0, 0);
     makeSprite(_againSprite, _againTexture, 1, 1, 0, 0);
-    makeSprite(_whiteWinSprite, _whiteWinTexture, 1, 1, 0, 0);
-    makeSprite(_blackWinSprite, _blackWinTexture, 1, 1, 0, 0);
-    makeSprite(_equalitySprite, _equalityTexture, 1, 1, 0, 0);
-    makeSprite(_boxSprite, _boxTexture, 1, 1, 0, 0);
+    makeSprite(_whiteWinSprite, _whiteWinTexture, 1, 1, 1, 1);
+    makeSprite(_blackWinSprite, _blackWinTexture, 1, 1, 1, 1);
+    makeSprite(_equalitySprite, _equalityTexture, 1, 1, 1, 1);
+    makeSprite(_boxSprite, _boxTexture, 1, 1, HELPERX - 10, HELPERY - 10);
     makeSprite(_againYesSprite, _againYesTexture, 1, 1, YES_LEFT, YES_UP);
     makeSprite(_againNoSprite, _againNoTexture, 1, 1, NO_LEFT, NO_UP);
     makeSprite(_boxSelectSprite, _boxTexture, 1, 1, 0, 0);
     makeSprite(previewStoneFree, _stoneWhiteTexture,0.825f, 0.825f, 0, 0);
     makeSprite(previewStoneForbidden, _stoneWhiteTexture,0.825f, 0.825f, 0, 0);
+    makeSprite(_help1Sprite, _help1Texture,0.82f, 0.82f, 0, 0);
+    makeSprite(_help2Sprite, _help2Texture,0.82f, 0.82f, 0, 0);
+    makeSprite(_help3Sprite, _help3Texture,0.82f, 0.82f, 0, 0);
+    makeSprite(_help4Sprite, _help4Texture,0.82f, 0.82f, 0, 0);
+    makeSprite(_help5Sprite, _help5Texture,0.82f, 0.82f, 0, 0);
+    makeSprite(_help5PlusSprite, _help5PlusTexture,0.82f, 0.82f, 0, 0);
+    makeSprite(_bestSprite, _bestTexture, 0.825f, 0.825f, 0, 0);
+    makeSprite(_chronoSprite, _chronoTexture,0.8f, 0.8f, CHRONOX, CHRONOY);
     _whiteStone.setOrigin(_stoneWhiteTexture.getSize().x / _whiteStone.getScale().x / 2, _stoneWhiteTexture.getSize().y / _whiteStone.getScale().y / 2);
     _blackStone.setOrigin(_stoneBlackTexture.getSize().x / _blackStone.getScale().x / 2, _stoneBlackTexture.getSize().y / _blackStone.getScale().y / 2);
+    _bestSprite.setOrigin(_bestTexture.getSize().x / _bestSprite.getScale().x / 2, _bestTexture.getSize().y / _bestSprite.getScale().y / 2);
+    _help1Sprite.setOrigin(_help1Texture.getSize().x / _help1Sprite.getScale().x / 2, _help1Texture.getSize().y / _help1Sprite.getScale().y / 2);
+    _help2Sprite.setOrigin(_help1Texture.getSize().x / _help1Sprite.getScale().x / 2, _help1Texture.getSize().y / _help1Sprite.getScale().y / 2);
+    _help3Sprite.setOrigin(_help1Texture.getSize().x / _help1Sprite.getScale().x / 2, _help1Texture.getSize().y / _help1Sprite.getScale().y / 2);
+    _help4Sprite.setOrigin(_help1Texture.getSize().x / _help1Sprite.getScale().x / 2, _help1Texture.getSize().y / _help1Sprite.getScale().y / 2);
+    _help5Sprite.setOrigin(_help1Texture.getSize().x / _help1Sprite.getScale().x / 2, _help1Texture.getSize().y / _help1Sprite.getScale().y / 2);
+    _help5PlusSprite.setOrigin(_help1Texture.getSize().x / _help1Sprite.getScale().x / 2, _help1Texture.getSize().y / _help1Sprite.getScale().y / 2);
     previewStoneFree.setOrigin(_stoneWhiteTexture.getSize().x / _whiteStone.getScale().x / 2, _stoneWhiteTexture.getSize().y / _whiteStone.getScale().y / 2);
     previewStoneForbidden.setOrigin(_stoneBlackTexture.getSize().x / _blackStone.getScale().x / 2, _stoneBlackTexture.getSize().y / _blackStone.getScale().y / 2);
     previewStoneFree.setColor(Color(0,255,0,125));
@@ -95,7 +127,8 @@ void    Interface::makeSprite(Sprite &sprite, Texture &texture, float sizeX, flo
 
 void    Interface::loadSoundBuffer(void) {
      if (!bipSB.loadFromFile("./sound/bip.wav")
-        || !captureSB.loadFromFile("./sound/capture.wav")) {
+        || !captureSB.loadFromFile("./sound/capture.wav")
+        || !victorySB.loadFromFile("./sound/victory.wav")) {
          DEBUG << "ERROR DURING LOAD SOUND BUFFER\n";
          exit(1);
      }
@@ -104,7 +137,7 @@ void    Interface::loadSoundBuffer(void) {
 void    Interface::loadSoundAndOpenMusic(void) {
     bipSound.setBuffer(bipSB);
     captureSound.setBuffer(captureSB);
-    testSound.setBuffer(testSB);
+    victorySound.setBuffer(victorySB);
     if (!ambiance1.openFromFile("./sound/ambiance1.wav")
         || !ambiance2.openFromFile("./sound/ambiance2.wav")) {
             DEBUG << "ERROR DURING OPEN MUSIC\n";
@@ -131,17 +164,22 @@ void    Interface::setText(Text *text, Font &font, int size, Color color, int po
 }
 
 void    Interface::loadText(void) {
-    setText(&timeOfGameText, menu.getArial(), 18, Color::Black, 10, 390, "Time of Game :\n0.00");
-    setText(&nbTurnText, menu.getArial(),18, Color::Blue, 10, 450, "TURN :\n 00");
-    setText(&timeToPlayText, menu.getArial(), 18, /*Color(0, 125, 250)*/Color::Red, 10, 500, "Player's time :\n0,000");
-    setText(&help1, menu.getArial(), 24, Color::Blue, 300, 300, "1");
-    setText(&help2, menu.getArial(), 24, Color(255,0,128), 400, 300, "2");
-    setText(&help3, menu.getArial(), 24, Color::Yellow, 500, 300, "3");
-    setText(&help4, menu.getArial(), 24, Color::Red, 600, 300, "4");
-    setText(&help5, menu.getArial(), 24, Color::Green, 700, 300, "5");
-    timeOfGameText.setOrigin(0,0);
+    Font &arial = menu.getArial();
+    setText(&timeOfGameText, arial, 18, Color::Black,  CHRONOX + 65, CHRONOY + 135, "TIME 00.00\n\n\nTIME OF GAME");
+    setText(&nbTurnText, arial,18, Color::Blue, 10, 450, "TURN :\n 00");
+    setText(&timeToPlayText, arial, 18, Color(0, 125, 250), 10, 500, "Player's time :\n0,000");
+    /*
+    setText(&help1, arial, 24, Color::Blue, 300, 300, "1");
+    setText(&help2, arial, 24, Color(255,0,128), 400, 300, "2");
+    setText(&help3, arial, 24, Color::Yellow, 500, 300, "3");
+    setText(&help4, arial, 24, Color::Red, 600, 300, "4");
+    setText(&help5, arial, 24, Color::Green, 700, 300, "5");
+    */
+    setText(&visualAidText, arial, 18, Color::Red, HELPERX, HELPERY, "    To activ\nVisualHelper :\n     [false]");
+    menu.setMiddle(timeOfGameText);
     timeToPlayText.setOrigin(0,0);
     nbTurnText.setOrigin(0,0);
+    visualAidText.setOrigin(0,0);
 }
 
 void    Interface::initCoordBoard(void) {
@@ -282,7 +320,6 @@ void    Interface::setState(State newState)
         return;
     }
     this->state = newState;
-    this->cleanInterface();
     switch (state) {
             case MENU :
                 menuScreen();
@@ -312,8 +349,8 @@ void    Interface::setState(State newState)
                 DEBUG << "ERROR SCREEN STATE ???";
                 exit(0);
                 break;
-    this->update();
     }
+    this->update();
 }
 
 void    Interface::startPauseScreen(void) {
@@ -333,24 +370,16 @@ void    Interface::drawGame(void) {
     for (std::list<Text*>::iterator it = _allText.begin(); it != _allText.end(); it++) {
         this->_window.draw(*(*it));
     }
+    //En jeu si demandé affichage de l'aide au joueur :
+    for (std::list<Sprite>::iterator it = _allHelpSprite.begin(); it != _allHelpSprite.end(); it++) {
+        this->_window.draw(*it);
+    }
 }
 
 void    Interface::cleanInterface(void) {
-    this->cleanSpriteList();
-    this->cleanTextList();
-}
-
-void    Interface::cleanTextList(void) {
-    for (std::list<Text*>::iterator it = _allText.begin(); it != _allText.end(); it++) {
-        it = _allText.erase(it);
-    }
-}
-
-void    Interface::cleanSpriteList(void) {
-    for (std::list<Sprite>::iterator it = _allSprite.begin(); it != _allSprite.end(); it++) {
-        it = _allSprite.erase(it);
-    }
-//    _allSprite.erase(_allSprite.begin(), _allSprite.end());
+    _allText.clear();
+    _allHelpSprite.clear();
+    _allSprite.clear();
 }
 
 void    Interface::welcomeScreen(void) {
@@ -363,12 +392,16 @@ void    Interface::welcomeScreen(void) {
 
 void    Interface::goodByeScreen(void) {
     DEBUG << "GOODBYE SCREEN\n";
-    _allSprite.push_back(_goodByeSprite);
     this->state = GOODBYE;
+    cleanInterface();
+    _allSprite.push_back(_goodByeSprite);
+    ambiance1.stop();
+    ambiance2.stop();
 }
 
 void    Interface::menuScreen(void) {
     DEBUG << "MENU SCREEN\n";
+    cleanInterface();
     _allSprite.push_back(menu.backgroundMenuSprite);
     _allText.push_back(&menu.textBoxP1);
     _allText.push_back(&menu.textBoxP2);
@@ -378,6 +411,7 @@ void    Interface::menuScreen(void) {
 
 void    Interface::againScreen(void) {
     DEBUG << "AGAIN SCREEN\n";
+    cleanInterface();
     _allSprite.push_back(_againSprite);
     _allSprite.push_back(_againYesSprite);
     _allSprite.push_back(_againNoSprite);
@@ -387,17 +421,24 @@ void    Interface::againScreen(void) {
 }
 
 void    Interface::gameScreen(void) {
+    cleanInterface();
     setTimeOfGame(_clockOfGame.restart());
     setTimeToPlay(_clockTurn.restart());
     _allSprite.push_back(_backgroundSprite);
     _allSprite.push_back(_boardGameSprite);
+    _allSprite.push_back(_chronoSprite);
+    _allText.push_back(&timeOfGameText);
     _allText.push_back(&nbTurnText);
     _allText.push_back(&timeToPlayText);
-    _allText.push_back(&help1);
-    _allText.push_back(&help2);
-    _allText.push_back(&help3);
-    _allText.push_back(&help4);
-    _allText.push_back(&help5);
+    if (gomoku->getBlackPlayer().getHuman() == true || gomoku->getWhitePlayer().getHuman() == true) {
+        _allText.push_back(&visualAidText);
+        _allSprite.push_back(_boxSprite);
+    }
+    //_allText.push_back(&help1);
+    //_allText.push_back(&help2);
+    //_allText.push_back(&help3);
+    //_allText.push_back(&help4);
+    //_allText.push_back(&help5);
     ambiance2.stop();
     ambiance1.play();
     this->state = GAME;
@@ -405,18 +446,21 @@ void    Interface::gameScreen(void) {
 
 void    Interface::whiteWinScreen(void) {
     DEBUG << "WHITE WIN SCREEN\n";
+    victorySound.play();
     _allSprite.push_back(_whiteWinSprite);
     this->state = WHITEWIN;
 }
 
 void    Interface::blackWinScreen(void) {
     DEBUG << "BLACK WIN SCREEN\n";
+    victorySound.play();
     _allSprite.push_back(_blackWinSprite);
     this->state = BLACKWIN;
 }
 
 void    Interface::equalScreen(void) {
     DEBUG << "EQUAL WIN SCREEN\n";
+    victorySound.play();
     _allSprite.push_back(_equalitySprite);
     this->state = EQUAL;
 }
@@ -432,6 +476,11 @@ void    Interface::captureZone(void) {
 void    Interface::putStone(Sprite stone, int x, int y) {
         stone.setPosition(x, y);
         _allSprite.push_back(stone);
+}
+
+void    Interface::putStoneToHelp(int i, int j) {
+        Vector2<int> coord = coordBoard[i][j];
+        _bestSprite.setPosition(coord.x, coord.y);
 }
 
 void    Interface::putPreviewStone(Player &current, int mouseX, int mouseY)
@@ -534,6 +583,17 @@ void    Interface::checkEvent(Player *current) {
     }
 }
 
+bool    Interface::onVisualAid(int x, int y)
+{
+    if (x <= BOARD_LEFT - 50 && 
+        x >= HELPERX - 10 &&
+        y >= HELPERY - 10 &&
+        y <= 110) {
+        return true;}
+    else {
+        return false;}
+}
+
 bool    Interface::onBoard(int x, int y)
 {
     if (x <= BOARD_RIGHT + MARGE && 
@@ -571,32 +631,43 @@ void    Interface::checkClickLeft(Player *current, int x, int y)
     {
         if (onBoard(x, y) && current)
             this->setStoneOnClick(*current, x, y);
-        else
-            DEBUG << "out of board add other feature interaction\n";
+        else if (onVisualAid(x,y) && (gomoku->getBlackPlayer().getHuman() == true || gomoku->getWhitePlayer().getHuman() == true))
+                updateVisualAid();
     }
     else if (state == WELCOME){
-        DEBUG << "click during Welcome\n";
+        //DEBUG << "click during Welcome\n";
     }
     else if (state == MENU){
         if (menu.onP1(x, y))
         {
+            bipSound.play();
             menu.switchTextBox(menu.textBoxP1, menu.choiceP1);
         }
         else if (menu.onP2(x, y))
         {
+            bipSound.play();
             menu.switchTextBox(menu.textBoxP2, menu.choiceP2);
         }
         else if (menu.onVariante(x, y))
         {
+            //bipSound.play();
             menu.switchTextBox(menu.textBoxVariante, menu.variante);
         }
         else if (menu.onGo(x, y)){
+            bipSound.play();
             menu.go(gomoku);//setPlayer...
             setState(GAME);
         }
     }
     else if (state == BLACKWIN || state == WHITEWIN || state == EQUAL){
-        setState(AGAIN);
+        if (viewWinner) {
+            setState(AGAIN);
+            viewWinner = false;
+        }
+        else {
+            removeStone(1,1);
+            viewWinner = true;
+        }
         DEBUG << "click during victory or equality screen\n";
     }
     else if (state == AGAIN){
@@ -620,49 +691,90 @@ void    Interface::checkClickLeft(Player *current, int x, int y)
 
 void    Interface::updateTimerOfGame(void) {
         setTimeOfGame(this->_clockOfGame.getElapsedTime());
-        String str = "Time of Game :\n" + intToString(((int)getTimeOfGameInSeconds()));
+        String str = "          " + intToString(((int)getTimeOfGameInSeconds())) + "\n\n\nTIME OF GAME";
         timeOfGameText.setString(str);
-//        removeText(timeOfGameText.getPosition());
-        _allText.push_back(&timeOfGameText);
+        //removeStone(timeOfGameText.getPosition().x, timeOfGameText.getPosition().y);
+        //_allText.push_back(&timeOfGameText);
 }
 
 void    Interface::updateTimerToPlay(void) {
         String str = "Player's time :\n" + floatToString(getTimeToPlayInSeconds());
         timeToPlayText.setString(str);
-//        removeText(timeToPlayText.getPosition());
-        _allText.push_back(&timeToPlayText);
 }
 
 void    Interface::updateNbOfTurn(void) {
         String str = "Nb of turn :\n" + intToString(((gomoku->getRules()).getTurnCounter()));
         nbTurnText.setString(str);
-//        removeText(timeToPlayText.getPosition());
-        _allText.push_back(&nbTurnText);
-
 }
 
-/*
+void    Interface::updateVisualAid(void) {
+        String str = "    To Activ\nVisualHelper :\n     [";
+        if (visualAid) {
+            visualAid = false;
+            visualAidText.setColor(Color::Red);
+            _allHelpSprite.clear();
+            str += "false]";
+        }
+        else {
+            visualAidText.setColor(Color(50,200,50));
+            visualAid = true;
+            str += "TRUE]";
+            updateHelperToPlay();
+        }
+        visualAidText.setString(str);
+        bipSound.play();
+        update();
+}
+
+void    Interface::putHelpSprite(Sprite sprite, int x, int y) {
+            sprite.setPosition(coordBoard[x][y].x, coordBoard[x][y].y);
+            _allHelpSprite.push_back(sprite);
+            //_window.draw(text);
+}
+
 void    Interface::updateHelperToPlay() {
- //appeler ici l'heuristic du current player pour le parcourir et afficher les texts help1, help2 ect...
+    if (!(gomoku->getCurrentPlayer()->getHuman()))
+        return;
+    _allHelpSprite.clear();
+    //appeler ici l'heuristic du current player pour le parcourir et afficher les texts help1, help2 ect...
+    HeuristicBoard currentHeuristic = gomoku->getCurrentPlayer()->getMyHeuristic();
+    int level;
+    for (short x = 0; x < GH; x++) {
+        for (short y = 0; y < GW; y++) {
+            level = currentHeuristic.getBestLevel(x,y);
+            if (level == 0)
+                continue;
+            else if (level == 1)
+                putHelpSprite(_help1Sprite, x, y);
+            else if (level == 2)
+                putHelpSprite(_help2Sprite, x, y);
+            else if (level == 3)
+                putHelpSprite(_help3Sprite, x, y);
+            else if (level == 4)
+                putHelpSprite(_help4Sprite, x, y);
+            else if (level == 5)
+                putHelpSprite(_help5Sprite, x, y);
+            else if (level > 5)
+                putHelpSprite(_help5PlusSprite, x, y);
+        }
+    }
+    //affichage du sprite best au coordonné précédemment enregistré par le helper...
+    gomoku->getCurrentPlayer()->getHelper()->play(gomoku->getRules(), *this);
+    _allHelpSprite.push_back(_bestSprite);
 }
-*/
 
 void    Interface::updateAllGameText() {
-    cleanTextList();
     updateTimerOfGame();
     updateTimerToPlay();
     updateNbOfTurn();
-    /*
-    if (helpPlayer) {
-        updateHelperToPlay();
-    }
-    */
 }
 
 void    Interface::update(void) {
-        this->_window.clear();
         if (state == GAME)
             this->updateAllGameText();
+        this->_window.clear();
         this->drawGame();
+        //if ((state == GAME /* || state == BLACKWIN || state == WHITEWIN || state == EQUAL*/) && visualAid)
+        //    updateHelperToPlay();
         this->_window.display();
 }

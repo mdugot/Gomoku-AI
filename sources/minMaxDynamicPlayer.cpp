@@ -1,5 +1,6 @@
 #include "minMaxDynamicPlayer.h"
 #include "rules.h"
+#include "interface.h"
 
 std::mutex MinMaxDynamicPlayer::mutex;
 
@@ -262,6 +263,14 @@ void MinMaxDynamicPlayer::play(Rules &rules, Interface &i) {
 	startMinMax(x, y, rules);
 	putStone(x, y);
 	setCoordPlayed(x, y);
+}
+
+void MinMaxDynamicPlayer::playToHelp(Rules &rules, Interface &i) {
+	(void)i;
+	int x = -1;
+	int y = -1;
+	startMinMax(x, y, rules);
+	i.putStoneToHelp(x, y);
 }
 
 long long MinMaxDynamicPlayer::heuristic(HeuristicBoard &myH, HeuristicBoard &ennemyH, bool last, int depth) {
