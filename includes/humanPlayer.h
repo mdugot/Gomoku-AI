@@ -5,7 +5,7 @@
 
 #include "player.h"
 
-class HumanPlayer : public Player
+class HumanPlayer : public virtual Player
 {
 	private:
 	

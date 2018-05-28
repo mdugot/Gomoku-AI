@@ -21,7 +21,7 @@ class Choice
 		~Choice();
 };
 
-class MinMaxDynamicPlayer : public Player
+class MinMaxDynamicPlayer : public virtual Player
 {
 	static std::mutex mutex;
 

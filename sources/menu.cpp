@@ -2,6 +2,7 @@
 #include "player.h"
 #include "humanPlayer.h"
 #include "minMaxDynamicPlayer.h"
+#include "assistedHumanPlayer.h"
 #include "randomPlayer.h"
 #include "noobIA.h"
 
@@ -68,8 +69,20 @@ void    Menu::setTextString(Text &text, TextChoice &textChoice) {
         case IA_NORMAL:
             text.setString("IA NORMAL");
             break;
+        case AH_HARD:
+            text.setString("Assisted Human Hard");
+            break;
+        case AH_EASY:
+            text.setString("Assisted Human Easy");
+            break;
+        case AH_NORMAL:
+            text.setString("Assisted Human Normal");
+            break;
         case CLASSIQUE:
             text.setString("CLASSIQUE");
+            break;
+        case VERSION_TEST:
+            text.setString("VERSION TEST");
             break;
         default:
             DEBUG << "not Text???? wtf\n";
@@ -93,9 +106,17 @@ void    Menu::switchTextBox(Text &text, TextChoice &textC) {
     else if (textC == IA_NORMAL)
         textC = IA_EASY;
     else if (textC == IA_EASY)
+        textC = AH_HARD;
+    else if (textC == AH_HARD)
+        textC = AH_NORMAL;
+    else if (textC == AH_NORMAL)
+        textC = AH_EASY;
+    else if (textC == AH_EASY)
         textC = HUMAN;
     else if (textC == CLASSIQUE)
-        ;//TO DO : update texte si d'autres variantes de jeu à venir
+        textC = VERSION_TEST;
+    else if (textC == VERSION_TEST)
+        textC = CLASSIQUE;//TO DO : update texte si d'autres variantes de jeu à venir
     else
         DEBUG << "ERROR SWITCH TEXT IN MENU\n";
     updateText(text, textC);
@@ -148,6 +169,12 @@ Player*    Menu::updatePlayer(TextChoice &textC) {
         return new MinMaxDynamicPlayer({7, 7, 5, 5, 3, 3, 0});
     else if (textC == IA_EASY)
         return new MinMaxDynamicPlayer({7, 3, 0});
+    else if (textC == AH_HARD)
+        return new AssistedHumanPlayer({7, 7, 7, 5, 5, 5, 3, 3, 3, 3, 0});
+    else if (textC == AH_NORMAL)
+        return new AssistedHumanPlayer({7, 7, 5, 5, 3, 3, 0});
+    else if (textC == AH_EASY)
+        return new AssistedHumanPlayer({7, 3, 0});
     else {
         DEBUG << "ERROR SWITCH PLAYER IN GO MENU\n";
         exit(1);

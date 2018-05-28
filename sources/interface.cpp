@@ -146,7 +146,6 @@ void    Interface::loadSoundAndOpenMusic(void) {
     else {
         /*bipSound.setVolume(50);
         captureSound.setVolume(50);
-        testSound.setVolume(50);
         ambiance1.setVolume(30);
         ambiance2.setVolume(30);*/
         ambiance1.setLoop(true);
@@ -165,7 +164,7 @@ void    Interface::setText(Text *text, Font &font, int size, Color color, int po
 
 void    Interface::loadText(void) {
     Font &arial = menu.getArial();
-    setText(&timeOfGameText, arial, 18, Color::Black,  CHRONOX + 65, CHRONOY + 135, "TIME 00.00\n\n\nTIME OF GAME");
+    setText(&timeOfGameText, arial, 18, Color::Black,  CHRONOX + 60, CHRONOY + 98, "000");
     setText(&nbTurnText, arial,18, Color::Blue, 10, 450, "TURN :\n 00");
     setText(&timeToPlayText, arial, 18, Color(0, 125, 250), 10, 500, "Player's time :\n0,000");
     /*
@@ -650,12 +649,12 @@ void    Interface::checkClickLeft(Player *current, int x, int y)
         }
         else if (menu.onVariante(x, y))
         {
-            //bipSound.play();
+            bipSound.play();
             menu.switchTextBox(menu.textBoxVariante, menu.variante);
         }
         else if (menu.onGo(x, y)){
             bipSound.play();
-            menu.go(gomoku);//setPlayer...
+            menu.go(gomoku);//setPlayer... WARNING AJOUTER SET RULES !!
             setState(GAME);
         }
     }
@@ -691,8 +690,9 @@ void    Interface::checkClickLeft(Player *current, int x, int y)
 
 void    Interface::updateTimerOfGame(void) {
         setTimeOfGame(this->_clockOfGame.getElapsedTime());
-        String str = "          " + intToString(((int)getTimeOfGameInSeconds())) + "\n\n\nTIME OF GAME";
+        String str = /*"          " + */intToString(((int)getTimeOfGameInSeconds())) /*+ "\n\n\nTIME OF GAME"*/;
         timeOfGameText.setString(str);
+        menu.setMiddle(timeOfGameText);
         //removeStone(timeOfGameText.getPosition().x, timeOfGameText.getPosition().y);
         //_allText.push_back(&timeOfGameText);
 }
@@ -736,6 +736,7 @@ void    Interface::updateHelperToPlay() {
     if (!(gomoku->getCurrentPlayer()->getHuman()))
         return;
     _allHelpSprite.clear();
+    _bestSprite.setPosition(-100, -100);
     //appeler ici l'heuristic du current player pour le parcourir et afficher les texts help1, help2 ect...
     HeuristicBoard currentHeuristic = gomoku->getCurrentPlayer()->getMyHeuristic();
     int level;
@@ -758,8 +759,8 @@ void    Interface::updateHelperToPlay() {
                 putHelpSprite(_help5PlusSprite, x, y);
         }
     }
-    //affichage du sprite best au coordonné précédemment enregistré par le helper...
-    gomoku->getCurrentPlayer()->getHelper()->play(gomoku->getRules(), *this);
+    //affichage du sprite best au coordonné trouvé par playForHelp...
+    gomoku->getCurrentPlayer()->playForHelp(gomoku->getRules(), *this);
     _allHelpSprite.push_back(_bestSprite);
 }
 

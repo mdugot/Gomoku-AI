@@ -3,7 +3,7 @@
 #include "humanPlayer.h"
 #include "randomPlayer.h"
 #include "minMaxDynamicPlayer.h"
-#include "helper.h"
+#include "assistedHumanPlayer.h"
 #include "noobIA.h"
 #include "rules.h"
 #include "interface.h"
@@ -14,8 +14,6 @@ Gomoku::Gomoku(Rules &rules, Interface &interface) : rules(rules), interface(int
 {
 	whitePlayer = new HumanPlayer();
 	blackPlayer = new HumanPlayer();
-	helperWhite = new Helper({7, 7, 7, 5, 5, 5, 3, 3, 3, 3, 0});
-	helperBlack = new Helper({7, 7, 7, 5, 5, 5, 3, 3, 3, 3, 0});
 	initGomoku();
 }
 
@@ -44,34 +42,10 @@ void	Gomoku::initGomoku() {
 
 void	Gomoku::updatePlayer()
 {
-	delete helperWhite;
-	delete helperBlack;
-	helperWhite = new Helper({7, 7, 7, 5, 5, 5, 3, 3, 3, 3, 0});
-	helperBlack = new Helper({7, 7, 7, 5, 5, 5, 3, 3, 3, 3, 0});
-	updateWhiteHelper();
-	updateBlackHelper();
 	updateBlackPlayer();
 	updateWhitePlayer();
 	currentPlayer = blackPlayer;
 	DEBUG << "PLAYER UPDATED\n";
-}
-
-void	Gomoku::updateWhiteHelper()
-{
-	helperWhite->setSpriteStone(&(interface._whiteStone));
-	helperWhite->setCanteen(interface.whiteCanteen);
-	helperWhite->setGomoku(this);
-	helperWhite->setColor(WHITE);
-	helperWhite->setEnemy(blackPlayer);
-}
-
-void	Gomoku::updateBlackHelper()
-{
-	helperBlack->setSpriteStone(&(interface._blackStone));
-	helperBlack->setCanteen(interface.blackCanteen);
-	helperBlack->setGomoku(this);
-	helperBlack->setColor(BLACK);
-	helperBlack->setEnemy(whitePlayer);
 }
 
 void	Gomoku::updateWhitePlayer()
@@ -81,7 +55,6 @@ void	Gomoku::updateWhitePlayer()
 	whitePlayer->setGomoku(this);
 	whitePlayer->setColor(WHITE);
 	whitePlayer->setEnemy(blackPlayer);
-	whitePlayer->setHelper(helperWhite);
 }
 
 void	Gomoku::updateBlackPlayer()
@@ -91,7 +64,6 @@ void	Gomoku::updateBlackPlayer()
 	blackPlayer->setGomoku(this);
 	blackPlayer->setColor(BLACK);
 	blackPlayer->setEnemy(whitePlayer);
-	blackPlayer->setHelper(helperBlack);
 }
 
 Gomoku::~Gomoku()
@@ -99,8 +71,6 @@ Gomoku::~Gomoku()
 	if (!clone) {
 		delete whitePlayer;
 		delete blackPlayer;
-		delete helperWhite;
-		delete helperBlack;
 	}
 }
 
@@ -133,9 +103,12 @@ void Gomoku::start() {
 		int y = 0;
 		updatePlayer();
 		while (!(end = rules.checkEnd(*currentPlayer))) {
-			if (interface.visualAid) {
+			if (interface.visualAid && currentPlayer->getHuman()) {
+				//currentPlayer->playToHelp(rules, interface);
 				interface.updateHelperToPlay();
 			}
+			else
+				interface._allHelpSprite.clear();
 			interface.update();
 			//PLAY
 			interface.setTimeToPlay(interface._clockTurn.restart());
@@ -148,8 +121,6 @@ void Gomoku::start() {
 			currentPlayer->ennemyHeuristic.clear(x, y);
 			currentPlayer->myHeuristic.print(x, y);
 			currentPlayer->ennemyHeuristic.print(x, y);
-			currentPlayer->getHelper()->myHeuristic.put(x,y);
-			currentPlayer->getHelper()->ennemyHeuristic.clear(x,y);
 			//DRAW
 			drawStone();
 			//CAPTURE
@@ -158,11 +129,8 @@ void Gomoku::start() {
 			//OBSERVE
 			currentPlayer->getEnemy()->observe(rules, x, y, captured);
 			currentPlayer->observeMyCapture(captured);
-			currentPlayer->getHelper()->getEnemy()->observe(rules, x, y, captured);
-			currentPlayer->getHelper()->observeMyCapture(captured);
 			//END
 			currentPlayer->played = false;
-			currentPlayer->getHelper()->played = false;
 			currentPlayer = currentPlayer->getEnemy();
 			interface.checkEvent(currentPlayer);
 			captured.clear();
