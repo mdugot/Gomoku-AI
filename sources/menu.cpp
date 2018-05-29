@@ -5,6 +5,8 @@
 #include "assistedHumanPlayer.h"
 #include "randomPlayer.h"
 #include "noobIA.h"
+#include "defaultRules.h"
+#include "rulesTest.h"
 
 using namespace sf;
 
@@ -151,10 +153,23 @@ bool    Menu::onGo(int x, int y) {
 void    Menu::go(Gomoku* gomoku) {
     delete &(gomoku->getWhitePlayer());
     delete &(gomoku->getBlackPlayer());
+    delete &(gomoku->getRules());
+    gomoku->setRules(updateRules(variante));
     gomoku->setWhitePlayer(updatePlayer(choiceP1));
     gomoku->setBlackPlayer(updatePlayer(choiceP2));
 	gomoku->getBlackPlayer().setGomoku(gomoku);
 	gomoku->getWhitePlayer().setGomoku(gomoku);
+}
+
+Rules*      Menu::updateRules(TextChoice &textC) {
+    if (textC == CLASSIQUE)
+        return new DefaultRules();
+    else if (textC == VERSION_TEST)
+        return new RulesTest();
+    else {
+        DEBUG << "IN MENU, UPDATERULES, TEXT UNKNOW";
+        exit(1);
+    }
 }
 
 Player*    Menu::updatePlayer(TextChoice &textC) {

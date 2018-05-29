@@ -23,9 +23,9 @@ int main(int argc, char **argv) {
 	//HumanPlayer	black;
 	//HumanPlayer	white;
 	//MinMaxDynamicPlayer		helper(5);
-	DefaultRules	rules;
+	//DefaultRules	rules;
 	Interface		interface;
-	Gomoku			gomoku(rules, interface);
+	Gomoku			gomoku(interface);
 //	srand(7);
 //	MinMaxDynamicPlayer		white(9);
 //	MinMaxDynamicPlayer		black(5);

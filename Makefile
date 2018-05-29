@@ -8,6 +8,7 @@ SRC_NAME= main.cpp \
           gomoku.cpp \
           rules.cpp \
           defaultRules.cpp \
+		  rulesTest.cpp\
           player.cpp \
           randomPlayer.cpp\
 	  humanPlayer.cpp\

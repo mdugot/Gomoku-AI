@@ -6,18 +6,21 @@
 #include "assistedHumanPlayer.h"
 #include "noobIA.h"
 #include "rules.h"
+#include "defaultRules.h"
+#include "rulesTest.h"
 #include "interface.h"
 
 using namespace sf;
 
-Gomoku::Gomoku(Rules &rules, Interface &interface) : rules(rules), interface(interface)
+Gomoku::Gomoku(Interface &interface) : interface(interface)
 {
 	whitePlayer = new HumanPlayer();
 	blackPlayer = new HumanPlayer();
+	rules = new DefaultRules();
 	initGomoku();
 }
 
-Gomoku::Gomoku(Gomoku *copyFrom, Rules &copyRules) : whitePlayer(copyFrom->aWhitePlayer()), blackPlayer(copyFrom->aBlackPlayer()), rules(copyRules), interface(copyFrom->getInterface())
+Gomoku::Gomoku(Gomoku *copyFrom) : whitePlayer(copyFrom->aWhitePlayer()), blackPlayer(copyFrom->aBlackPlayer()), rules(copyFrom->aRules()), interface(copyFrom->getInterface())
 {
 	clone = true;
 	memcpy((void*)board, (void*)(copyFrom->getBoard()), sizeof(Stone[GW][GH]));
@@ -34,8 +37,7 @@ void	Gomoku::initGomoku() {
 		}
 	}
 	focus[GW/2][GH/2] = true;
-	rules.setGomoku(this);
-	rules.turnCounter = 0;
+	updateRules();
 	interface.setGomoku(this);
 	currentPlayer = blackPlayer;
 }
@@ -46,6 +48,12 @@ void	Gomoku::updatePlayer()
 	updateWhitePlayer();
 	currentPlayer = blackPlayer;
 	DEBUG << "PLAYER UPDATED\n";
+}
+
+void	Gomoku::updateRules()
+{
+	rules->setGomoku(this);
+	rules->turnCounter = 0;
 }
 
 void	Gomoku::updateWhitePlayer()
@@ -71,6 +79,7 @@ Gomoku::~Gomoku()
 	if (!clone) {
 		delete whitePlayer;
 		delete blackPlayer;
+		delete rules;
 	}
 }
 
@@ -102,10 +111,10 @@ void Gomoku::start() {
 		int x = 0;
 		int y = 0;
 		updatePlayer();
-		while (!(end = rules.checkEnd(*currentPlayer))) {
+		updateRules();
+		while (!(end = rules->checkEnd(*currentPlayer))) {
 			interface.updateNbOfTurn();
 			if (interface.visualAid && currentPlayer->getHuman()) {
-				//currentPlayer->playToHelp(rules, interface);
 				interface.updateHelperToPlay();
 			}
 			else
@@ -113,7 +122,7 @@ void Gomoku::start() {
 			interface.update();
 			//PLAY
 			interface.setTimeToPlay(interface._clockTurn.restart());
-			currentPlayer->play(rules, interface);
+			currentPlayer->play(*rules, interface);
 			interface.setTimeToPlay(interface._clockTurn.getElapsedTime());
 			interface.updateTimerToPlay();
 			x = currentPlayer->coordPlayed.x;
@@ -129,14 +138,14 @@ void Gomoku::start() {
 			checkCapture(*currentPlayer, x, y, *(currentPlayer->getEnemy()), captured);
 			captureAll(*currentPlayer, currentPlayer->getEnemy()->getSpriteStone(), captured);
 			//OBSERVE
-			currentPlayer->getEnemy()->observe(rules, x, y, captured);
+			currentPlayer->getEnemy()->observe(*rules, x, y, captured);
 			currentPlayer->observeMyCapture(captured);
 			//END
 			currentPlayer->played = false;
 			currentPlayer = currentPlayer->getEnemy();
 			interface.checkEvent(currentPlayer);
 			captured.clear();
-			rules.turnCounter += 1;
+			rules->turnCounter += 1;
 		}
 		interface._allHelpSprite.clear();
 		if (end == WHITE_WIN)

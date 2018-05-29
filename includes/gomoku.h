@@ -24,11 +24,8 @@ class Gomoku
 		bool clone;
 		Player	*whitePlayer;
 		Player	*blackPlayer;
-		Player	*helperWhite;
-		Player	*helperBlack;
-		//Player	*currentHelper;
 		Player	*currentPlayer;
-		Rules	&rules;
+		Rules	*rules;
 		Interface &interface;
 		Stone	board[GW][GH];
 		int		nbEatenStone;
@@ -56,24 +53,25 @@ class Gomoku
 	
 	public:
 
-		Gomoku(Rules& rules, Interface& interface);
-		Gomoku(Gomoku* copyFrom, Rules &copyRules);
+		Gomoku(Interface& interface);
+		Gomoku(Gomoku* copyFrom);
 		~Gomoku();
 
 		inline Player	&getWhitePlayer() {return *whitePlayer;}
 		inline Player	&getBlackPlayer() {return *blackPlayer;}
+		inline Rules	&getRules() {return *rules;}
 		inline Player	*aWhitePlayer() {return whitePlayer;}
 		inline Player	*aBlackPlayer() {return blackPlayer;}
+		inline Rules	*aRules() {return rules;}
 		inline void		setWhitePlayer(Player *p) {whitePlayer = p;}
 		inline void		setBlackPlayer(Player *p) {blackPlayer = p;}
+		inline void		setRules(Rules *r) {rules = r;}
 		void			updateWhitePlayer(void);
 		void			updateBlackPlayer(void);
-		void			updateWhiteHelper(void);
-		void			updateBlackHelper(void);
 		void			updatePlayer(void);
+		void			updateRules(void);
 		inline Player	*getCurrentPlayer() {return currentPlayer;}
 		//inline Player	*getCurrentHelper() {return currentHelper;}
-		inline Rules	&getRules() {return rules;}
 		inline Stone**	getBoard() {return (Stone**)board;}
 		inline bool**	getFocus() {return (bool**)focus;}
 		inline Interface &getInterface() {return interface;}
