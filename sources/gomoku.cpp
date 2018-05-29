@@ -103,6 +103,7 @@ void Gomoku::start() {
 		int y = 0;
 		updatePlayer();
 		while (!(end = rules.checkEnd(*currentPlayer))) {
+			interface.updateNbOfTurn();
 			if (interface.visualAid && currentPlayer->getHuman()) {
 				//currentPlayer->playToHelp(rules, interface);
 				interface.updateHelperToPlay();
@@ -114,6 +115,7 @@ void Gomoku::start() {
 			interface.setTimeToPlay(interface._clockTurn.restart());
 			currentPlayer->play(rules, interface);
 			interface.setTimeToPlay(interface._clockTurn.getElapsedTime());
+			interface.updateTimerToPlay();
 			x = currentPlayer->coordPlayed.x;
 			y = currentPlayer->coordPlayed.y;
 			//UPDATE HEURISTIC

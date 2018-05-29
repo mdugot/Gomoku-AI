@@ -25,9 +25,21 @@
 # define WHITECANTEENX 960
 # define WHITECANTEENY 860
 # define HELPERX	35
-# define HELPERY	30
-# define CHRONOX		1020
+# define HELPERY	35
+# define CHRONOX		1025
 # define CHRONOY		40
+# define TIMEX			1086
+# define TIMEY			142
+# define BTIMERX		25
+# define BTIMERY		285
+# define WTIMERX		1005
+# define WTIMERY		285
+# define BTIMEX			107
+# define BTIMEY			590
+# define WTIMEX			1089
+# define WTIMEY			590
+# define NBTURNX		1089
+# define NBTURNY		216
 # define CENTER_MAX_DISTANCE 20
 
 typedef enum State {
@@ -128,10 +140,8 @@ class Interface {
 		void	updateTimerOfGame(void);
 		void	updateTimerToPlay(void);
 		void	updateNbOfTurn(void);
-		void	updateAllGameText(void);
 		void	updateVisualAid(void);
 		void	updateHelperToPlay(void);
-		//void	putHelpText(sf::Text &text, int x, int y);
 		void	putHelpSprite(sf::Sprite sprite, int x, int y);
 
 		//to previzualize stone
@@ -161,6 +171,8 @@ class Interface {
 		sf::Sprite			_help5Sprite;
 		sf::Sprite			_help5PlusSprite;
 		sf::Sprite			_chronoSprite;
+		sf::Sprite			_blackTimerSprite;
+		sf::Sprite			_whiteTimerSprite;
 		sf::Sprite			_bestSprite;
 
 		sf::Texture			_stoneWhiteTexture;
@@ -183,6 +195,8 @@ class Interface {
 		sf::Texture			_help5Texture;
 		sf::Texture			_help5PlusTexture;
 		sf::Texture			_chronoTexture;
+		sf::Texture			_blackTimerTexture;
+		sf::Texture			_whiteTimerTexture;
 		sf::Texture			_bestTexture;
 
 
@@ -196,7 +210,8 @@ class Interface {
 		sf::Music			ambiance1;
 		sf::Music			ambiance2;
 
-		sf::Text			timeToPlayText;
+		sf::Text			whiteTimeToPlayText;
+		sf::Text			blackTimeToPlayText;
 		sf::Text			timeOfGameText;
 		sf::Text			nbTurnText;
 		/*sf::Text			help1;
