@@ -7,7 +7,6 @@
 #include "noobIA.h"
 #include "rules.h"
 #include "defaultRules.h"
-#include "rulesTest.h"
 #include "interface.h"
 
 using namespace sf;
@@ -114,6 +113,7 @@ void Gomoku::start() {
 		updateRules();
 		while (!(end = rules->checkEnd(*currentPlayer))) {
 			interface.updateNbOfTurn();
+			rules->specificRules();
 			if (interface.visualAid && currentPlayer->getHuman()) {
 				interface.updateHelperToPlay();
 			}

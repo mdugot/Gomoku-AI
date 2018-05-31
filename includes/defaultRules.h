@@ -15,6 +15,7 @@ class DefaultRules : public Rules
 
 		virtual bool canPutStone(HeuristicBoard *h, int x, int y);
 		virtual Rules *copy();
+		inline virtual void specificRules() {return;}
 };
 
 

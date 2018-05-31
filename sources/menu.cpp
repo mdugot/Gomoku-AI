@@ -6,7 +6,10 @@
 #include "randomPlayer.h"
 #include "noobIA.h"
 #include "defaultRules.h"
-#include "rulesTest.h"
+#include "proRules.h"
+#include "longProRules.h"
+#include "swapRules.h"
+#include "swapTwoRules.h"
 
 using namespace sf;
 
@@ -83,8 +86,17 @@ void    Menu::setTextString(Text &text, TextChoice &textChoice) {
         case CLASSIQUE:
             text.setString("CLASSIQUE");
             break;
-        case VERSION_TEST:
-            text.setString("VERSION TEST");
+        case PRO:
+            text.setString("PRO");
+            break;
+        case LONG_PRO:
+            text.setString("LONG PRO");
+            break;
+        case SWAP:
+            text.setString("SWAP");
+            break;
+        case SWAP2:
+            text.setString("SWAP2");
             break;
         default:
             DEBUG << "not Text???? wtf\n";
@@ -116,9 +128,15 @@ void    Menu::switchTextBox(Text &text, TextChoice &textC) {
     else if (textC == AH_EASY)
         textC = HUMAN;
     else if (textC == CLASSIQUE)
-        textC = VERSION_TEST;
-    else if (textC == VERSION_TEST)
-        textC = CLASSIQUE;//TO DO : update texte si d'autres variantes de jeu à venir
+        textC = PRO;
+    else if (textC == PRO)
+        textC = LONG_PRO;
+    else if (textC == LONG_PRO)
+        textC = SWAP;
+    else if (textC == SWAP)
+        textC = SWAP2;
+    else if (textC == SWAP2)
+        textC = CLASSIQUE;
     else
         DEBUG << "ERROR SWITCH TEXT IN MENU\n";
     updateText(text, textC);
@@ -164,8 +182,14 @@ void    Menu::go(Gomoku* gomoku) {
 Rules*      Menu::updateRules(TextChoice &textC) {
     if (textC == CLASSIQUE)
         return new DefaultRules();
-    else if (textC == VERSION_TEST)
-        return new RulesTest();
+    else if (textC == PRO)
+        return new ProRules();
+    else if (textC == LONG_PRO)
+        return new LongProRules();
+    else if (textC == SWAP)
+        return new SwapRules();
+    else if (textC == SWAP2)
+        return new SwapTwoRules();
     else {
         DEBUG << "IN MENU, UPDATERULES, TEXT UNKNOW";
         exit(1);

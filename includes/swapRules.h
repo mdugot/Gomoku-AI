@@ -1,20 +1,21 @@
-# ifndef RULESTEST_H
-# define RULESTEST_H
+# ifndef SWAPRULES_H
+# define SWAPRULES_H
 
 #include "rules.h"
 
-class RulesTest : public Rules
+class SwapRules : public Rules
 {
 	private:
 
 	public:
 
-		RulesTest();
-		~RulesTest();
+		SwapRules();
+		~SwapRules();
 
 
 		virtual bool canPutStone(HeuristicBoard *h, int x, int y);
         virtual Rules *copy();
+		virtual void specificRules();
 };
 
 # endif

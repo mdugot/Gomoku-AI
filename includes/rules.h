@@ -33,6 +33,7 @@ class Rules
 		inline void setTurnCounter(unsigned int t) {this->turnCounter = t;}
 		inline unsigned int getTurnCounter() {return this->turnCounter;}
 		virtual bool canPutStone(HeuristicBoard *h, int x, int y) = 0;
+		virtual void specificRules() = 0;
 		bool canPutStone(Player &player, int x, int y);
 		virtual Rules *copy() = 0;
 
