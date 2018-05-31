@@ -65,13 +65,13 @@ class Gomoku
 		inline Rules	*aRules() {return rules;}
 		inline void		setWhitePlayer(Player *p) {whitePlayer = p;}
 		inline void		setBlackPlayer(Player *p) {blackPlayer = p;}
+		inline void		setCurrentPlayer(Player *p) {currentPlayer = p;}
 		inline void		setRules(Rules *r) {rules = r;}
 		void			updateWhitePlayer(void);
 		void			updateBlackPlayer(void);
 		void			updatePlayer(void);
 		void			updateRules(void);
 		inline Player	*getCurrentPlayer() {return currentPlayer;}
-		//inline Player	*getCurrentHelper() {return currentHelper;}
 		inline Stone**	getBoard() {return (Stone**)board;}
 		inline bool**	getFocus() {return (bool**)focus;}
 		inline Interface &getInterface() {return interface;}

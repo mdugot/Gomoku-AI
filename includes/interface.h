@@ -82,6 +82,8 @@ class Interface {
 		inline	float				getTimeToPlayInSeconds(void) {return this->_timeToPlay.asSeconds();}
 		inline	sf::RectangleShape	*getPtrFiveByFiveRect(void) {return &(this->fiveByFiveRect);}
 		inline	sf::RectangleShape	*getPtrSevenBySevenRect(void) {return &(this->sevenBySevenRect);}
+		inline	sf::Sprite			*getSpriteWhiteStone(void) {return &(this->_whiteStone);}
+		inline	sf::Sprite			*getSpriteBlackStone(void) {return &(this->_blackStone);}
 		inline	void				setTimeToPlay(sf::Time newTime) {this->_timeToPlay = newTime;}
 		void						setShapeInDrawList(sf::Shape *shape);
 		inline void					setRulesText(sf::String text, int screenX, int screenY) {this->rulesText.setString(text);this->rulesText.setPosition(screenX, screenY);}

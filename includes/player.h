@@ -25,7 +25,6 @@ class Player
 		bool	played;
 		sf::Vector2<int> coordPlayed; // MEMO : x et y ==> coordonnée du board dans Gomoku
 
-		inline virtual void setColor(Stone color) {this->stoneColor = color; myHeuristic.stone = color; ennemyHeuristic.stone = (color == WHITE ? BLACK : WHITE);}
 		void putStone(int x, int y);
 		sf::Vector2<int> canteen[10];
 	
@@ -55,6 +54,7 @@ class Player
 		inline void	setSpriteStone(sf::Sprite *stone) {this->stoneSprite = stone;}
 		inline void	setPlayed(bool state) {played = state;}
 		inline void	setCanteen(sf::Vector2<int> toCopy[10]) {int i = 0; while(i<10){canteen[i] = toCopy[i];i++;}}
+		inline virtual void setColor(Stone color) {this->stoneColor = color; myHeuristic.stone = color; ennemyHeuristic.stone = (color == WHITE ? BLACK : WHITE);}
 };
 
 

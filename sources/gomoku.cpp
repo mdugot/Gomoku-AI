@@ -113,8 +113,8 @@ void Gomoku::start() {
 		updateRules();
 		while (!(end = rules->checkEnd(*currentPlayer))) {
 			interface._allShape.clear();
-			interface.updateNbOfTurn();
 			interface.updateRulesText();
+			interface.updateNbOfTurn();
 			rules->specificRules(interface);
 			if (interface.visualAid && currentPlayer->getHuman()) {
 				interface.updateHelperToPlay();
