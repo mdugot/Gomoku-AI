@@ -25,7 +25,8 @@ bool SwapRules::canPutStone(HeuristicBoard *heuristic, int x, int y) {
 	return false;
 }
 
-void	SwapRules::specificRules() {
+void	SwapRules::specificRules(Interface &interface) {
+	(void)interface;
 	if (turnCounter > 3)
 		return;
 	else if (turnCounter == 0) // TEST

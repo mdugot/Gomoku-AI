@@ -16,6 +16,7 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
    this->loadSoundBuffer();
    this->loadSoundAndOpenMusic();
    this->loadText();
+   this->loadShape();
    initCoordBoard();
    initCoordCanteen();
    this->setState(WELCOME);
@@ -25,6 +26,17 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
 }
 
 Interface::~Interface() {
+}
+void    Interface::loadShape() {
+    fiveByFiveRect.setSize(Vector2f(150,150));
+    fiveByFiveRect.setFillColor(Color(0,0,0,0));
+    fiveByFiveRect.setOutlineThickness(5);
+    fiveByFiveRect.setOutlineColor(Color::Red);
+    fiveByFiveRect.setPosition(524,374);
+}
+
+void    Interface::setShapeInDrawList(Shape *shape) {
+    _allShape.push_back(shape);
 }
 
 //TO-DO : Ajout texture des autres States ici.
@@ -174,7 +186,7 @@ void    Interface::loadText(void) {
     setText(&nbTurnText, arial,18, Color::Blue, NBTURNX, NBTURNY, "TURN : 0 BLACK ");
     setText(&blackTimeToPlayText, arial, 18, Color::Black, BTIMEX, BTIMEY, "0");
     setText(&whiteTimeToPlayText, arial, 18, Color::White, WTIMEX, WTIMEY, "0");
-    /*
+    setText(&rulesText, arial, 20, Color::Red, BRULESX, WRULESY, "No specific rules\n good luck");/*
     setText(&help1, arial, 24, Color::Blue, 300, 300, "1");
     setText(&help2, arial, 24, Color(255,0,128), 400, 300, "2");
     setText(&help3, arial, 24, Color::Yellow, 500, 300, "3");
@@ -186,6 +198,7 @@ void    Interface::loadText(void) {
     menu.setMiddle(blackTimeToPlayText);
     menu.setMiddle(whiteTimeToPlayText);
     menu.setMiddle(nbTurnText);
+    menu.setMiddle(rulesText);
     visualAidText.setOrigin(0,0);
 }
 
@@ -381,12 +394,17 @@ void    Interface::drawGame(void) {
     for (std::list<Sprite>::iterator it = _allHelpSprite.begin(); it != _allHelpSprite.end(); it++) {
         this->_window.draw(*it);
     }
+    //Affichage des formes liées aux règles spécifiques par au-dessus
+    for (std::list<Shape*>::iterator it = _allShape.begin(); it != _allShape.end(); it++) {
+        this->_window.draw(*(*it));
+    }
 }
 
 void    Interface::cleanInterface(void) {
     _allText.clear();
     _allHelpSprite.clear();
     _allSprite.clear();
+    _allShape.clear();
 }
 
 void    Interface::welcomeScreen(void) {
@@ -444,6 +462,7 @@ void    Interface::gameScreen(void) {
     menu.setMiddle(whiteTimeToPlayText);
     _allText.push_back(&blackTimeToPlayText);
     _allText.push_back(&whiteTimeToPlayText);
+    _allText.push_back(&rulesText);
     if (gomoku->getBlackPlayer().getHuman() == true || gomoku->getWhitePlayer().getHuman() == true) {
         _allText.push_back(&visualAidText);
         _allSprite.push_back(_boxSprite);
@@ -790,6 +809,13 @@ void    Interface::updateHelperToPlay() {
     //affichage du sprite best au coordonné trouvé par playForHelp...
     gomoku->getCurrentPlayer()->playForHelp(gomoku->getRules(), *this);
     _allHelpSprite.push_back(_bestSprite);
+}
+
+void    Interface::updateRulesText(void) {
+    if (gomoku->getCurrentPlayer()->getColor() == BLACK)
+        rulesText.setPosition(BRULESX, BRULESY);    
+    else
+        rulesText.setPosition(WRULESX, WRULESY);    
 }
 
 void    Interface::update(void) {

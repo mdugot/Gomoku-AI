@@ -15,7 +15,7 @@ class SwapRules : public Rules
 
 		virtual bool canPutStone(HeuristicBoard *h, int x, int y);
         virtual Rules *copy();
-		virtual void specificRules();
+		virtual void specificRules(Interface &interface);
 };
 
 # endif

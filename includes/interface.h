@@ -40,6 +40,10 @@
 # define WTIMEY			590
 # define NBTURNX		1089
 # define NBTURNY		216
+# define BRULESX		107
+# define BRULESY		640
+# define WRULESX		1089
+# define WRULESY		640
 # define CENTER_MAX_DISTANCE 20
 
 typedef enum State {
@@ -62,9 +66,6 @@ class Interface {
 		void	printCoordBoard(void);
 		void	makeSprite(sf::Sprite &s, sf::Texture &t, float sy, float sx, int px, int py);
 		void	cleanInterface(void);
-		void	cleanSpriteList(void);
-		void	cleanTextList(void);
-		void	cleanHelpList(void);
 		void	checkClickLeft(Player *current, int x, int y);
 		void	setStoneOnClick(Player &player, int x, int y);
 		void	checkEvent(Player *current);
@@ -80,7 +81,10 @@ class Interface {
 		inline	float				getTimeOfGameInSeconds(void) {return this->_timeOfGame.asSeconds();}
 		inline	void				setTimeOfGame(sf::Time newTime) {this->_timeOfGame = newTime;}
 		inline	float				getTimeToPlayInSeconds(void) {return this->_timeToPlay.asSeconds();}
+		inline	sf::RectangleShape	*getPtrFiveByFiveRect(void) {return &(this->fiveByFiveRect);}
 		inline	void				setTimeToPlay(sf::Time newTime) {this->_timeToPlay = newTime;}
+		void						setShapeInDrawList(sf::Shape *shape);
+		inline void					setRulesText(sf::String text, int screenX, int screenY) {this->rulesText.setString(text);this->rulesText.setPosition(screenX, screenY);}
 		sf::Vector2<int> whiteCanteen[10];
 		sf::Vector2<int> blackCanteen[10];
 
@@ -99,6 +103,7 @@ class Interface {
 		std::list<sf::Sprite>			_allSprite;
 		std::list<sf::Text*>			_allText;
 		std::list<sf::Sprite>			_allHelpSprite;
+		std::list<sf::Shape*>			_allShape;
 		sf::Vector2<int>	coordBoard[GW][GH];
 		sf::Vector2<int>	turnCoordInterfaceInGomokuBoardIndex(int screenX, int screenY);
 		
@@ -126,6 +131,7 @@ class Interface {
 		void	loadSoundBuffer(void);
 		void	loadSoundAndOpenMusic(void);
 		void	loadText(void);
+		void	loadShape(void);
 		void	setText(sf::Text *text, sf::Font &font, int size, sf::Color color, int posX, int posY, sf::String str);
 		void	initCoordBoard(void);
 		void	initCoordCanteen(void);
@@ -142,6 +148,7 @@ class Interface {
 		void	updateNbOfTurn(void);
 		void	updateVisualAid(void);
 		void	updateHelperToPlay(void);
+		void	updateRulesText(void);
 		void	putHelpSprite(sf::Sprite sprite, int x, int y);
 
 		//to previzualize stone
@@ -220,6 +227,9 @@ class Interface {
 		sf::Text			help4;
 		sf::Text			help5;*/
 		sf::Text			visualAidText;
+		sf::Text			rulesText;
+
+		sf::RectangleShape	fiveByFiveRect;
 
 };
 

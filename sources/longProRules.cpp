@@ -25,7 +25,8 @@ bool LongProRules::canPutStone(HeuristicBoard *heuristic, int x, int y) {
 	return false;
 }
 
-void	LongProRules::specificRules() {
+void	LongProRules::specificRules(Interface &interface) {
+	(void)interface;
 	if (turnCounter > 3)
 		return;
 	else if (turnCounter == 1)
