@@ -41,11 +41,11 @@ void	ProRules::specificRules(Interface &interface) {
 		interface.setShapeInDrawList(interface.getPtrFiveByFiveRect());
 	}
 	if (turnCounter == 0)
-		interface.setRulesText("Play in Middle = H8.", BRULESX, BRULESY);
+		interface.setRulesText("Play :\nin Middle = H8.", BRULESX, BRULESY);
 	else if (turnCounter == 1)
-		interface.setRulesText("Play where you want", WRULESX, WRULESY);
+		interface.setRulesText("Play :\nwhere you want", WRULESX, WRULESY);
 	else if (turnCounter == 2)
-		interface.setRulesText("Play outside of square", BRULESX, BRULESY);
+		interface.setRulesText("Play :\noutside of square", BRULESX, BRULESY);
 	else if (turnCounter == 3)
 		interface.setRulesText("No specific rules", WRULESX, WRULESY);
 	return;

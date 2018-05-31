@@ -28,11 +28,16 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
 Interface::~Interface() {
 }
 void    Interface::loadShape() {
-    fiveByFiveRect.setSize(Vector2f(150,150));
-    fiveByFiveRect.setFillColor(Color(0,0,0,0));
-    fiveByFiveRect.setOutlineThickness(5);
-    fiveByFiveRect.setOutlineColor(Color::Red);
-    fiveByFiveRect.setPosition(524,374);
+    makeRectangleShape(&fiveByFiveRect,152,152,5,Color(0,0,0,0), Color::Red, 523,373);
+    makeRectangleShape(&sevenBySevenRect,231,231,5,Color(0,0,0,0), Color::Red, 483,333);
+}
+
+void    Interface::makeRectangleShape(RectangleShape *shape, int sizeX, int sizeY, int thickness, Color inside, Color outside, int posX, int posY) {
+    shape->setSize(Vector2f(sizeX, sizeY));
+    shape->setFillColor(inside);
+    shape->setOutlineThickness(thickness);
+    shape->setOutlineColor(outside);
+    shape->setPosition(posX, posY);
 }
 
 void    Interface::setShapeInDrawList(Shape *shape) {

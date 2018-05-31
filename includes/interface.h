@@ -64,7 +64,6 @@ class Interface {
 		void	putStone(sf::Sprite, int, int);
 		void	putStoneToHelp(int gomokuX, int gomokuY);
 		void	printCoordBoard(void);
-		void	makeSprite(sf::Sprite &s, sf::Texture &t, float sy, float sx, int px, int py);
 		void	cleanInterface(void);
 		void	checkClickLeft(Player *current, int x, int y);
 		void	setStoneOnClick(Player &player, int x, int y);
@@ -82,6 +81,7 @@ class Interface {
 		inline	void				setTimeOfGame(sf::Time newTime) {this->_timeOfGame = newTime;}
 		inline	float				getTimeToPlayInSeconds(void) {return this->_timeToPlay.asSeconds();}
 		inline	sf::RectangleShape	*getPtrFiveByFiveRect(void) {return &(this->fiveByFiveRect);}
+		inline	sf::RectangleShape	*getPtrSevenBySevenRect(void) {return &(this->sevenBySevenRect);}
 		inline	void				setTimeToPlay(sf::Time newTime) {this->_timeToPlay = newTime;}
 		void						setShapeInDrawList(sf::Shape *shape);
 		inline void					setRulesText(sf::String text, int screenX, int screenY) {this->rulesText.setString(text);this->rulesText.setPosition(screenX, screenY);}
@@ -133,6 +133,8 @@ class Interface {
 		void	loadText(void);
 		void	loadShape(void);
 		void	setText(sf::Text *text, sf::Font &font, int size, sf::Color color, int posX, int posY, sf::String str);
+		void	makeSprite(sf::Sprite &s, sf::Texture &t, float sy, float sx, int px, int py);
+		void	makeRectangleShape(sf::RectangleShape *shape, int sizeX, int sizeY, int thickness, sf::Color inside, sf::Color outside, int posX, int posY);
 		void	initCoordBoard(void);
 		void	initCoordCanteen(void);
 		void	putPreviewStone(Player &current, int mouseX, int mouseY);
@@ -150,7 +152,6 @@ class Interface {
 		void	updateHelperToPlay(void);
 		void	updateRulesText(void);
 		void	putHelpSprite(sf::Sprite sprite, int x, int y);
-
 		//to previzualize stone
 		bool				previewStone;
 		bool				viewWinner;
@@ -230,6 +231,7 @@ class Interface {
 		sf::Text			rulesText;
 
 		sf::RectangleShape	fiveByFiveRect;
+		sf::RectangleShape	sevenBySevenRect;
 
 };
 
