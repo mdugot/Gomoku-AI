@@ -66,7 +66,8 @@ class Gomoku
 		inline void		setWhitePlayer(Player *p) {whitePlayer = p;}
 		inline void		setBlackPlayer(Player *p) {blackPlayer = p;}
 		inline void		setCurrentPlayer(Player *p) {currentPlayer = p;}
-		inline void		setRules(Rules *r) {rules = r;}
+		inline void		setRules(Rules *r) {rules = r; updateStartingFocus();}
+		void			updateStartingFocus(void);
 		void			updateWhitePlayer(void);
 		void			updateBlackPlayer(void);
 		void			updatePlayer(void);

@@ -134,6 +134,7 @@ void Gomoku::start() {
 			currentPlayer->ennemyHeuristic.clear(x, y);
 			currentPlayer->myHeuristic.print(x, y);
 			currentPlayer->ennemyHeuristic.print(x, y);
+			printBoard(x, y);
 			//DRAW
 			drawStone();
 			//CAPTURE
@@ -367,6 +368,14 @@ void Gomoku::checkDownRight(Player &current, unsigned char xPlayed, unsigned cha
 		if (checkBetween(enemy.getColor(), xPlayed + 2, yPlayed + 2, xPlayed + 1, yPlayed + 1)) {
 			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed + 1, yPlayed + 1));
 			captured.push_back(std::pair<unsigned char, unsigned char>(xPlayed + 2, yPlayed + 2));
+		}
+	}
+}
+
+void Gomoku::updateStartingFocus() {
+	for (int i = 0; i < GW; i++) {
+		for (int j = 0; j < GH; j++) {
+			focus[i][j] = rules->startingFocus[i][j];
 		}
 	}
 }

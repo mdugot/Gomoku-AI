@@ -15,6 +15,7 @@ class ProRules : public Rules
 
 		virtual bool	canPutStone(HeuristicBoard *h, int x, int y);
         virtual Rules	*copy();
+		virtual void 	initStartingFocus();
 		virtual void	specificRules(Interface &interface);
 };
 

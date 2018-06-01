@@ -1,6 +1,6 @@
 #include "swapRules.h"
 
-SwapRules::SwapRules() : Rules()
+SwapRules::SwapRules() : 	Rules()
 {
 }
 

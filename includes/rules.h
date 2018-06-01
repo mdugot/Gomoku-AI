@@ -18,6 +18,7 @@ class Rules
 	protected:
 
 		unsigned int turnCounter;
+		bool startingFocus[GW][GH];
 		Gomoku *gomoku;
 		
 		bool win(Player &player, bool avoidable);
@@ -37,6 +38,7 @@ class Rules
 		virtual void specificRules(Interface &interface) = 0;
 		bool canPutStone(Player &player, int x, int y);
 		virtual Rules *copy() = 0;
+		virtual void initStartingFocus();
 
 		End checkEnd(Player &nextToPlay);
 };

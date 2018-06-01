@@ -3,6 +3,19 @@
 
 Rules::Rules() : turnCounter(0)
 {
+	initStartingFocus();
+}
+
+void Rules::initStartingFocus() {
+	char schema[GW] = {0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0};
+	for (int i = 0; i < GW; i++) {
+		for (int j = 0; j < GH; j++) {
+			if (schema[i] == 1 && schema[j] == 1)
+				startingFocus[i][j] = 1;
+			else
+				startingFocus[i][j] = 0;
+		}
+	}
 }
 
 Rules::~Rules() {
@@ -12,7 +25,7 @@ bool Rules::canAvoidDefeat(Player *player, Player *ennemy) {
 	for (unsigned char j = 0; j < GH; j++) {
 		for (unsigned char i = 0; i < GW; i++) {
 			if (canPutStone(*player, i, j)) {
-					Choice choice(i, j, player->getMyHeuristic(), player->getEnnemyHeuristic(), player, gomoku, this);
+					Choice choice(i, j, player->getMyHeuristic(), player->getEnnemyHeuristic(), player, gomoku, false);
 					gomoku->checkCapture(*player, i, j, *ennemy, choice.captured);
 					for (auto it = choice.captured.begin(); it != choice.captured.end(); ++it) {
 						choice.ennemyHeuristic.beCaptured(it->first, it->second);

@@ -209,7 +209,7 @@ Player*    Menu::updatePlayer(TextChoice &textC) {
     else if (textC == IA_EASY)
         return new MinMaxDynamicPlayer({7, 3, 0});
     else if (textC == AH_HARD)
-        return new AssistedHumanPlayer({7, 7, 7, 5, 5, 5, 3, 3, 3, 3, 0});
+        return new AssistedHumanPlayer({11, 9, 7, 5, 5, 5, 3, 3, 3, 3, 0});
     else if (textC == AH_NORMAL)
         return new AssistedHumanPlayer({7, 7, 5, 5, 3, 3, 0});
     else if (textC == AH_EASY)
