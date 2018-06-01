@@ -16,6 +16,7 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
    this->loadSoundBuffer();
    this->loadSoundAndOpenMusic();
    this->loadText();
+   this->loadShape();
    initCoordBoard();
    initCoordCanteen();
    this->setState(WELCOME);
@@ -25,6 +26,22 @@ Interface::Interface() : _window(sf::VideoMode(WIDTH, HEIGHT), "GOMOKU", Style::
 }
 
 Interface::~Interface() {
+}
+void    Interface::loadShape() {
+    makeRectangleShape(&fiveByFiveRect,152,152,5,Color(0,0,0,0), Color::Red, 523,373);
+    makeRectangleShape(&sevenBySevenRect,231,231,5,Color(0,0,0,0), Color::Red, 483,333);
+}
+
+void    Interface::makeRectangleShape(RectangleShape *shape, int sizeX, int sizeY, int thickness, Color inside, Color outside, int posX, int posY) {
+    shape->setSize(Vector2f(sizeX, sizeY));
+    shape->setFillColor(inside);
+    shape->setOutlineThickness(thickness);
+    shape->setOutlineColor(outside);
+    shape->setPosition(posX, posY);
+}
+
+void    Interface::setShapeInDrawList(Shape *shape) {
+    _allShape.push_back(shape);
 }
 
 //TO-DO : Ajout texture des autres States ici.
@@ -50,6 +67,8 @@ void    Interface::loadTexture(void) {
     || !_help5PlusTexture.loadFromFile("./sprite/help5Plus.png")
     || !_bestTexture.loadFromFile("./sprite/best.png")
     || !_chronoTexture.loadFromFile("./sprite/chrono.png")
+    || !_blackTimerTexture.loadFromFile("./sprite/blackTimer.png")
+    || !_whiteTimerTexture.loadFromFile("./sprite/whiteTimer.png")
     ) {
        DEBUG << "Error during import " << std::endl;
        exit(1);
@@ -74,6 +93,8 @@ void    Interface::loadTexture(void) {
        _help5PlusTexture.setSmooth(true);
        _bestTexture.setSmooth(true);
        _chronoTexture.setSmooth(true);
+       _blackTimerTexture.setSmooth(true);
+       _whiteTimerTexture.setSmooth(true);
    }
 }
 
@@ -102,6 +123,8 @@ void    Interface::loadSprite(void) {
     makeSprite(_help5PlusSprite, _help5PlusTexture,0.82f, 0.82f, 0, 0);
     makeSprite(_bestSprite, _bestTexture, 0.825f, 0.825f, 0, 0);
     makeSprite(_chronoSprite, _chronoTexture,0.8f, 0.8f, CHRONOX, CHRONOY);
+    makeSprite(_blackTimerSprite, _blackTimerTexture,0.65f, 0.65f, BTIMERX, BTIMERY);
+    makeSprite(_whiteTimerSprite, _whiteTimerTexture,0.65f, 0.65f, WTIMERX, WTIMERY);
     _whiteStone.setOrigin(_stoneWhiteTexture.getSize().x / _whiteStone.getScale().x / 2, _stoneWhiteTexture.getSize().y / _whiteStone.getScale().y / 2);
     _blackStone.setOrigin(_stoneBlackTexture.getSize().x / _blackStone.getScale().x / 2, _stoneBlackTexture.getSize().y / _blackStone.getScale().y / 2);
     _bestSprite.setOrigin(_bestTexture.getSize().x / _bestSprite.getScale().x / 2, _bestTexture.getSize().y / _bestSprite.getScale().y / 2);
@@ -165,20 +188,23 @@ void    Interface::setText(Text *text, Font &font, int size, Color color, int po
 
 void    Interface::loadText(void) {
     Font &arial = menu.getArial();
-    setText(&timeOfGameText, arial, 18, Color::Black,  CHRONOX + 65, CHRONOY + 135, "TIME 00.00\n\n\nTIME OF GAME");
-    setText(&nbTurnText, arial,18, Color::Blue, 10, 450, "TURN :\n 00");
-    setText(&timeToPlayText, arial, 18, Color(0, 125, 250), 10, 500, "Player's time :\n0,000");
-    /*
+    setText(&timeOfGameText, arial, 18, Color::Black,  TIMEX, TIMEY, "00");
+    setText(&nbTurnText, arial,18, Color::Blue, NBTURNX, NBTURNY, "TURN : 0 BLACK ");
+    setText(&blackTimeToPlayText, arial, 18, Color::Black, BTIMEX, BTIMEY, "0");
+    setText(&whiteTimeToPlayText, arial, 18, Color::White, WTIMEX, WTIMEY, "0");
+    setText(&rulesText, arial, 20, Color::Red, BRULESX, WRULESY, "No specific rules\n good luck");/*
     setText(&help1, arial, 24, Color::Blue, 300, 300, "1");
     setText(&help2, arial, 24, Color(255,0,128), 400, 300, "2");
     setText(&help3, arial, 24, Color::Yellow, 500, 300, "3");
     setText(&help4, arial, 24, Color::Red, 600, 300, "4");
     setText(&help5, arial, 24, Color::Green, 700, 300, "5");
     */
-    setText(&visualAidText, arial, 18, Color::Red, HELPERX, HELPERY, "    To activ\nVisualHelper :\n     [false]");
+    setText(&visualAidText, arial, 18, Color::Red, HELPERX, HELPERY + 10, "VisualHelper :\n     [false]");
     menu.setMiddle(timeOfGameText);
-    timeToPlayText.setOrigin(0,0);
-    nbTurnText.setOrigin(0,0);
+    menu.setMiddle(blackTimeToPlayText);
+    menu.setMiddle(whiteTimeToPlayText);
+    menu.setMiddle(nbTurnText);
+    menu.setMiddle(rulesText);
     visualAidText.setOrigin(0,0);
 }
 
@@ -374,12 +400,17 @@ void    Interface::drawGame(void) {
     for (std::list<Sprite>::iterator it = _allHelpSprite.begin(); it != _allHelpSprite.end(); it++) {
         this->_window.draw(*it);
     }
+    //Affichage des formes liées aux règles spécifiques par au-dessus
+    for (std::list<Shape*>::iterator it = _allShape.begin(); it != _allShape.end(); it++) {
+        this->_window.draw(*(*it));
+    }
 }
 
 void    Interface::cleanInterface(void) {
     _allText.clear();
     _allHelpSprite.clear();
     _allSprite.clear();
+    _allShape.clear();
 }
 
 void    Interface::welcomeScreen(void) {
@@ -424,12 +455,20 @@ void    Interface::gameScreen(void) {
     cleanInterface();
     setTimeOfGame(_clockOfGame.restart());
     setTimeToPlay(_clockTurn.restart());
+    blackTimeToPlayText.setString("0");
+    whiteTimeToPlayText.setString("0");
     _allSprite.push_back(_backgroundSprite);
     _allSprite.push_back(_boardGameSprite);
     _allSprite.push_back(_chronoSprite);
+    _allSprite.push_back(_blackTimerSprite);
+    _allSprite.push_back(_whiteTimerSprite);
     _allText.push_back(&timeOfGameText);
     _allText.push_back(&nbTurnText);
-    _allText.push_back(&timeToPlayText);
+    menu.setMiddle(blackTimeToPlayText);
+    menu.setMiddle(whiteTimeToPlayText);
+    _allText.push_back(&blackTimeToPlayText);
+    _allText.push_back(&whiteTimeToPlayText);
+    _allText.push_back(&rulesText);
     if (gomoku->getBlackPlayer().getHuman() == true || gomoku->getWhitePlayer().getHuman() == true) {
         _allText.push_back(&visualAidText);
         _allSprite.push_back(_boxSprite);
@@ -650,12 +689,12 @@ void    Interface::checkClickLeft(Player *current, int x, int y)
         }
         else if (menu.onVariante(x, y))
         {
-            //bipSound.play();
+            bipSound.play();
             menu.switchTextBox(menu.textBoxVariante, menu.variante);
         }
         else if (menu.onGo(x, y)){
             bipSound.play();
-            menu.go(gomoku);//setPlayer...
+            menu.go(gomoku);//setPlayer... WARNING AJOUTER SET RULES !!
             setState(GAME);
         }
     }
@@ -691,24 +730,38 @@ void    Interface::checkClickLeft(Player *current, int x, int y)
 
 void    Interface::updateTimerOfGame(void) {
         setTimeOfGame(this->_clockOfGame.getElapsedTime());
-        String str = "          " + intToString(((int)getTimeOfGameInSeconds())) + "\n\n\nTIME OF GAME";
+        String str = /*"          " + */intToString(((int)getTimeOfGameInSeconds())) /*+ "\n\n\nTIME OF GAME"*/;
         timeOfGameText.setString(str);
+        menu.setMiddle(timeOfGameText);
         //removeStone(timeOfGameText.getPosition().x, timeOfGameText.getPosition().y);
         //_allText.push_back(&timeOfGameText);
 }
 
 void    Interface::updateTimerToPlay(void) {
-        String str = "Player's time :\n" + floatToString(getTimeToPlayInSeconds());
-        timeToPlayText.setString(str);
+        String str = floatToString(getTimeToPlayInSeconds());
+        if (gomoku->getCurrentPlayer()->getColor() == WHITE) {
+            whiteTimeToPlayText.setString(str);
+            menu.setMiddle(whiteTimeToPlayText);
+        }
+        else {
+            blackTimeToPlayText.setString(str);
+            menu.setMiddle(blackTimeToPlayText);
+        }
 }
 
 void    Interface::updateNbOfTurn(void) {
-        String str = "Nb of turn :\n" + intToString(((gomoku->getRules()).getTurnCounter()));
+        String str = "Turn : " + intToString(((gomoku->getRules()).getTurnCounter()));
+        if (gomoku->getCurrentPlayer()->getColor() == BLACK) {
+            str += " Black ";
+        } else {
+            str += " White ";
+        }
         nbTurnText.setString(str);
+        menu.setMiddle(nbTurnText);
 }
 
 void    Interface::updateVisualAid(void) {
-        String str = "    To Activ\nVisualHelper :\n     [";
+        String str = "Visual Helper :\n     [";
         if (visualAid) {
             visualAid = false;
             visualAidText.setColor(Color::Red);
@@ -736,6 +789,7 @@ void    Interface::updateHelperToPlay() {
     if (!(gomoku->getCurrentPlayer()->getHuman()))
         return;
     _allHelpSprite.clear();
+    _bestSprite.setPosition(-100, -100);
     //appeler ici l'heuristic du current player pour le parcourir et afficher les texts help1, help2 ect...
     HeuristicBoard currentHeuristic = gomoku->getCurrentPlayer()->getMyHeuristic();
     int level;
@@ -758,20 +812,21 @@ void    Interface::updateHelperToPlay() {
                 putHelpSprite(_help5PlusSprite, x, y);
         }
     }
-    //affichage du sprite best au coordonné précédemment enregistré par le helper...
-    gomoku->getCurrentPlayer()->getHelper()->play(gomoku->getRules(), *this);
+    //affichage du sprite best au coordonné trouvé par playForHelp...
+    gomoku->getCurrentPlayer()->playForHelp(gomoku->getRules(), *this);
     _allHelpSprite.push_back(_bestSprite);
 }
 
-void    Interface::updateAllGameText() {
-    updateTimerOfGame();
-    updateTimerToPlay();
-    updateNbOfTurn();
+void    Interface::updateRulesText(void) {
+    if (gomoku->getCurrentPlayer()->getColor() == BLACK)
+        rulesText.setPosition(BRULESX, BRULESY);    
+    else
+        rulesText.setPosition(WRULESX, WRULESY);    
 }
 
 void    Interface::update(void) {
         if (state == GAME)
-            this->updateAllGameText();
+            updateTimerOfGame();
         this->_window.clear();
         this->drawGame();
         //if ((state == GAME /* || state == BLACKWIN || state == WHITEWIN || state == EQUAL*/) && visualAid)

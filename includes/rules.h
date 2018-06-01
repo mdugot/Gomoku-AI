@@ -3,6 +3,7 @@
 
 #include "gomoku.h"
 #include "player.h"
+#include "interface.h"
 
 #define NB_CAPTURE_TO_WIN 10 
 
@@ -33,6 +34,7 @@ class Rules
 		inline void setTurnCounter(unsigned int t) {this->turnCounter = t;}
 		inline unsigned int getTurnCounter() {return this->turnCounter;}
 		virtual bool canPutStone(HeuristicBoard *h, int x, int y) = 0;
+		virtual void specificRules(Interface &interface) = 0;
 		bool canPutStone(Player &player, int x, int y);
 		virtual Rules *copy() = 0;
 

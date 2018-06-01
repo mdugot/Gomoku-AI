@@ -2,8 +2,14 @@
 #include "player.h"
 #include "humanPlayer.h"
 #include "minMaxDynamicPlayer.h"
+#include "assistedHumanPlayer.h"
 #include "randomPlayer.h"
 #include "noobIA.h"
+#include "defaultRules.h"
+#include "proRules.h"
+#include "longProRules.h"
+#include "swapRules.h"
+#include "swapTwoRules.h"
 
 using namespace sf;
 
@@ -68,8 +74,29 @@ void    Menu::setTextString(Text &text, TextChoice &textChoice) {
         case IA_NORMAL:
             text.setString("IA NORMAL");
             break;
+        case AH_HARD:
+            text.setString("Assisted Human Hard");
+            break;
+        case AH_EASY:
+            text.setString("Assisted Human Easy");
+            break;
+        case AH_NORMAL:
+            text.setString("Assisted Human Normal");
+            break;
         case CLASSIQUE:
             text.setString("CLASSIQUE");
+            break;
+        case PRO:
+            text.setString("PRO");
+            break;
+        case LONG_PRO:
+            text.setString("LONG PRO");
+            break;
+        case SWAP:
+            text.setString("SWAP");
+            break;
+        case SWAP2:
+            text.setString("SWAP2");
             break;
         default:
             DEBUG << "not Text???? wtf\n";
@@ -93,9 +120,23 @@ void    Menu::switchTextBox(Text &text, TextChoice &textC) {
     else if (textC == IA_NORMAL)
         textC = IA_EASY;
     else if (textC == IA_EASY)
+        textC = AH_HARD;
+    else if (textC == AH_HARD)
+        textC = AH_NORMAL;
+    else if (textC == AH_NORMAL)
+        textC = AH_EASY;
+    else if (textC == AH_EASY)
         textC = HUMAN;
     else if (textC == CLASSIQUE)
-        ;//TO DO : update texte si d'autres variantes de jeu à venir
+        textC = PRO;
+    else if (textC == PRO)
+        textC = LONG_PRO;
+    else if (textC == LONG_PRO)
+        textC = SWAP;
+    else if (textC == SWAP)
+        textC = SWAP2;
+    else if (textC == SWAP2)
+        textC = CLASSIQUE;
     else
         DEBUG << "ERROR SWITCH TEXT IN MENU\n";
     updateText(text, textC);
@@ -130,10 +171,29 @@ bool    Menu::onGo(int x, int y) {
 void    Menu::go(Gomoku* gomoku) {
     delete &(gomoku->getWhitePlayer());
     delete &(gomoku->getBlackPlayer());
+    delete &(gomoku->getRules());
+    gomoku->setRules(updateRules(variante));
     gomoku->setWhitePlayer(updatePlayer(choiceP1));
     gomoku->setBlackPlayer(updatePlayer(choiceP2));
 	gomoku->getBlackPlayer().setGomoku(gomoku);
 	gomoku->getWhitePlayer().setGomoku(gomoku);
+}
+
+Rules*      Menu::updateRules(TextChoice &textC) {
+    if (textC == CLASSIQUE)
+        return new DefaultRules();
+    else if (textC == PRO)
+        return new ProRules();
+    else if (textC == LONG_PRO)
+        return new LongProRules();
+    else if (textC == SWAP)
+        return new SwapRules();
+    else if (textC == SWAP2)
+        return new SwapTwoRules();
+    else {
+        DEBUG << "IN MENU, UPDATERULES, TEXT UNKNOW";
+        exit(1);
+    }
 }
 
 Player*    Menu::updatePlayer(TextChoice &textC) {
@@ -148,6 +208,12 @@ Player*    Menu::updatePlayer(TextChoice &textC) {
         return new MinMaxDynamicPlayer({7, 7, 5, 5, 3, 3, 0});
     else if (textC == IA_EASY)
         return new MinMaxDynamicPlayer({7, 3, 0});
+    else if (textC == AH_HARD)
+        return new AssistedHumanPlayer({7, 7, 7, 5, 5, 5, 3, 3, 3, 3, 0});
+    else if (textC == AH_NORMAL)
+        return new AssistedHumanPlayer({7, 7, 5, 5, 3, 3, 0});
+    else if (textC == AH_EASY)
+        return new AssistedHumanPlayer({7, 3, 0});
     else {
         DEBUG << "ERROR SWITCH PLAYER IN GO MENU\n";
         exit(1);

@@ -25,9 +25,25 @@
 # define WHITECANTEENX 960
 # define WHITECANTEENY 860
 # define HELPERX	35
-# define HELPERY	30
-# define CHRONOX		1020
+# define HELPERY	35
+# define CHRONOX		1025
 # define CHRONOY		40
+# define TIMEX			1086
+# define TIMEY			142
+# define BTIMERX		25
+# define BTIMERY		285
+# define WTIMERX		1005
+# define WTIMERY		285
+# define BTIMEX			107
+# define BTIMEY			590
+# define WTIMEX			1089
+# define WTIMEY			590
+# define NBTURNX		1089
+# define NBTURNY		216
+# define BRULESX		107
+# define BRULESY		640
+# define WRULESX		1089
+# define WRULESY		640
 # define CENTER_MAX_DISTANCE 20
 
 typedef enum State {
@@ -48,11 +64,7 @@ class Interface {
 		void	putStone(sf::Sprite, int, int);
 		void	putStoneToHelp(int gomokuX, int gomokuY);
 		void	printCoordBoard(void);
-		void	makeSprite(sf::Sprite &s, sf::Texture &t, float sy, float sx, int px, int py);
 		void	cleanInterface(void);
-		void	cleanSpriteList(void);
-		void	cleanTextList(void);
-		void	cleanHelpList(void);
 		void	checkClickLeft(Player *current, int x, int y);
 		void	setStoneOnClick(Player &player, int x, int y);
 		void	checkEvent(Player *current);
@@ -68,7 +80,13 @@ class Interface {
 		inline	float				getTimeOfGameInSeconds(void) {return this->_timeOfGame.asSeconds();}
 		inline	void				setTimeOfGame(sf::Time newTime) {this->_timeOfGame = newTime;}
 		inline	float				getTimeToPlayInSeconds(void) {return this->_timeToPlay.asSeconds();}
+		inline	sf::RectangleShape	*getPtrFiveByFiveRect(void) {return &(this->fiveByFiveRect);}
+		inline	sf::RectangleShape	*getPtrSevenBySevenRect(void) {return &(this->sevenBySevenRect);}
+		inline	sf::Sprite			*getSpriteWhiteStone(void) {return &(this->_whiteStone);}
+		inline	sf::Sprite			*getSpriteBlackStone(void) {return &(this->_blackStone);}
 		inline	void				setTimeToPlay(sf::Time newTime) {this->_timeToPlay = newTime;}
+		void						setShapeInDrawList(sf::Shape *shape);
+		inline void					setRulesText(sf::String text, int screenX, int screenY) {this->rulesText.setString(text);this->rulesText.setPosition(screenX, screenY);}
 		sf::Vector2<int> whiteCanteen[10];
 		sf::Vector2<int> blackCanteen[10];
 
@@ -87,6 +105,7 @@ class Interface {
 		std::list<sf::Sprite>			_allSprite;
 		std::list<sf::Text*>			_allText;
 		std::list<sf::Sprite>			_allHelpSprite;
+		std::list<sf::Shape*>			_allShape;
 		sf::Vector2<int>	coordBoard[GW][GH];
 		sf::Vector2<int>	turnCoordInterfaceInGomokuBoardIndex(int screenX, int screenY);
 		
@@ -114,7 +133,10 @@ class Interface {
 		void	loadSoundBuffer(void);
 		void	loadSoundAndOpenMusic(void);
 		void	loadText(void);
+		void	loadShape(void);
 		void	setText(sf::Text *text, sf::Font &font, int size, sf::Color color, int posX, int posY, sf::String str);
+		void	makeSprite(sf::Sprite &s, sf::Texture &t, float sy, float sx, int px, int py);
+		void	makeRectangleShape(sf::RectangleShape *shape, int sizeX, int sizeY, int thickness, sf::Color inside, sf::Color outside, int posX, int posY);
 		void	initCoordBoard(void);
 		void	initCoordCanteen(void);
 		void	putPreviewStone(Player &current, int mouseX, int mouseY);
@@ -128,12 +150,10 @@ class Interface {
 		void	updateTimerOfGame(void);
 		void	updateTimerToPlay(void);
 		void	updateNbOfTurn(void);
-		void	updateAllGameText(void);
 		void	updateVisualAid(void);
 		void	updateHelperToPlay(void);
-		//void	putHelpText(sf::Text &text, int x, int y);
+		void	updateRulesText(void);
 		void	putHelpSprite(sf::Sprite sprite, int x, int y);
-
 		//to previzualize stone
 		bool				previewStone;
 		bool				viewWinner;
@@ -161,6 +181,8 @@ class Interface {
 		sf::Sprite			_help5Sprite;
 		sf::Sprite			_help5PlusSprite;
 		sf::Sprite			_chronoSprite;
+		sf::Sprite			_blackTimerSprite;
+		sf::Sprite			_whiteTimerSprite;
 		sf::Sprite			_bestSprite;
 
 		sf::Texture			_stoneWhiteTexture;
@@ -183,6 +205,8 @@ class Interface {
 		sf::Texture			_help5Texture;
 		sf::Texture			_help5PlusTexture;
 		sf::Texture			_chronoTexture;
+		sf::Texture			_blackTimerTexture;
+		sf::Texture			_whiteTimerTexture;
 		sf::Texture			_bestTexture;
 
 
@@ -196,7 +220,8 @@ class Interface {
 		sf::Music			ambiance1;
 		sf::Music			ambiance2;
 
-		sf::Text			timeToPlayText;
+		sf::Text			whiteTimeToPlayText;
+		sf::Text			blackTimeToPlayText;
 		sf::Text			timeOfGameText;
 		sf::Text			nbTurnText;
 		/*sf::Text			help1;
@@ -205,6 +230,10 @@ class Interface {
 		sf::Text			help4;
 		sf::Text			help5;*/
 		sf::Text			visualAidText;
+		sf::Text			rulesText;
+
+		sf::RectangleShape	fiveByFiveRect;
+		sf::RectangleShape	sevenBySevenRect;
 
 };
 

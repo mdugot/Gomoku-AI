@@ -20,13 +20,11 @@ class Player
 		int nbCapture;
 		Gomoku *gomoku;
 		Player *enemy;
-		Player *myHelper;
 		Stone stoneColor;
 		sf::Sprite	*stoneSprite;
 		bool	played;
 		sf::Vector2<int> coordPlayed; // MEMO : x et y ==> coordonnée du board dans Gomoku
 
-		inline virtual void setColor(Stone color) {this->stoneColor = color; myHeuristic.stone = color; ennemyHeuristic.stone = (color == WHITE ? BLACK : WHITE);}
 		void putStone(int x, int y);
 		sf::Vector2<int> canteen[10];
 	
@@ -37,6 +35,7 @@ class Player
 		bool	human;
 
 		virtual void play(Rules &rules, Interface &i )= 0;
+		virtual void playForHelp(Rules &rules, Interface &i) {(void)rules;(void)i;return;}
 		virtual void observe(Rules &rules, int x, int y, std::vector<std::pair<unsigned char, unsigned char>> &captured);
 		virtual void observeMyCapture(std::vector<std::pair<unsigned char, unsigned char>> &captured);
 		inline Stone getColor() {return stoneColor;}
@@ -44,19 +43,18 @@ class Player
 		inline HeuristicBoard *getMyHeuristic() {return &myHeuristic;}
 		inline HeuristicBoard *getEnnemyHeuristic() {return &ennemyHeuristic;}
 		inline Player *getEnemy() {return enemy;}
-		inline Player *getHelper() {return myHelper;}
 		inline sf::Sprite *getSpriteStone() {return stoneSprite;}
 		inline int getNbCapture() {return nbCapture;}
 		inline sf::Vector2<int> getCoordPlayed(void) {return (coordPlayed);}
 		inline sf::Vector2<int> getCoordCanteen(int index) {return (canteen[index]);}
 		inline void setGomoku(Gomoku *gomoku) {this->gomoku = gomoku; myHeuristic.gomoku = gomoku; ennemyHeuristic.gomoku = gomoku;}
 		inline void	setEnemy(Player *en) {this->enemy = en;}
-		inline void	setHelper(Player *h) {this->myHelper = h;}
 		inline void	setNbCapture(int nb) {this->nbCapture = nb;}
 		inline void setCoordPlayed(int x, int y) {coordPlayed.x = x; coordPlayed.y = y;}
 		inline void	setSpriteStone(sf::Sprite *stone) {this->stoneSprite = stone;}
 		inline void	setPlayed(bool state) {played = state;}
 		inline void	setCanteen(sf::Vector2<int> toCopy[10]) {int i = 0; while(i<10){canteen[i] = toCopy[i];i++;}}
+		inline virtual void setColor(Stone color) {this->stoneColor = color; myHeuristic.stone = color; ennemyHeuristic.stone = (color == WHITE ? BLACK : WHITE);}
 };
 
 

@@ -3,23 +3,23 @@
 #include "humanPlayer.h"
 #include "randomPlayer.h"
 #include "minMaxDynamicPlayer.h"
-#include "helper.h"
+#include "assistedHumanPlayer.h"
 #include "noobIA.h"
 #include "rules.h"
+#include "defaultRules.h"
 #include "interface.h"
 
 using namespace sf;
 
-Gomoku::Gomoku(Rules &rules, Interface &interface) : rules(rules), interface(interface)
+Gomoku::Gomoku(Interface &interface) : interface(interface)
 {
 	whitePlayer = new HumanPlayer();
 	blackPlayer = new HumanPlayer();
-	helperWhite = new Helper({7, 7, 7, 5, 5, 5, 3, 3, 3, 3, 0});
-	helperBlack = new Helper({7, 7, 7, 5, 5, 5, 3, 3, 3, 3, 0});
+	rules = new DefaultRules();
 	initGomoku();
 }
 
-Gomoku::Gomoku(Gomoku *copyFrom, Rules &copyRules) : whitePlayer(copyFrom->aWhitePlayer()), blackPlayer(copyFrom->aBlackPlayer()), rules(copyRules), interface(copyFrom->getInterface())
+Gomoku::Gomoku(Gomoku *copyFrom) : whitePlayer(copyFrom->aWhitePlayer()), blackPlayer(copyFrom->aBlackPlayer()), rules(copyFrom->aRules()), interface(copyFrom->getInterface())
 {
 	clone = true;
 	memcpy((void*)board, (void*)(copyFrom->getBoard()), sizeof(Stone[GW][GH]));
@@ -36,42 +36,23 @@ void	Gomoku::initGomoku() {
 		}
 	}
 	focus[GW/2][GH/2] = true;
-	rules.setGomoku(this);
-	rules.turnCounter = 0;
+	updateRules();
 	interface.setGomoku(this);
 	currentPlayer = blackPlayer;
 }
 
 void	Gomoku::updatePlayer()
 {
-	delete helperWhite;
-	delete helperBlack;
-	helperWhite = new Helper({7, 7, 7, 5, 5, 5, 3, 3, 3, 3, 0});
-	helperBlack = new Helper({7, 7, 7, 5, 5, 5, 3, 3, 3, 3, 0});
-	updateWhiteHelper();
-	updateBlackHelper();
 	updateBlackPlayer();
 	updateWhitePlayer();
 	currentPlayer = blackPlayer;
 	DEBUG << "PLAYER UPDATED\n";
 }
 
-void	Gomoku::updateWhiteHelper()
+void	Gomoku::updateRules()
 {
-	helperWhite->setSpriteStone(&(interface._whiteStone));
-	helperWhite->setCanteen(interface.whiteCanteen);
-	helperWhite->setGomoku(this);
-	helperWhite->setColor(WHITE);
-	helperWhite->setEnemy(blackPlayer);
-}
-
-void	Gomoku::updateBlackHelper()
-{
-	helperBlack->setSpriteStone(&(interface._blackStone));
-	helperBlack->setCanteen(interface.blackCanteen);
-	helperBlack->setGomoku(this);
-	helperBlack->setColor(BLACK);
-	helperBlack->setEnemy(whitePlayer);
+	rules->setGomoku(this);
+	rules->turnCounter = 0;
 }
 
 void	Gomoku::updateWhitePlayer()
@@ -81,7 +62,6 @@ void	Gomoku::updateWhitePlayer()
 	whitePlayer->setGomoku(this);
 	whitePlayer->setColor(WHITE);
 	whitePlayer->setEnemy(blackPlayer);
-	whitePlayer->setHelper(helperWhite);
 }
 
 void	Gomoku::updateBlackPlayer()
@@ -91,7 +71,6 @@ void	Gomoku::updateBlackPlayer()
 	blackPlayer->setGomoku(this);
 	blackPlayer->setColor(BLACK);
 	blackPlayer->setEnemy(whitePlayer);
-	blackPlayer->setHelper(helperBlack);
 }
 
 Gomoku::~Gomoku()
@@ -99,8 +78,7 @@ Gomoku::~Gomoku()
 	if (!clone) {
 		delete whitePlayer;
 		delete blackPlayer;
-		delete helperWhite;
-		delete helperBlack;
+		delete rules;
 	}
 }
 
@@ -132,15 +110,23 @@ void Gomoku::start() {
 		int x = 0;
 		int y = 0;
 		updatePlayer();
-		while (!(end = rules.checkEnd(*currentPlayer))) {
-			if (interface.visualAid) {
+		updateRules();
+		while (!(end = rules->checkEnd(*currentPlayer))) {
+			interface._allShape.clear();
+			interface.updateRulesText();
+			interface.updateNbOfTurn();
+			rules->specificRules(interface);
+			if (interface.visualAid && currentPlayer->getHuman()) {
 				interface.updateHelperToPlay();
 			}
+			else
+				interface._allHelpSprite.clear();
 			interface.update();
 			//PLAY
 			interface.setTimeToPlay(interface._clockTurn.restart());
-			currentPlayer->play(rules, interface);
+			currentPlayer->play(*rules, interface);
 			interface.setTimeToPlay(interface._clockTurn.getElapsedTime());
+			interface.updateTimerToPlay();
 			x = currentPlayer->coordPlayed.x;
 			y = currentPlayer->coordPlayed.y;
 			//UPDATE HEURISTIC
@@ -148,25 +134,20 @@ void Gomoku::start() {
 			currentPlayer->ennemyHeuristic.clear(x, y);
 			currentPlayer->myHeuristic.print(x, y);
 			currentPlayer->ennemyHeuristic.print(x, y);
-			currentPlayer->getHelper()->myHeuristic.put(x,y);
-			currentPlayer->getHelper()->ennemyHeuristic.clear(x,y);
 			//DRAW
 			drawStone();
 			//CAPTURE
 			checkCapture(*currentPlayer, x, y, *(currentPlayer->getEnemy()), captured);
 			captureAll(*currentPlayer, currentPlayer->getEnemy()->getSpriteStone(), captured);
 			//OBSERVE
-			currentPlayer->getEnemy()->observe(rules, x, y, captured);
+			currentPlayer->getEnemy()->observe(*rules, x, y, captured);
 			currentPlayer->observeMyCapture(captured);
-			currentPlayer->getHelper()->getEnemy()->observe(rules, x, y, captured);
-			currentPlayer->getHelper()->observeMyCapture(captured);
 			//END
 			currentPlayer->played = false;
-			currentPlayer->getHelper()->played = false;
 			currentPlayer = currentPlayer->getEnemy();
 			interface.checkEvent(currentPlayer);
 			captured.clear();
-			rules.turnCounter += 1;
+			rules->turnCounter += 1;
 		}
 		interface._allHelpSprite.clear();
 		if (end == WHITE_WIN)

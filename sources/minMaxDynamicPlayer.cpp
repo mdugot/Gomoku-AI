@@ -4,7 +4,7 @@
 
 std::mutex MinMaxDynamicPlayer::mutex;
 
-Choice::Choice(unsigned char x, unsigned char y, HeuristicBoard *myHeuristic, HeuristicBoard *ennemyHeuristic, Player *player, Gomoku *gomoku, Rules *rules, bool ennemy) : x(x), y(y), gomoku(gomoku, *rules), myHeuristic(myHeuristic), ennemyHeuristic(ennemyHeuristic)
+Choice::Choice(unsigned char x, unsigned char y, HeuristicBoard *myHeuristic, HeuristicBoard *ennemyHeuristic, Player *player, Gomoku *gomoku, bool ennemy) : x(x), y(y), gomoku(gomoku), myHeuristic(myHeuristic), ennemyHeuristic(ennemyHeuristic)
 {
 	if (!ennemy) {
 		this->gomoku.setStone(player->getColor(), x, y);
@@ -55,7 +55,7 @@ void MinMaxDynamicPlayer::heuristicMap(std::multimap<long long, std::unique_ptr<
 			if (gomoku->isFocus(i, j) && rules.canPutStone(&myOrigin, i, j)) {
 
 
-				Choice *choice = new Choice(i, j, &myOrigin, &ennemyOrigin, this, gomoku, &rules);
+				Choice *choice = new Choice(i, j, &myOrigin, &ennemyOrigin, this, gomoku);
 
 				choice->gomoku.checkCapture(*this, i, j, *enemy, choice->captured);
 				for (auto it2 = choice->captured.begin(); it2 != choice->captured.end(); ++it2) {
@@ -79,7 +79,7 @@ void MinMaxDynamicPlayer::heuristicMap_e(std::multimap<long long, std::unique_pt
 		for (unsigned char i = 0; i < GW; i++) {
 			if (gomoku->isFocus(i, j) && rules.canPutStone(&ennemyOrigin, i, j)) {
 
-				Choice *choice = new Choice(i, j, &myOrigin, &ennemyOrigin, enemy, gomoku, &rules, true);
+				Choice *choice = new Choice(i, j, &myOrigin, &ennemyOrigin, enemy, gomoku, true);
 
 				choice->gomoku.checkCapture(*enemy, i, j, *this, choice->captured);
 				for (auto it2 = choice->captured.begin(); it2 != choice->captured.end(); ++it2) {

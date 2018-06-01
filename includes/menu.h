@@ -21,7 +21,7 @@ class Interface;
 # define GO_DOWN 750
 
 typedef enum textChoice {
-    HUMAN, RANDOM, IA_HARD, IA_NORMAL, IA_EASY, CLASSIQUE, NOTHING = 0
+    HUMAN, RANDOM, IA_HARD, IA_NORMAL, IA_EASY, AH_EASY, AH_NORMAL, AH_HARD, CLASSIQUE, PRO, LONG_PRO, SWAP, SWAP2, NOTHING = 0
 } TextChoice;
 
 class Menu {
@@ -31,23 +31,17 @@ class Menu {
     private:
         sf::Font            arial;
         void    setTextString(sf::Text &text, TextChoice &textChoice);
-        //int     searchPosX(unsigned int strLen);
         void    setMiddle(sf::Text &Text);
 
         sf::Sprite			backgroundMenuSprite;
 		sf::Texture			backgroundMenuTexture;
-		
-        /*sf::Sprite          boxVariante;
-		sf::Sprite			boxP1;
-		sf::Sprite			boxP2;
-		sf::Sprite			boxGo;*/
 
     protected:
 		sf::Text            textBoxVariante;
 		sf::Text			textBoxP1;
 		sf::Text			textBoxP2;
-        //Rules *upadteRules(Rules *rules); // si variante
-        Player *updatePlayer(TextChoice &textChoice);
+        Rules   *updateRules(TextChoice &textChoice);
+        Player  *updatePlayer(TextChoice &textChoice);
         void    switchTextBox(sf::Text &text, TextChoice &textChoice);
         void    updateText(sf::Text &text, TextChoice &textChoice);
         void    go(Gomoku* gomoku);

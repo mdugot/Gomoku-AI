@@ -8,14 +8,18 @@ SRC_NAME= main.cpp \
           gomoku.cpp \
           rules.cpp \
           defaultRules.cpp \
+		  proRules.cpp\
+		  longProRules.cpp\
+		  swapRules.cpp\
+		  swapTwoRules.cpp\
           player.cpp \
           randomPlayer.cpp\
 	  humanPlayer.cpp\
+	  assistedHumanPlayer.cpp\
 	  noobIA.cpp\
 	  interface.cpp\
 	  boardIterator.cpp\
 	  minMaxDynamicPlayer.cpp\
-	  helper.cpp\
 	  heuristicBoard.cpp\
 	  menu.cpp
 SRC_PATH= ./sources/

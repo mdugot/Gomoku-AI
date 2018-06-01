@@ -17,11 +17,11 @@ class Choice
 		HeuristicBoard ennemyHeuristic;
 		std::vector<std::pair<unsigned char, unsigned char>> captured;
 	
-		Choice(unsigned char x, unsigned char y, HeuristicBoard *myHeuristic, HeuristicBoard *ennemyHeuristic, Player *player, Gomoku *gomoku, Rules *rules, bool ennemy = false);
+		Choice(unsigned char x, unsigned char y, HeuristicBoard *myHeuristic, HeuristicBoard *ennemyHeuristic, Player *player, Gomoku *gomoku, bool ennemy = false);
 		~Choice();
 };
 
-class MinMaxDynamicPlayer : public Player
+class MinMaxDynamicPlayer : public virtual Player
 {
 	static std::mutex mutex;
 
