@@ -146,7 +146,7 @@ void    Interface::loadSoundAndOpenMusic(void) {
     else {
         bipSound.setVolume(50);
         captureSound.setVolume(50);
-        testSound.setVolume(50);
+        //testSound.setVolume(50);
         ambiance1.setVolume(5);
         ambiance2.setVolume(5);
         ambiance1.setLoop(true);
