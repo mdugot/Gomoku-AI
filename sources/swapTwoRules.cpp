@@ -12,12 +12,10 @@ Rules *SwapTwoRules::copy() {
 	SwapTwoRules *cpy = new SwapTwoRules();
 	cpy->setGomoku(gomoku);
 	cpy->setTurnCounter(turnCounter);
-    DEBUG << "SwapTwoRules";
 	return cpy;
 }
 
 bool SwapTwoRules::canPutStone(HeuristicBoard *heuristic, int x, int y) {
-    DEBUG << "SwapTwoRules";
 	if (heuristic->checkDoubleFreeThree((unsigned char)x, (unsigned char)y))
 		return false;
 	if (gomoku->getStone(x, y) == FREE)

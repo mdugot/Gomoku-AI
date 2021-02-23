@@ -161,22 +161,11 @@ void    Interface::loadSoundAndOpenMusic(void) {
     bipSound.setBuffer(bipSB);
     captureSound.setBuffer(captureSB);
     victorySound.setBuffer(victorySB);
-    if (!ambiance1.openFromFile("./sound/ambiance1.wav")
-        || !ambiance2.openFromFile("./sound/ambiance2.wav")) {
-            DEBUG << "ERROR DURING OPEN MUSIC\n";
-            exit(1);
-        }
-    else {
-        bipSound.setVolume(50);
-        captureSound.setVolume(50);
-        //testSound.setVolume(50);
-        ambiance1.setVolume(5);
-        ambiance2.setVolume(5);
-        ambiance1.setLoop(true);
-        ambiance2.setPlayingOffset(sf::seconds(30));
-        ambiance2.play();
-    }
+    bipSound.setVolume(5);
+    captureSound.setVolume(10);
+    victorySound.setVolume(10);
 }
+
 void    Interface::setText(Text *text, Font &font, int size, Color color, int posX, int posY, String str) {
     text->setFont(font);
     text->setCharacterSize(size);
@@ -426,8 +415,6 @@ void    Interface::goodByeScreen(void) {
     this->state = GOODBYE;
     cleanInterface();
     _allSprite.push_back(_goodByeSprite);
-    ambiance1.stop();
-    ambiance2.stop();
 }
 
 void    Interface::menuScreen(void) {
@@ -446,8 +433,6 @@ void    Interface::againScreen(void) {
     _allSprite.push_back(_againSprite);
     _allSprite.push_back(_againYesSprite);
     _allSprite.push_back(_againNoSprite);
-    ambiance1.stop();
-    ambiance2.play();
     this->state = AGAIN;
 }
 
@@ -478,8 +463,6 @@ void    Interface::gameScreen(void) {
     //_allText.push_back(&help3);
     //_allText.push_back(&help4);
     //_allText.push_back(&help5);
-    ambiance2.stop();
-    ambiance1.play();
     this->state = GAME;
 }
 

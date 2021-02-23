@@ -99,7 +99,7 @@ void    Menu::setTextString(Text &text, TextChoice &textChoice) {
             text.setString("SWAP2");
             break;
         default:
-            DEBUG << "not Text???? wtf\n";
+            DEBUG << "no interface text\n";
             exit(0);
             break;
     }

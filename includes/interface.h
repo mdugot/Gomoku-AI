@@ -217,8 +217,6 @@ class Interface {
 		sf::Sound			bipSound;
 		sf::Sound			captureSound;
 		sf::Sound			victorySound;
-		sf::Music			ambiance1;
-		sf::Music			ambiance2;
 
 		sf::Text			whiteTimeToPlayText;
 		sf::Text			blackTimeToPlayText;
